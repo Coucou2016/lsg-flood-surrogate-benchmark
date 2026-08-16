@@ -85,8 +85,12 @@ OPTIONAL = [
     "docs/references/Wang_2026_WRR_Strategies_Flood_Inundation_Large_Complex.md",
     "docs/references/Wang_2026_WRR_Strategies_Flood_Inundation_Large_Complex.from_pdf.md",
     "scripts/make_figures.py",
+    "scripts/mineru_convert.py",
+    "scripts/_secret_scan_publish.py",
+    "scripts/_sync_to_publish.py",
     "lsg/figstyle.py",
     "outputs/figures/figure_manifest.json",
+    ".gitignore",
 ]
 
 

@@ -61,7 +61,7 @@
 
 在 Fraehr 风格的 Grp1 / `wet_train` 协议下，三案例的主结论是：（1）相对 LF-only，多保真 LSG 在 Burnett 等弱 LF 情景给出清晰的 CSI（Critical Success Index，临界成功指数）与湿单元 RMSE（root mean square error，均方根误差）提升——**技能来自多保真映射本身**；（2）**关于局部化的结论是负面的**：层次残差分区（H-LSG，`residual_kmeans`）在原生容量下看似缩小截断间隙 O2−O1（empirical orthogonal function，经验正交函数），但**一旦把 GP 输入维度对齐**，全局模型复现（Burnett）甚至超越（Chowilla）该收缩，且 Chowilla 上 matched-15 全局拿到**更低**的 wet RMSE（0.085 vs 0.093 m），Burnett 上额外残差容量通过退化的 LF→HF GP 映射（O4−O2 0.304 vs 0.056 m，EXT 门控相同）**恶化**深度 RMSE；诱导点预算与分区数对 RMSE 的影响不亚于分区本身——因此**表观分区优势是容量/近似混淆，而非空间局部化**；（3）Carlisle Max 路径上 CRPS（Continuous Ranked Probability Score，连续分级概率评分）方差标定把方差尺度压到 s≈0.417，CRPS 由 0.039 降至 0.028，而 CSI/RMSE 因均值不变而按构造保持不变；（4）Chowilla 在 all_cells 上出现 CSI≈0.3902 的“崩溃”，但在 `wet_train` 上 CSI≈0.9756、RMSE≈0.093 m——这是强 LF 范围情景下的评分协议反例，不是静默失败。评价单元是 hold-out 事件（Carlisle/Chowilla Max：N=1；Burnett：N=18），不是栅格单元。本报告因此把 H-LSG 从“分区精度胜利”重新定位为**带等容量对照的截断诊断工具 + 诚实的负结果**。
 
-报告按教学体例撰写：每个图/表前说明动机，之后逐面板解读，并给出机制诊断时序（问题→证据→诊断→最小处理→验证→边界）。缺失资产一律标为「待补充」，不编造。
+报告按教学体例撰写：每个图/表前说明动机，之后逐面板解读，并给出机制诊断时序（问题→证据→诊断→最小处理→验证→边界）。缺失资产一律标为**已关闭局限**（不编造、不留开放占位符）。
 
 
 ## 研究背景与目标
@@ -91,7 +91,8 @@ Wang 等（2026）在大型复杂洪泛区进一步讨论 LSG-TS 与 LSG-Max，�
 - Fraehr et al. 2022 WRR（10.1029/2022WR032248）：EOF + Sparse GP 提升 LF 淹没。
 - Fraehr et al. 2023 WRR（10.1029/2022WR033836）：洪泛区混合 LSG；深度与非结构网格。
 - Fraehr et al. 2023 Nature Water：加速水动力淹没。
-- Fraehr et al. 2024 Water Research：Carlisle/Chowilla/Burnett 上 LSG 与 ML 代理对比。
+- Fraehr et al. 2024a Water Research（10.1016/j.watres.2024.121202）：Carlisle/Chowilla/Burnett 上 LSG vs 1dCNN / LSTM-SRR / GP-EOF / LSTM-EOF；本组沿用公开立方体与 wet_train/CSI，不重训 ML 基线、不做 50% 外推。
+- Fraehr et al. 2024b J. Environ. Manage.（10.1016/j.jenvman.2024.123570）：LESS 训练事件选择；与固定分割下的残差容量对照互补。
 - Wang, Wang & Nathan 2026 WRR（10.1029/2025WR042481）：大型复杂洪泛区策略；**分区 EOF 为 future work**。
 - Lu et al. 2025 JoH：LSG 中核函数选择。
 - 公共立方体 Figshare 10.26188/24312658。
@@ -118,7 +119,7 @@ Wang 等（2026）在大型复杂洪泛区进一步讨论 LSG-TS 与 LSG-Max，�
 | Carlisle（英国） | 主案例 | LISFLOOD-FP × HEC-RAS | config/carlisle.yaml | HF ≈ 581 061 单元；LF 有效 5 681（去 ghost） | 完整时间序列可训（LSG-TS） | 已解压（~9.6 GB，Figshare 10.26188/24312658） |
 | Chowilla（澳大利亚） | 次案例 | 细网格 / 粗网格 HEC-RAS | config/chowilla.yaml | HF ≈ 110k 单元；29 事件 / 10 组 | time_reduction: max | 可用（junction / zip） |
 | Burnett（澳大利亚） | 第三案例 | TUFLOW × HEC-RAS | config/burnett.yaml | HF ≈ 780 785；LF ≈ 15 256；74 事件 / 4 组 | time_reduction: max | 可用（junction / zip） |
-| Brisbane（附录） | 许可门控附录 | TUFLOW × URBS（Wang 2026） | config/brisbane.yaml | 待补充（许可数据未到） | 待补充 | 未运行（许可门控） |
+| Brisbane（附录） | 许可门控附录 | TUFLOW × URBS（Wang 2026） | config/brisbane.yaml | 许可数据未到（关闭局限，不运行） | 全时序未跑 | 未运行（许可门控） |
 
 
 ### 评分掩膜术语（首次完整定义）
@@ -330,7 +331,7 @@ Max CRPS 0.039→0.028；CSI/RMSE 不变。Chowilla/Burnett 已用保存状态�
 - **RFA**（Relative False Alarms，相对虚警）
 - **CSI** = hits / (hits+misses+false alarms)
 - **CRPS / Brier / PIT / coverage**：概率层
-- **运行时**：JSON 中 `runtime_train_s` / `runtime_predict_s`（硬件细节待补充）
+- **运行时**：JSON 中 `runtime_train_s` / `runtime_predict_s`；硬件/软件钉扎见手稿 §3.8（Windows 10 / Dual Xeon Gold 6133 / ≈128 GB RAM / Python 3.12.10 + GPflow 2.11.1）
 
 ### 公平性
 
@@ -1001,7 +1002,7 @@ wet CSI：global 0.9744；H-LSG 0.9756；wet_correlation 0.9778。
 
 1. O2−O1 作为诊断很有信息量，但与执行技能解耦——未来应报告“容量匹配后的留出技能”而非单看 O2−O1。
 2. 强 LF 反例的社区评分规范应如何标准化？
-3. `var_scale` 能否跨事件/站点迁移而不重拟合？（待补充实验）
+3. `var_scale` 能否跨事件/站点迁移而不重拟合？（**关闭局限**：Chowilla 标定已近乎持平且 coverage 恶化，说明不可默认跨站迁移；本报告不追加新实验）
 4. 与 REOF-SGP、Tan 区域化 LSG 的精细边界还需对照表持续维护；未来局部 EOF 洪水代理应默认报告等容量基线。
 
 
@@ -1095,7 +1096,8 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml
 1. Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2022). Water Resources Research, 58, e2022WR032248. https://doi.org/10.1029/2022WR032248
 2. Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2023). Water Resources Research, 59, e2022WR033836. https://doi.org/10.1029/2022WR033836
 3. Fraehr, N., et al. (2023). Nature Water. https://doi.org/10.1038/s44221-023-00132-2
-4. Fraehr, N., et al. (2024). Water Research. https://doi.org/10.1016/j.watres.2024.121202
+4. Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2024a). Assessment of surrogate models for flood inundation: The physics-guided LSG model vs. state-of-the-art machine learning models. Water Research, 252, 121202. https://doi.org/10.1016/j.watres.2024.121202
+4b. Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2024b). Generation and selection of training events for surrogate flood inundation models. Journal of Environmental Management, 373, 123570. https://doi.org/10.1016/j.jenvman.2024.123570
 5. Wang, W., Wang, Q. J., & Nathan, R. (2026). Water Resources Research, 62, e2025WR042481. https://doi.org/10.1029/2025WR042481
 6. Lu et al. (2025). Journal of Hydrology. https://doi.org/10.1016/j.jhydrol.2025.132949
 7. Tan et al. (2025). HESS, 29, 3833. https://doi.org/10.5194/hess-29-3833-2025
@@ -1146,7 +1148,7 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml
 2. Brisbane / FloodCastBench — 移出公开证据链，仅未来外部复现。
 3. Burnett CRPS *s* 嵌套 CV、容量×分区×站点完整析因、oracle 顺序置换 — 不构成本稿逻辑缺口。
 
-**本轮已完成：** Chowilla/Burnett 等容量对照；Carlisle 等容量对照（秩上限说明，见 `docs/paper/05_carlisle_capacity.md`）；Chowilla+Carlisle CRPS *s* 嵌套 CV；Carlisle 区划 8-NN 相干诊断；硬件/软件版本钉扎；手稿清除全部「待补充/待修改」占位。
+**本轮已完成：** Chowilla/Burnett 等容量对照；Carlisle 等容量对照（秩上限说明，见 `docs/paper/05_carlisle_capacity.md`）；Chowilla+Carlisle CRPS *s* 嵌套 CV；Carlisle 区划 8-NN 相干诊断；硬件/软件版本钉扎；手稿开放占位符已全部改为关闭局限表述。
 
 **Carlisle 等容量教学要点（wet_train）：** H-LSG 维 13 → RMSE 0.094 m；原生全局维 1 → 0.112 m；`force_n_modes: 13` 受 *n*_train=8 限制实现为维 8 → RMSE 0.202 m 且 O2−O1=0；`residual_eof_modes: 0` 坍缩回原生全局。精确维 13 的全局匹配在 Max 路径上不可行。
 

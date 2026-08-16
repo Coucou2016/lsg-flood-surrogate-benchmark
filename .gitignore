@@ -1,41 +1,29 @@
-﻿.venv/
+.venv/
 __pycache__/
 *.pyc
 .pytest_cache/
+outputs/
+data/synthetic/*.npz
 *.egg-info/
 .DS_Store
-*.npz
-*.h5
-*.hdf
-*.hdf5
-*.zip
-*.pkl
-*.pt
-*.ckpt
 
-# Bulk data and large binaries (never publish)
-data/external/
-data/raw/
-data/synthetic/*.npz
-data/processed/
+# Secrets (API tokens, credentials) — never commit
+.secrets/
+**/mineru_token.txt
 
-# Heavy outputs except curated JSON/SVG/PDF
-outputs/models/
-outputs/**/*.npz
-outputs/**/*.png
-!outputs/figures/*.svg
-!outputs/figures/*.pdf
-!outputs/figures/figure_manifest.json
-!outputs/evaluation/**/*.json
+# Elsevier VoR PDFs and their full-text MinerU extracts (copyright; local-only)
+docs/references/1-s2.0-*.pdf
+docs/references/Fraehr_2024_WaterResearch_*.md
+docs/references/Fraehr_2024_WaterResearch_*_assets/
+docs/references/Fraehr_2024_JEnvironManage_*.md
+docs/references/Fraehr_2024_JEnvironManage_*_assets/
+docs/references/*_assets/
 
-# Local secrets / credentials
-.env
-.env.*
-*.pem
-*.key
-id_rsa*
-id_ed25519*
-credentials*.json
-**/secrets/**
-.npmrc
-.pypirc
+# Large binaries under data/external (keep README / CSV / YAML)
+data/external/**
+!data/external/**/
+!data/external/**/README.md
+!data/external/**/*.md
+!data/external/**/*.csv
+!data/external/**/*.yaml
+!data/external/**/*.yml

@@ -1,0 +1,111 @@
+# Carlisle (UK) — published LSG benchmark with already-computed HF/LF results.
+#
+# Fraehr (2024) Figshare 10.26188/24312658, file Carlisle.zip (~9.6 GB, CC BY 4.0).
+# HF = LISFLOOD-FP, LF = HEC-RAS. Do not re-run HEC-RAS; unzip the dump and train.
+
+study_area:
+  id: carlisle_global
+  name: Carlisle, United Kingdom
+  notes: >
+    Global-EOF twin of config/carlisle.yaml for equal-capacity controls.
+    Existing published multi-fidelity benchmark. Inundation cubes are in the
+    Figshare dump. This repository does not generate them.
+
+ingest:
+  kind: fraehr
+
+paths:
+  project_root: null
+  case_root: data/external/carlisle
+  dem: data/external/carlisle
+  hf_results: data/external/carlisle
+  lf_results: data/external/carlisle
+  processed: data/processed/carlisle
+  models: outputs/models/carlisle_global
+  evaluation: outputs/evaluation/carlisle
+  metadata: data/external/carlisle
+
+hydrodynamic:
+  depth_threshold_m: 0.03
+  extent_binary_threshold: 0.5
+  hf_cell_size_m: 5
+  timestep_hours: 1
+
+lsg:
+  # depth = single depth EOF/GP (A/B baseline).
+  # wse_ext = Fraehr dual path: EXT (binary) + WSE EOF/GP, then
+  #   depth = max(where(EXT==1, WSE, Z) - Z, 0). Not an LF-extent gate.
+  field: wse_ext
+  weight_by_cell_area: true
+  max_eof_modes: 100
+  inducing_point_fraction: 0.02
+  # Floor on the SGPR inducing budget (capped at n_train, where SGPR is exact).
+  # LSG-Max trains on one row per event, so the 0.02 fraction alone would leave
+  # 2 inducing points for 8 events and the sparse approximation would dominate
+  # the error budget (O4). LSG-TS (>2000 rows) keeps the fraction rule.
+  min_inducing_points: 16
+  gp_kernel: exponential
+  train_test_split: 0.8
+  random_seed: 20260814
+  # none = global-only baseline. residual_kmeans | wet_correlation = H-LSG.
+  # Under wse_ext, residual zones attach to the WSE branch only (EXT stays global).
+  zoning: none
+  n_zones: 4
+  residual_eof_modes: 3
+
+events:
+  synthetic_only: false
+  # Fraehr validates one event at a time (Train_test_split_ValidateOnGrp_N).
+  # E1..E9 are Run1..Run9 (HF) paired with Carlisle_LFmodelA.p01..p09 (LF).
+  # include: [E1, E2, E3]   # uncomment to ingest a subset (see README)
+  splits:
+    validation: [E1]
+    lsg_ts_train: [E2, E3, E4, E5, E6, E7, E8, E9]
+    lsg_max_train: [E2, E3, E4, E5, E6, E7, E8, E9]
+
+variants:
+  lsg_ts:
+    use_time_series: true
+    derive_max_from_ts: true
+  lsg_max:
+    use_time_series: false
+    train_on_max_surface: true
+
+evaluation:
+  metrics:
+    - rmse_depth
+    - csi
+    - pod
+    - rfa
+    - crps
+    - brier
+  uq: true
+  # crps_scale = train-fit global Var_cal = s * Var_raw (mean / CSI / RMSE unchanged).
+  # coverage_90 = match active-cell 90% coverage; none = disable.
+  uq_calibration: crps_scale
+  # Cap TS calibration rows (full train UQ maps are multi-GB).
+  uq_calibration_max_rows: 256
+  error_budget: true
+  contingency_threshold_m: 0.03
+  # Paper-safe reporting: always emit all_cells + wet_train (Fraehr wet_idx).
+  # CSI is usually identical; RMSE on wet_train is the Fraehr-comparable depth RMSE.
+  # With lsg.field: wse_ext the official prediction is trained EXT+WSE (not LF gate).
+  cell_mask: wet_train
+
+figshare:
+  doi: 10.26188/24312658
+  file: Carlisle.zip
+  file_id: 44120405
+  bytes: 9603961435
+  md5: 5b4bf7b6007d858a67050fdecc7e6b5f
+  downloaded: true
+  unzipped: true
+  python_data_file: Python_data.zip
+  python_data_file_id: 44120348
+  python_data_status: unzipped
+  comparison_results_file: Comparison_results.zip
+  comparison_results_file_id: 44120360
+  comparison_results_bytes: 279586627
+  comparison_results_md5: a34de5b89811804d8baa8c6bfb11ef7f
+  comparison_results_status: unzipped
+  comparison_results_path: data/external/carlisle/comparison_results

@@ -269,4 +269,10 @@ Source: `outputs/evaluation/pytest_capacity_controls.txt`.
 4. Keep **inducing floor** and **n_zones** sensitivity in Methods/SI — both move RMSE as much as zoning.
 5. CRPS `s` on Chowilla is **fold-stable**; still report Chowilla calibration CRPS as flat/coverage-hostile where previously documented.
 
+---
+
+## Appendix — Carlisle equal-capacity (this revision)
+
+See `docs/paper/05_carlisle_capacity.md`. Headline wet_train: H-LSG dim 13 RMSE **0.094 m**; native global dim 1 RMSE 0.112 m; `force_n_modes: 13` realises dim **8** with RMSE **0.202 m** and O2−O1 = 0; residual_modes=0 collapses to native global. Exact dim-13 global match is infeasible under Max *n*_train = 8.
+
 **仅本地修改，未提交、未推送、未创建 PR、未部署。**

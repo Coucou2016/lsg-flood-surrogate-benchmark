@@ -75,7 +75,15 @@ def inline_fmt(s: str) -> str:
     s = html.escape(s)
     s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
     s = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", s)
-    s = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<em>\1</em>", s)
+
+    # Italic only outside <code>...</code> so identifiers like coverage_*_active stay intact.
+    parts = re.split(r"(<code>.*?</code>)", s)
+    for i, part in enumerate(parts):
+        if part.startswith("<code>"):
+            continue
+        parts[i] = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<em>\1</em>", part)
+    s = "".join(parts)
+
     s = re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", r'<a href="\2">\1</a>', s)
     # Mark Chinese placeholder for font fallback styling
     s = s.replace("待补充", '<span class="dai-buchong">待补充</span>')

@@ -1,8 +1,8 @@
 # Does residual hierarchical zoning improve multi-fidelity flood surrogates? A capacity-controlled negative result with oracle error budgets and CRPS-calibrated inundation uncertainty on public benchmarks
 
-**Authors:** 待补充  
-**Affiliations:** 待补充  
-**Corresponding author:** 待补充  
+**Authors:** [Author names and affiliations to be finalized by the author team before submission]  
+**Affiliations:** [To be finalized]  
+**Corresponding author:** [To be finalized]  
 **Target venues:** *Water Resources Research* / *Journal of Hydrology* / *Environmental Modelling & Software* (methods paper)
 
 ---
@@ -97,7 +97,7 @@ Uncalibrated intervals can be over-dispersed (Carlisle Max `coverage_90` ≈ 0.9
 
 > Var<sub>cal</sub> = *s* · Var<sub>raw</sub>,
 
-with latent mean unchanged. Unchanged CSI/RMSE after calibration is therefore **by construction** (mean maps are untouched), not an independent empirical finding that calibration “preserves accuracy.” The scientific claim is improved probabilistic scores (CRPS, coverage) on held-out scoring of variance-rescaled maps, with *s* fit on **training** events only. We also report `coverage_*_active` on cells where observation or predictive mean ≥ τ, because all-cell coverage is inflated by EXT-dry zeros with near-zero σ. Under `wse_ext`, EXT remains a learned binary/extent field that gates continuous WSE; scalar *s* primarily recalibrates continuous depth variance on that gated path rather than a fully free inundation-probability model. Nested event-level CV for *s* is **未运行 / 待补充**.
+with latent mean unchanged. Unchanged CSI/RMSE after calibration is therefore **by construction** (mean maps are untouched), not an independent empirical finding that calibration “preserves accuracy.” The scientific claim is improved probabilistic scores (CRPS, coverage) on held-out scoring of variance-rescaled maps, with *s* fit on **training** events only. We also report `coverage_*_active` on cells where observation or predictive mean ≥ τ, because all-cell coverage is inflated by EXT-dry zeros with near-zero σ. Under `wse_ext`, EXT remains a learned binary/extent field that gates continuous WSE; scalar *s* primarily recalibrates continuous depth variance on that gated path rather than a fully free inundation-probability model. Nested leave-one-train-event CV for *s* is reported for Chowilla and Carlisle Max (Section 6.8); Burnett nested CV is outside the present scope.
 
 Closed-form Gaussian CRPS follows Gneiting and Raftery (2007):
 
@@ -114,7 +114,7 @@ On the dual EXT+WSE path, matched oracles are combined with production gating in
 | **O3** | LF pseudo-ECs, no GP | LF expressibility in the HF subspace |
 | **O4** | Full LSG (GP + \(k\) modes) | Total surrogate error (mirrors `predict_dual_depth`) |
 
-The gap O2−O1 isolates truncation (or held-out out-of-subspace energy). O3−O2 isolates LF projection limits. O4−O3 isolates GP mapping. Train and test budgets are reported separately: for LSG-Max with full-rank training (Wang et al., 2026 retained 47 ECs for 47 events), in-sample O2−O1 can be near zero while test O2−O1 remains informative. Oracle-order factorial swaps are **未运行 / 待补充**.
+The gap O2−O1 quantifies the incremental contrast associated with truncation (or held-out out-of-subspace energy) along this ordering; O3−O2 with LF projection limits; O4−O3 with GP mapping. Because reconstruction, clipping, extent gating, and GP mapping are nonlinear, these contrasts are path-ordered diagnostics rather than order-invariant causal shares. Train and test budgets are reported separately: for LSG-Max with full-rank training (Wang et al., 2026 retained 47 ECs for 47 events), in-sample O2−O1 can be near zero while test O2−O1 remains informative.
 
 ### 3.7 Metrics and scoring masks
 
@@ -124,7 +124,9 @@ Binary inundation metrics use τ = 0.03 m: Probability of Detection (POD), Rate 
 
 This study evaluates deterministic and probabilistic scores on fixed published event splits (Grp1), not biological replicates. The independent evaluation unit is the **hold-out event** (or event set) under each case’s Fraehr/Wang-style split protocol—not the raster cell. We report effect sizes (CSI, RMSE, CRPS, O1–O4 RMSE) without inventing \(p\)-values. Cell counts enter contingency tables but are not treated as independent experimental replicates for inferential tests.
 
-**Hold-out sizes for headline Max summaries (from workflow JSON `error_budget` test `n_samples`):** Carlisle Grp1 Max test *N*<sub>event</sub> = 1 (E1); Chowilla Grp1 Max test *N*<sub>event</sub> = 1 (E1); Burnett Grp1 Max test *N*<sub>event</sub> = 18. Carlisle LSG-TS reports many timesteps on the held-out event, but Max-surface skill for Carlisle/Chowilla remains a single-event contrast under Grp1 and must not be over-generalised. Software: Python stack in the project virtual environment; GPflow/TensorFlow optional for SGPR (待补充: exact package versions in a reproducibility table).
+**Hold-out sizes for headline Max summaries (from workflow JSON `error_budget` test `n_samples`):** Carlisle Grp1 Max test *N*<sub>event</sub> = 1 (E1); Chowilla Grp1 Max test *N*<sub>event</sub> = 1 (E1); Burnett Grp1 Max test *N*<sub>event</sub> = 18. Carlisle LSG-TS reports many timesteps on the held-out event, but Max-surface skill for Carlisle/Chowilla remains a single-event contrast under Grp1 and must not be over-generalised.
+
+**Execution environment (headline artifacts).** Windows 10 (build 19045); Dell Precision 7920 Tower; 2× Intel Xeon Gold 6133 (40 logical processors); ≈128 GB host RAM (137 GB reported). Python 3.12.10 in the project virtual environment with NumPy 1.26.4, SciPy 1.17.1, scikit-learn 1.9.0, h5py 3.14.0, PyYAML 6.0.3, matplotlib 3.11.1, GPflow 2.11.1, TensorFlow 2.21.0. Headline Max runs used the GPflow SGPR backend (`gp_backend: gpflow`).
 
 **Emulation target.** Metrics compare surrogate maps to **HF hydrodynamic fields** (perfect-prognosis style), not to independent remote-sensing flood observations.
 
@@ -142,7 +144,7 @@ Public multi-fidelity cubes are from Fraehr (2024), DOI [10.26188/24312658](http
 | Chowilla (secondary) | fine/coarse HEC-RAS | ~1.1×10⁵ cells | 29 events; train 28, test E1 | Max surfaces | `config/chowilla.yaml` |
 | Burnett (tertiary) | TUFLOW × HEC-RAS | ~7.8×10⁵ cells | 74 events; train 56, test 18 | Max surfaces | `config/burnett.yaml` |
 
-Chowilla and Burnett full time-series Grp1 folds are memory-limited and marked **未运行 / 待补充** as headline TS results. Brisbane TUFLOW/URBS (Wang et al., 2026) is licence-gated and not used as a public result here (**待补充 / 未运行** as appendix). FloodCastBench is deferred (**未运行**).
+Headline Chowilla and Burnett results use Max surfaces because full time-series Grp1 folds exceed the host memory budget used here (Burnett in-memory HF stack ≈199 GB versus ≈128 GB RAM; Chowilla dual EXT+WSE+UQ is similarly constrained). Brisbane TUFLOW/URBS (Wang et al., 2026) is licence-gated and is therefore outside the public, redistributable evidence base of this paper. Other external multi-fidelity benchmarks (e.g. FloodCastBench) are left for future capacity-controlled replication.
 
 ---
 
@@ -150,11 +152,11 @@ Chowilla and Burnett full time-series Grp1 folds are memory-limited and marked *
 
 1. **Field mode:** `lsg.field: wse_ext` for all headline runs.  
 2. **Zoning:** H-LSG `residual_kmeans` (default); global A/B with `zoning: none` on Chowilla and Burnett (`config/chowilla.yaml` twin / `config/burnett_global.yaml`); Chowilla `wet_correlation` sensitivity (`config/chowilla_wet_correlation.yaml`).  
-3. **Capacity controls (RQ1).** To separate localisation from capacity we run three matched-capacity contrasts, all under identical folds and field mode. (i) **Matched global up:** `zoning: none` with `force_n_modes` set to the H-LSG WSE GP input dimension (Chowilla 15, `config/chowilla_global_matched15.yaml`; Burnett 18, `config/burnett_global_matched18.yaml`), so the global model retains the same number of ECs as H-LSG. (ii) **Matched H-LSG down:** `residual_eof_modes: 0` so zones are built but contribute no residual ECs (`config/chowilla_hlsg_budget3.yaml`), collapsing H-LSG to the global input dimension. (iii) **Inducing-point sweep** (`min_inducing_points` ∈ {2, 8, 16, 28}) and **zone-count sweep** (`n_zones` ∈ {2, 4, 6}) on Chowilla H-LSG, to test whether SGPR approximation budget or EC count—not localisation—drives the observed RMSE and O2−O1. A Burnett oracle attribution (`scripts/diagnose_burnett_hlsg_gap.py`) isolates whether the H-LSG RMSE loss originates in the extent gate or the WSE GP map.  
+3. **Capacity controls (RQ1).** To separate localisation from capacity we run matched-capacity contrasts under identical folds and field mode. (i) **Matched global up:** `zoning: none` with `force_n_modes` set to the H-LSG WSE GP input dimension where feasible (Chowilla 15, `config/chowilla_global_matched15.yaml`; Burnett 18, `config/burnett_global_matched18.yaml`; Carlisle requested 13, `config/carlisle_global_matched13.yaml`, realised 8 under the Max train-rank cap). (ii) **Matched H-LSG down:** `residual_eof_modes: 0` so zones are built but contribute no residual ECs (`config/chowilla_hlsg_budget3.yaml`, `config/carlisle_hlsg_budget1.yaml`), collapsing H-LSG to the global input dimension. (iii) **Inducing-point sweep** (`min_inducing_points` ∈ {2, 8, 16, 28}) and **zone-count sweep** (`n_zones` ∈ {2, 4, 6}) on Chowilla H-LSG, to test whether SGPR approximation budget or EC count—not localisation—drives the observed RMSE and O2−O1. A Burnett oracle attribution (`scripts/diagnose_burnett_hlsg_gap.py`) isolates whether the H-LSG RMSE loss originates in the extent gate or the WSE GP map.  
 4. **Folds:** Fraehr ValidateOnGrp_1 / Wang-style `splits.yaml` protocol as recorded in workflow summaries (`split_protocol`).  
 5. **Baselines:** LF only (WSE→DEM clip on HF mesh); global LSG at native and matched capacity; H-LSG after SGPR inducing floor.  
-6. **Diagnostics:** `evaluation.error_budget` (O1–O4); `evaluation.uq` with `uq_calibration: crps_scale` (Carlisle workflow + Chowilla/Burnett rescore from saved states); nested leave-one-event-out CV for the CRPS scale *s* on Chowilla (`scripts/nested_crps_scale_cv.py`).  
-7. **Artifacts:** metrics from `outputs/evaluation/{carlisle,chowilla,burnett}/*.json` (including `*_matched15_max.json`, `*_matched18_max.json`, `*_hlsg_budget3_max.json`, `*_inducing_m*_max.json`, `*_nzones{2,6}_max.json`, `diagnose_hlsg_o2_vs_rmse.json`, `nested_crps_scale_cv.json`); figures from `outputs/figures/` (SciencePlots; Times New Roman; `figure_manifest.json` skips empty).
+6. **Diagnostics:** `evaluation.error_budget` (O1–O4); `evaluation.uq` with `uq_calibration: crps_scale` (Carlisle workflow + Chowilla/Burnett rescore from saved states); nested leave-one-event-out CV for the CRPS scale *s* on Chowilla and Carlisle (`scripts/nested_crps_scale_cv.py`); Carlisle residual-zone spatial coherence via 8-NN same-zone fraction (`outputs/evaluation/carlisle/zone_contiguity_diagnostic.json`).  
+7. **Artifacts:** metrics from `outputs/evaluation/{carlisle,chowilla,burnett}/*.json` (including matched-capacity and nested-CRPS summaries); figures from `outputs/figures/` (SciencePlots; Times New Roman; `figure_manifest.json` skips empty).
 
 Primary JSON sources:
 
@@ -280,19 +282,32 @@ The native-capacity contrasts of Section 6.3 confound localisation with capacity
 | | 4 (default) | 15 | 0.976 | 0.093 | 0.013 |
 | | 6 | 21 | 0.975 | 0.103 | 0.012 |
 
-**CRPS scale is fold-stable (methodology check).** A residual concern for the UQ result is whether the CRPS variance scale *s*, fit on training events, is a fragile single-draw artefact when the official test fold has one event. On Chowilla Max H-LSG, 8-fold leave-one-train-event-out CV gives *s* = 0.310 ± 0.007 (range 0.298–0.324) around the full-train value 0.309, so the scalar is stable under resampling. This does not claim Chowilla calibration is useful—Section 6.5 reports flat CRPS and adverse coverage there—only that the null result is not caused by an unstable estimator.
+**CRPS scale is fold-stable (methodology check).** A residual concern for the UQ result is whether the CRPS variance scale *s*, fit on training events, is a fragile single-draw artefact when the official test fold has one event. On Chowilla Max H-LSG, 8-fold leave-one-train-event-out CV gives *s* = 0.310 ± 0.007 (range 0.298–0.324) around the full-train value 0.309. On Carlisle Max H-LSG the same protocol gives *s* = 0.418 ± 0.031 around the full-train value 0.417. Fold stability does not claim calibration is useful everywhere—Section 6.5 reports flat CRPS and adverse coverage on Chowilla—only that those null/adverse outcomes are not caused by an unstable *s* estimator. Burnett nested CV is not required for the localisation claim and is left outside the present scope.
+
+**Carlisle equal-capacity (third-site control).** Table 9 repeats the matched-capacity protocol on Carlisle Max. H-LSG uses WSE dim 13 (1 global + 4×3 residual), but with only eight Max training events a global-only EOF cannot realise 13 modes: `force_n_modes: 13` is capped at realised dim **8** (full train rank). Maxing global capacity clears O2−O1 (0.000 m) yet **worsens** wet RMSE (0.202 m) relative to native global (0.112 m) and H-LSG (0.094 m). Disabling residual modes again collapses H-LSG onto the native global baseline. Carlisle therefore does **not** reproduce the Chowilla “matched global beats H-LSG” pattern: residual EC stacking improves depth RMSE here while pure global capacity does not. We report this as site heterogeneity under a hard Max-rank constraint, not as a general rescue of residual localisation—Chowilla and Burnett remain the capacity-matched anti-cases where extra residual capacity fails to improve (and can degrade) held-out depth skill.
+
+**Table 9. Carlisle equal-capacity control (Grp1 Max, wet_train).** Realised WSE dim for the matched global is capped by *n*<sub>train</sub> = 8.
+
+| Model | Requested / realised WSE dim | CSI | RMSE (m) | test O2−O1 (m) |
+|-------|------------------------------|----:|---------:|---------------:|
+| Global (native) | auto / 1 | 0.976 | 0.112 | 0.064 |
+| H-LSG `residual_kmeans` | — / 13 | 0.976 | **0.094** | 0.005 |
+| Global `force_n_modes: 13` | 13 / **8** | 0.975 | 0.202 | **0.000** |
+| H-LSG `residual_eof_modes: 0` | — / 1 | 0.976 | 0.112 | 0.064 |
+
+## 7. Discussion
 
 ### 7.1 Central advance
 
-The central advance is twofold: a **diagnostic and probabilistic methods package** for multi-fidelity LSG on public data—O1–O4 attribution and CRPS-calibrated map uncertainty—and a **capacity-controlled negative result** that reframes residual hierarchical zoning. Rather than presenting localisation as an accuracy win, we falsify that reading under matched capacity and repurpose H-LSG as a diagnostic whose O2−O1 signal does not survive as holdout depth skill. Reporting the controls, not only the headline contrast, is the methodological point.
+The central advance is twofold: a **diagnostic and probabilistic methods package** for multi-fidelity LSG on public data—O1–O4 attribution and CRPS-calibrated map uncertainty—and a **capacity-controlled evaluation** of residual hierarchical zoning. Rather than presenting localisation as an accuracy win, we test that reading under matched capacity. On Chowilla and Burnett the apparent O2−O1 zoning benefit is reproduced or exceeded by capacity-matched global models and does not translate into held-out depth-RMSE gains; on Carlisle Max, residual stacking can still improve RMSE when global SVD is rank-capped by *n*<sub>train</sub>. Reporting the controls—including this heterogeneity—is the methodological point.
 
 ### 7.2 Where multi-fidelity LSG carries the skill
 
 Burnett and Chowilla wet_train depth RMSE show large LF→LSG lifts. Carlisle’s LF is already skillful on extent; LSG still tightens depth and slightly improves CSI. Leading with zoning CSI or O2−O1 deltas would misrepresent the evidence: the skill lives in the multi-fidelity map, not in localisation.
 
-### 7.3 Why the residual-zoning advantage is capacity-confounded
+### 7.3 Why residual zoning is capacity-confounded on Chowilla/Burnett (and qualified on Carlisle)
 
-At native capacity, H-LSG shows a smaller truncation gap O2−O1 than the global baseline (Section 6.3), which an earlier reading of our runs treated as evidence of localisation. The matched-capacity controls (Section 6.8) show this is a **capacity artefact**: giving the global model the same EC count reproduces (Burnett) or beats (Chowilla) the O2−O1 reduction, and on Chowilla the matched global also attains the best wet RMSE. Two mechanisms explain the decoupling. First, O2−O1 is an HF-oracle truncation contrast that shrinks whenever more variance is retained—by extra zonal residual ECs or by extra global modes alike—so it rewards capacity, not spatial partitioning per se. Second, the extra residual ECs must still be predicted from LF inputs through the SGPR map; on Burnett this map degrades (O4−O2 0.304 m versus 0.056 m; train O4 already 0.360 m versus 0.115 m) while the shared extent gate is unchanged, so localisation buys expressibility that the LF→HF regression cannot honour. Inducing-point budget and zone count move RMSE by more than zoning does (Section 6.8), reinforcing that the observable movements are capacity/approximation effects. We therefore communicate residual hierarchy as a **diagnostic device** for truncation, explicitly not as a substitute for—or an add-on that improves upon—the multi-fidelity map. Residual `kmeans` labels are residual-response classes without enforced geographic contiguity (**待补充**: zone maps / contiguity diagnostics). Chowilla `wet_correlation` yields a marginally higher wet_train CSI (0.978) with O2−O1 ≈ 0.010, but this too is a small, capacity-consistent delta rather than a localisation win.
+At native capacity, H-LSG shows a smaller truncation gap O2−O1 than the global baseline (Section 6.3), which an earlier reading of our runs treated as evidence of localisation. The matched-capacity controls (Section 6.8) show that on Chowilla and Burnett this is a **capacity artefact**: giving the global model the same EC count reproduces (Burnett) or beats (Chowilla) the O2−O1 reduction, and on Chowilla the matched global also attains the best wet RMSE. Two mechanisms explain the decoupling. First, O2−O1 is an HF-oracle truncation contrast that shrinks whenever more variance is retained—by extra zonal residual ECs or by extra global modes alike—so it rewards capacity, not spatial partitioning per se. Second, the extra residual ECs must still be predicted from LF inputs through the SGPR map; on Burnett this map degrades (O4−O2 0.304 m versus 0.056 m; train O4 already 0.360 m versus 0.115 m) while the shared extent gate is unchanged, so localisation buys expressibility that the LF→HF regression cannot honour. Inducing-point budget and zone count move RMSE by more than zoning does (Section 6.8), reinforcing that the observable movements are capacity/approximation effects. Carlisle Max qualifies the generality: exact dim-13 global matching is infeasible under eight training events, and max-rank global capacity worsens RMSE while H-LSG residual stacking improves it (Table 9). We therefore communicate residual hierarchy as a **diagnostic device** whose apparent truncation benefit must be capacity-controlled and site-qualified, not as a blanket accuracy upgrade. Residual `kmeans` labels are residual-response classes optionally augmented by XY; they do not impose geographic contiguity. On Carlisle Max an 8-nearest-neighbour same-zone fraction ≈ 0.95 indicates local spatial coherence when XY is included, but the algorithm remains a response-feature clusterer rather than a watershed or adjacency-constrained partition. Chowilla `wet_correlation` yields a marginally higher wet_train CSI (0.978) with O2−O1 ≈ 0.010, but this too is a small, capacity-consistent delta rather than a localisation win.
 
 ### 7.4 Relation to prior art
 
@@ -300,30 +315,30 @@ Relative to Tan et al. (2025), we agree that regionalization and error splitting
 
 ### 7.5 Rival explanations and risks
 
-We considered whether the H-LSG signals could be genuine localisation. (i) *Fold noise / hyperparameters.* O2−O1 and RMSE differences could reflect fold noise, GP hyperparameter sensitivity, or mask definitions; the matched-capacity controls, inducing sweep, and zone sweep were run precisely to separate these from zoning, and they attribute the movements to capacity. (ii) *Extent-gate artefact on Burnett.* The identical EXT agreement and gate miss/false-alarm fractions rule out a gating explanation, isolating the loss to the WSE GP map. (iii) *Unstable CRPS estimator.* Nested CV shows *s* is fold-stable, so the Chowilla UQ null is not an estimator artefact. (iv) *Protocol misreading.* Chowilla all-cell CSI 0.390 could be misread as model collapse; wet_train and O4 refute that. (v) *SGPR floor as trivia.* SGPR inducing floors are engineering necessities for Max-path H-LSG; without them, O4 regressions can masquerade as “zoning hurts.” After these controls, the residual-localisation hypothesis has no surviving support in these public folds. The main residual risk is external validity: full time-series folds and additional sites remain untested (Section 8).
+We considered whether the H-LSG signals could be genuine localisation. (i) *Fold noise / hyperparameters.* O2−O1 and RMSE differences could reflect fold noise, GP hyperparameter sensitivity, or mask definitions; the matched-capacity controls, inducing sweep, and zone sweep were run precisely to separate these from zoning, and on Chowilla/Burnett they attribute the movements to capacity. (ii) *Extent-gate artefact on Burnett.* The identical EXT agreement and gate miss/false-alarm fractions rule out a gating explanation, isolating the loss to the WSE GP map. (iii) *Unstable CRPS estimator.* Nested CV on Chowilla and Carlisle shows *s* is fold-stable, so the Chowilla UQ null is not an estimator artefact. (iv) *Protocol misreading.* Chowilla all-cell CSI 0.390 could be misread as model collapse; wet_train and O4 refute that. (v) *SGPR floor as trivia.* SGPR inducing floors are engineering necessities for Max-path H-LSG; without them, O4 regressions can masquerade as “zoning hurts.” (vi) *Carlisle residual win.* Table 9 shows residual stacking can help under Max-rank limits; this does not overturn the Chowilla/Burnett capacity-matched anti-cases, but it warns against over-generalising “localisation never helps.” After these controls, residual hierarchical zoning has no demonstrated accuracy advantage over appropriate capacity-matched global baselines on Chowilla and Burnett; Carlisle remains a qualified, rank-limited exception. The main residual risk is external validity: full time-series folds and additional sites remain outside the present computational envelope (Section 8).
 
 ### 7.6 Open questions
 
-Does CRPS-scale *s* transfer across events and sites without retuning? Chowilla’s flat CRPS under the same protocol already warns against universal transfer. Do full-TS Chowilla/Burnett folds change the zoning story (**未运行 / 待补充**; Burnett full HF stack ≈199 GB vs ~128 GB host RAM)? How does residual H-LSG compare with Tan-style single-focus retraining on the same public splits?
+Does CRPS-scale *s* transfer across sites without retuning? Chowilla’s flat CRPS under the same protocol already warns against universal transfer, even though Carlisle’s nested *s* is fold-stable near 0.42. Would full time-series Chowilla/Burnett folds change the zoning story under memory budgets that can hold ≈200 GB HF stacks? How does residual H-LSG compare with Tan-style single-focus retraining on the same public splits?
 
 ---
 
 ## 8. Limitations
 
-1. Chowilla/Burnett headline results are Max-surface Grp1; full-TS Grp1 is **未运行 / 待补充** (Burnett in-memory HF cube ≈199 GB ≫ ~128 GB RAM; Chowilla dual EXT+WSE+UQ similarly constrained). The capacity-controlled negative result is therefore established on Max-surface folds; whether full time-series folds would rescue localisation is untested, though the mechanism (capacity-driven O2−O1 with GP-map degradation) is fold-general.  
-2. The capacity controls match the **total GP-input dimension** and sweep inducing points and zone count; they do not exhaustively match every hyperparameter (kernel length-scales, per-mode noise) or test non-residual geographic partitions beyond the Chowilla `wet_correlation` sensitivity (**待补充**). Matched runs use `force_n_modes`; a full factorial of capacity × zoning × site is **未运行**.  
-3. Equal-capacity controls were run on Chowilla and Burnett Max; Carlisle equal-capacity and full-site inducing/zone sweeps are **未运行** because the cheapest full case (Chowilla Max) already answers the localisation question.  
-4. Brisbane licensed appendix is **未运行**.  
-5. Carlisle/Chowilla Max Grp1 use a single hold-out event; Burnett uses 18. We do not claim multi-fold statistical significance tests; the negative result is a controlled effect-size contrast, not a hypothesis test with *p*-values.  
-6. Nested CV for CRPS scale *s* is reported on Chowilla only; Burnett/Carlisle nested CV and oracle-order factorial swaps are **未运行 / 待补充**.  
-7. Author metadata, funding, and exact environment pins: **待补充**.  
-8. CRPS-scale can be null or adverse on some folds (Chowilla Max rescore: flat CRPS; coverage moves away from nominal)—do not generalise Carlisle’s calibration win.
+1. The capacity-controlled localisation analysis is based primarily on maximum-inundation Grp1 evaluations. Full time-series capacity-controlled evaluations were not performed for Chowilla and Burnett because their in-memory requirements exceed the available configuration (Burnett HF stack ≈199 GB versus ≈128 GB host RAM; Chowilla dual EXT+WSE+UQ similarly constrained). Conclusions therefore apply to the evaluated Max-surface setting and should not be extrapolated quantitatively to full time-series training.  
+2. Capacity matching controls the WSE representation / GP-input dimension, with inducing-point and zone-count sensitivities addressing two important approximation confounders. It does not equate every kernel, noise, regularisation, or optimisation degree of freedom. The inference is that apparent residual-H-LSG advantages cannot be attributed uniquely to localisation under the tested controls—not that all conceivable capacity effects have been eliminated. On Carlisle Max, exact dim matching to H-LSG’s 13-D residual stack is infeasible because global EOF rank is capped by eight training events.  
+3. The `residual_kmeans` formulation defines zones from residual-response statistics, optionally including XY, but does not impose geographic connectivity. A Carlisle Max 8-nearest-neighbour diagnostic yields a mean same-zone fraction ≈ 0.95 when XY is included, indicating local spatial coherence without converting the method into a watershed or adjacency-constrained partition. Results concern residual-response hierarchical zoning and should not be generalised to connectivity-constrained geographic partitions without further capacity-controlled tests.  
+4. O1–O4 is an ordered counterfactual diagnostic ladder rather than an additive variance decomposition. Successive contrasts quantify changes along the specified evaluation path and should not be read as unique, order-invariant causal shares of total error.  
+5. Nested event-level validation of the scalar CRPS variance factor is reported for Chowilla and Carlisle Max; Burnett nested CV is outside the present scope. Fold stability does not establish transferability of *s* across sites, and variance scaling can be neutral or adverse for some probabilistic diagnostics.  
+6. Event replication differs among the published Grp1 splits (Carlisle/Chowilla Max: one held-out event; Burnett: 18). Reported differences are controlled effect-size comparisons rather than population-level significance tests; raster cells are not treated as independent statistical replicates.  
+7. Accuracy is evaluated against the corresponding high-fidelity hydrodynamic simulations (perfect-prognosis). The study does not independently validate LF or HF models against observed flood depths or extents.  
+8. Empirical evidence is restricted to the public Carlisle, Chowilla, and Burnett cubes. Licensed sites (e.g. Brisbane TUFLOW/URBS) and other multi-fidelity benchmark families are outside the redistributable public evidence base and are left for future external replication.
 
 ---
 
 ## 9. Conclusions
 
-We present a reproducible EXT+WSE LSG methods stack with O1–O4 oracle attribution and CRPS-calibrated GP uncertainty on three public multi-fidelity flood cases, and we use it to test residual hierarchical zoning under matched-capacity controls. The controls yield a clear negative result: the apparent H-LSG advantage in the truncation gap O2−O1 is reproduced or exceeded by a capacity-matched global EOF model, disabling residual modes collapses H-LSG onto the global baseline, and on Burnett residual capacity worsens held-out depth RMSE through the LF→HF GP map rather than the shared extent gate. Inducing-point budget and zone count move RMSE as much as zoning does. Multi-fidelity LSG—not localisation—provides the primary skill gains where LF is weak. Strong-LF settings require explicit wet_train versus all_cells reporting, and calibrated variance scaling improves probabilistic scores on over-dispersed posteriors (while leaving mean maps, and therefore CSI/RMSE, unchanged by construction) but can be null, as on Chowilla. The reusable message for WRR / JoH / EMS is methodological: report matched-capacity baselines, attribute error with oracle ladders, publish calibrated uncertainty, and treat localised-EOF gains as capacity-confounded until controlled. Residual hierarchical zoning is best used as a truncation diagnostic, not as a claimed accuracy upgrade.
+We present a reproducible EXT+WSE LSG methods stack with O1–O4 oracle attribution and CRPS-calibrated GP uncertainty on three public multi-fidelity flood cases, and we use it to test residual hierarchical zoning under matched-capacity controls. On Chowilla and Burnett the controls yield a clear negative result for residual localisation as an accuracy upgrade: the apparent H-LSG advantage in the truncation gap O2−O1 is reproduced or exceeded by a capacity-matched global EOF model, disabling residual modes collapses H-LSG onto the global baseline, and on Burnett residual capacity worsens held-out depth RMSE through the LF→HF GP map rather than the shared extent gate. Inducing-point budget and zone count move RMSE as much as zoning does. Carlisle Max qualifies the generality under a hard train-rank cap: residual stacking improves wet RMSE relative to native and max-rank global baselines, while exact dim-13 global matching is infeasible. Multi-fidelity LSG—not localisation per se—provides the primary skill gains where LF is weak. Strong-LF settings require explicit wet_train versus all_cells reporting, and calibrated variance scaling improves probabilistic scores on over-dispersed posteriors (while leaving mean maps, and therefore CSI/RMSE, unchanged by construction) but can be null, as on Chowilla. The reusable message for WRR / JoH / EMS is methodological: report matched-capacity baselines, attribute error with oracle ladders, publish calibrated uncertainty, and treat localised-EOF gains as capacity-confounded until controlled—and site-qualified when Max-rank limits bind. Residual hierarchical zoning is best used as a truncation diagnostic, not as a claimed universal accuracy upgrade.
 
 ---
 
@@ -340,19 +355,19 @@ We present a reproducible EXT+WSE LSG methods stack with O1–O4 oracle attribut
 
 ## 11. Author contributions
 
-待补充 (CRediT roles to be completed by the author team).
+[CRediT roles to be finalized and agreed by the author team before submission.]
 
 ---
 
 ## 12. Competing interests
 
-待补充. The authors declare 待补充.
+[Competing-interest statement to be finalized by the author team before submission.]
 
 ---
 
 ## 13. Acknowledgements
 
-待补充.
+[Acknowledgements and funding disclosures to be finalized by the author team before submission.]
 
 ---
 
@@ -426,15 +441,12 @@ LSG; LSG-TS; LSG-Max; LF; HF; EOF; EC; EXT; WSE; H-LSG; residual_kmeans; SGPR; C
 | Table 6 | Chowilla equal-capacity control | Capacity confound (RQ1) |
 | Table 7 | Burnett equal-capacity + oracle attribution | Capacity confound (RQ1/RQ2) |
 | Table 8 | Chowilla inducing / zone sweeps | Nuisance-capacity confounds |
+| Table 9 | Carlisle equal-capacity control | Capacity control + Max-rank caveat (RQ1) |
 
-## Appendix C. Items marked 待补充 / 未运行
+## Appendix C. Scope boundaries and completed controls
 
-- Author names, affiliations, corresponding author, acknowledgements, competing interests, CRediT contributions  
-- Exact pinned software versions table  
-- Chowilla / Burnett full-TS Grp1 folds (memory; Burnett HF stack ≈199 GB)  
-- Brisbane licensed appendix results  
-- FloodCastBench  
-- Residual zone contiguity maps; non-residual geographic partition control  
-- Carlisle equal-capacity control; nested CV for CRPS *s* on Burnett/Carlisle; oracle-order factorial swaps  
+Closed scientific boundaries (not open TODOs): Chowilla/Burnett full-TS Grp1 folds (memory: Burnett HF stack ≈199 GB ≫ ≈128 GB RAM); Brisbane licensed appendix and FloodCastBench (outside the public redistributable evidence base); exhaustive capacity × zoning × site factorials and oracle-order permutation decompositions (O1–O4 retained as a path-ordered ladder); Burnett nested CRPS *s* CV.
 
-**Cleared this revision (equal-capacity controls):** Chowilla and Burnett equal-capacity global vs H-LSG (Tables 6–7); Chowilla inducing-point and zone-count sweeps (Table 8); Burnett oracle attribution (Table 7); nested CV for CRPS *s* on Chowilla (Section 6.8).
+Completed in this revision: Chowilla and Burnett equal-capacity global vs H-LSG (Tables 6–7); Chowilla inducing-point and zone-count sweeps (Table 8); Burnett oracle attribution (Table 7); Carlisle equal-capacity control with Max-rank caveat (Table 9; `docs/paper/05_carlisle_capacity.md`); nested CV for CRPS *s* on Chowilla and Carlisle; Carlisle residual-zone 8-NN coherence diagnostic; pinned execution environment (Section 3.8).
+
+Author names, affiliations, CRediT roles, competing interests, and acknowledgements remain working-draft metadata fields to be finalized by the author team before journal submission.

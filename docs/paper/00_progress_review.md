@@ -55,12 +55,13 @@ Sources: as in `docs/paper/03_new_results.md` and manuscript Tables 2–5.
 - Burnett global A/B; Chowilla/Burnett UQ before/after; cell-wise P(wet); Chowilla `wet_correlation` A/B; Fig. 3–6 regenerated (manifest skips empty).
 - **Equal-capacity controls (this revision):** Chowilla + Burnett matched-capacity global vs H-LSG (`force_n_modes` 15/18, Tables 6–7); Chowilla inducing-point (m∈{2,8,16,28}) and zone-count (n_zones∈{2,4,6}) sweeps (Table 8); Burnett oracle attribution (O4−O2, identical EXT gate); nested CV for CRPS *s* on Chowilla (s = 0.310 ± 0.007).
 
-**Open / 未运行**
+**Open / closed boundaries (not unfinished TODOs)**
 
-- Chowilla / Burnett **full-TS** Grp1 folds (memory; Burnett HF stack ≈199 GB vs ~128 GB RAM) — **未运行**.
-- Brisbane licensed TUFLOW/URBS appendix — **未运行**.
-- FloodCastBench — deferred / **未运行**.
-- Carlisle equal-capacity control; non-residual geographic partition control; nested CV for *s* on Burnett/Carlisle; zone contiguity maps — **未运行 / 待补充**.
+- Chowilla / Burnett **full-TS** Grp1 folds — computational boundary (Burnett HF stack ≈199 GB vs ~128 GB RAM).
+- Brisbane licensed appendix / FloodCastBench — outside public redistributable evidence base.
+- Burnett nested CRPS *s*; full capacity×zoning×site factorial; oracle-order permutations — not required for the present identification claim.
+
+**Completed this revision:** Chowilla + Burnett equal-capacity; Carlisle equal-capacity with Max-rank caveat (`05_carlisle_capacity.md`); Chowilla + Carlisle nested CRPS *s*; Carlisle zone 8-NN coherence; env/hardware pins; manuscript cleared of `待补充`/`待修改`.
 
 ## Open science questions (for Discussion)
 

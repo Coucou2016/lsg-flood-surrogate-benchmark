@@ -1,0 +1,29 @@
+{
+  "case": "carlisle",
+  "method": "residual_kmeans",
+  "diagnostic": "8-nearest-neighbor same-zone fraction on 5000 random wet cells (kd-tree)",
+  "overall_mean_8nn_same_zone_frac": 0.951675,
+  "zones": {
+    "0": {
+      "sample_n": 968,
+      "mean_8nn_same_zone_frac": 0.9244576446280992,
+      "n_cells_total": 45424
+    },
+    "1": {
+      "sample_n": 2270,
+      "mean_8nn_same_zone_frac": 0.9795154185022027,
+      "n_cells_total": 109333
+    },
+    "2": {
+      "sample_n": 493,
+      "mean_8nn_same_zone_frac": 0.8770283975659229,
+      "n_cells_total": 24346
+    },
+    "3": {
+      "sample_n": 1269,
+      "mean_8nn_same_zone_frac": 0.9516351457840819,
+      "n_cells_total": 60379
+    }
+  },
+  "interpretation": "High 8-NN same-zone fraction (~0.95) indicates local spatial coherence when XY features are included, but residual_kmeans still does not enforce geographic contiguity and must not be equated with watershed or adjacency-constrained partitions."
+}

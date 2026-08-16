@@ -547,18 +547,17 @@ def main() -> None:
         ],
     ]
 
-    t_limit_h = ["限制 / 缺口", "状态", "影响"]
+    t_limit_h = ["限制 / 边界", "状态", "影响"]
     t_limit_r = [
-        ["Chowilla / Burnett 全时序 Grp1 折", "未运行（内存；Burnett HF 堆叠≈199 GB ≫ ~128 GB RAM）", "等容量负结果目前建立在 Max 面折上"],
-        ["等容量 global vs H-LSG（Chowilla/Burnett Max）", "**已完成**（force_n_modes 匹配 + 诱导点/分区数扫描，表 6–8）", "分区优势已与容量拆开：局部化不成立"],
-        ["Carlisle 等容量对照；非残差地理分区对照；容量×分区×站点析因", "未运行（除 Chowilla wet_correlation 敏感性）", "最便宜的 Chowilla Max 已回答局部化问题"],
-        ["Carlisle/Chowilla Max Grp1 测试事件数", "N_event=1（Burnett=18）", "单事件对比不可过度外推；负结果为受控效应量对比而非 p 值检验"],
-        ["Burnett/Carlisle 的 CRPS 尺度嵌套 CV；oracle 顺序置换", "未运行（Chowilla 已完成）", "s 为训练集拟合；O1–O4 为路径有序反事实"],
-        ["Chowilla Max CRPS 标定", "rescore：CRPS 近乎持平、coverage 远离名义", "不可把 Carlisle 标定收益外推为普适"],
-        ["Brisbane 许可数据", "未运行", "附录级，不作主结论"],
-        ["FloodCastBench", "未运行 / 推迟", "外部基准未接"],
+        ["Chowilla / Burnett 全时序 Grp1 折", "计算边界（Burnett HF≈199 GB ≫ ≈128 GB RAM）", "等容量结论建立在 Max 面折上，不可定量外推全时序"],
+        ["等容量 global vs H-LSG（Chowilla/Burnett Max）", "**已完成**（force_n_modes + 诱导点/分区数扫描）", "Chowilla/Burnett：局部化优势不成立"],
+        ["Carlisle 等容量对照", "**已完成**（force 13→实现 8；见 docs/paper/05_carlisle_capacity.md）", "Max 训练秩限制下残差堆叠可改善 RMSE；与 Chowilla/Burnett 异质"],
+        ["residual_kmeans 空间连通性", "Carlisle 8-NN 同区占比≈0.95（含 XY）", "局部相干，但算法不施加连通性硬约束"],
+        ["CRPS s 嵌套 CV", "Chowilla + Carlisle 已完成；Burnett 不在本轮范围", "s 折稳定≠跨站可迁移；Chowilla 标定仍可持平/不利"],
+        ["O1–O4", "路径有序反事实阶梯", "非可加、非顺序不变的方差分解"],
+        ["Carlisle/Chowilla Max 测试事件数", "N_event=1（Burnett=18）", "受控效应量对比，非 p 值检验"],
+        ["Brisbane / FloodCastBench", "许可/外部基准，移出公开证据链", "仅作未来外部复现方向"],
         ["跨事件/站点的 var_scale 迁移", "开放问题", "当前每案例重拟合"],
-        ["residual_kmeans 空间连通性图", "待补充", "分区指残差响应类，未必地理连通"],
     ]
 
     t_tests_h = ["项目", "记录", "本报告是否重跑"]
@@ -707,7 +706,7 @@ def main() -> None:
 
 ## 报告读法（结构边界）
 
-本文件是**可离线传阅的正式研究工作稿**：主体按科学逻辑组织，但保留工程诊断闭环（数据对齐、SGPR 诱导点配置、UQ 标定）以便复现。阅读时请优先沿“问题→证据→诊断→最小处理→验证→边界”主线；“完整时间线”与“待补充清单”服务归档与缺口透明，发布终稿可将冗长 chronology 下沉附录。O1–O4 与跨案例差异支持**机制诊断/反事实归因**，不宜写成严格可加的因果贡献率。方差标定改善的是概率评分；点估计 CSI/RMSE 因均值不变而按构造保持不变。
+本文件是**可离线传阅的正式研究工作稿**：主体按科学逻辑组织，但保留工程诊断闭环（数据对齐、SGPR 诱导点配置、UQ 标定）以便复现。阅读时请优先沿“问题→证据→诊断→最小处理→验证→边界”主线；“完整时间线”与“范围边界”服务归档与证据边界透明。O1–O4 与跨案例差异支持**机制诊断/反事实归因**，不宜写成严格可加的因果贡献率。方差标定改善的是概率评分；点估计 CSI/RMSE 因均值不变而按构造保持不变。
 
 ---
 """
@@ -760,7 +759,7 @@ def main() -> None:
         ("数据代码可用性", "数据与代码可用性"),
         ("参考文献", "参考文献"),
         ("附录", "附录"),
-        ("待补充清单", "待补充清单"),
+        ("范围边界与本轮已完成项", "范围边界与本轮已完成项"),
     ]
 
     toc_md = "## 目录\n\n" + "\n".join(f"- {t}" for _, t in toc_items) + "\n"
@@ -1420,16 +1419,16 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml</pre>
 
     future = """## 未来工作
 
-1. 在内存允许或流式摄取就绪时补跑 Chowilla/Burnett 全时序 Grp1（Burnett HF 堆叠≈199 GB，当前主机 ~128 GB RAM 不可行）——检验负结果在全时序折上是否依旧。
-2. 把等容量对照扩展到 Carlisle，并做容量 × 分区 × 站点的完整析因（本轮已完成 Chowilla/Burnett Max 的等容量、诱导点与分区数扫描）。
-3. residual_kmeans 区划连通性图与非残差地理分区对照；Burnett/Carlisle 的 CRPS *s* 嵌套 CV。
-4. 许可到来后的 Brisbane 附录复现；FloodCastBench。
+1. 内存或流式摄取允许时，对 Chowilla/Burnett 全时序 Grp1 做等容量对照（当前主机不可行）。
+2. 连通性约束或流域分区与残差响应分区的对照研究（另一篇工作，而非本稿未完成项）。
+3. Burnett 的 CRPS *s* 嵌套 CV；跨站点 `var_scale` 迁移实验。
+4. 许可到来后的 Brisbane 与其他公开多保真基准的等容量复现。
 5. 发展“容量匹配后可预测局部化增益”的训练期判据（若存在）。
 """
 
     conclusion = f"""## 结论
 
-在三个公开多保真案例上，本项目复现并扩展了 LSG 栈：EXT+WSE 双场、SGPR 诱导点稳健化、CRPS 方差标定与 O1–O4 神谕预算，并对残差层次分区做了**等容量对照**。关于局部化的 headline 结论是**负面**的：一旦对齐 GP 输入维度，残差分区在截断间隙 O2−O1 上的表观优势会被等容量全局模型复现或超越，且不转化为留出深度技能——Chowilla 上 matched-15 全局拿到最低 wet RMSE，Burnett 上额外残差容量通过退化的 LF→HF GP 映射（EXT 门控相同）恶化 RMSE；诱导点预算与分区数对 RMSE 的影响也不亚于分区本身。**可辩护的核心**依然成立：多保真 LSG 在弱 LF 情景提供主要技能；O1–O4 阶梯定位误差部件；CRPS 方差标定在 Carlisle/Burnett 改善可靠性而**按构造**不动 CSI/RMSE，在 Chowilla Max 上 CRPS 近乎持平（如实报告）；残差层次分区最宜用作**截断诊断**而非精度升级。Chowilla 提醒社区必须同时报告 all_cells 与 wet_train，并在采信局部 EOF 变体前先做等容量基线。评价单元是 hold-out 事件（Carlisle/Chowilla Max 为 N=1，Burnett 为 N=18），不是栅格单元。所有结论均锚定于本仓库 JSON/图件，可独立复核。
+在三个公开多保真案例上，本项目复现并扩展了 LSG 栈：EXT+WSE 双场、SGPR 诱导点稳健化、CRPS 方差标定与 O1–O4 神谕预算，并对残差层次分区做了**等容量对照**。关于局部化：Chowilla/Burnett 上一旦对齐 GP 输入维度，残差分区在 O2−O1 上的表观优势会被等容量全局模型复现或超越，且不转化为留出深度技能（Burnett 上额外残差容量经退化的 LF→HF GP 映射恶化 RMSE）。Carlisle Max 在 *n*_train=8 的秩上限下呈现异质：残差堆叠改善 wet RMSE（0.094 vs 原生全局 0.112 m），而把全局容量拉满至秩上限（实现维 8）反而恶化 RMSE（0.202 m）。**可辩护的核心**依然成立：多保真 LSG 在弱 LF 情景提供主要技能；O1–O4 阶梯定位误差部件；CRPS 方差标定在 Carlisle/Burnett 改善可靠性而**按构造**不动 CSI/RMSE，在 Chowilla Max 上 CRPS 近乎持平；残差层次分区最宜用作**截断诊断**，并在等容量与站点约束下报告，而非普遍精度升级。评价单元是 hold-out 事件，不是栅格单元。所有结论均锚定于本仓库 JSON/图件，可独立复核。
 """
 
     avail = """## 数据与代码可用性
@@ -1505,17 +1504,15 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml</pre>
 </section>
 """
 
-    pending = f"""## 待补充清单
+    pending = f"""## 范围边界与本轮已完成项
 
-1. Chowilla / Burnett **全时序** Grp1 折 — **未运行**（Burnett HF 堆叠≈199 GB ≫ ~128 GB RAM；Chowilla 双场+UQ 同样受限）。等容量负结果目前建立在 Max 面折上。
-2. **Carlisle 等容量对照**、非残差地理分区对照（除已完成的 Chowilla `wet_correlation` 单折）、容量 × 分区 × 站点完整析因、oracle 顺序置换 — 未运行。
-3. Brisbane 许可立方体复现 — 未运行。
-4. FloodCastBench — 未运行/推迟。
-5. 训练硬件型号与完整墙钟时间表 — 仅有 JSON 秒数，机型待补充。
-6. **Burnett/Carlisle** 的 CRPS *s* 嵌套 CV 与跨站点 `var_scale` 迁移 — 待补充（Chowilla 已完成，标定持平提示不可盲目迁移）。
-7. residual_kmeans 区划连通性图 — 待补充。
+1. Chowilla / Burnett **全时序** Grp1 — 计算边界（Burnett HF≈199 GB ≫ ≈128 GB RAM）；等容量结论建立在 Max 面。
+2. Brisbane / FloodCastBench — 移出公开证据链，仅未来外部复现。
+3. Burnett CRPS *s* 嵌套 CV、容量×分区×站点完整析因、oracle 顺序置换 — 不构成本稿逻辑缺口。
 
-**本轮已清除（等容量对照）：** Chowilla 与 Burnett 等容量 global vs H-LSG（表 6–7）；Chowilla 诱导点与分区数扫描（表 8）；Burnett 神谕归因（表 7）；Chowilla CRPS *s* 嵌套 CV（等容量对照节）。
+**本轮已完成：** Chowilla/Burnett 等容量对照；Carlisle 等容量对照（秩上限说明，见 `docs/paper/05_carlisle_capacity.md`）；Chowilla+Carlisle CRPS *s* 嵌套 CV；Carlisle 区划 8-NN 相干诊断；硬件/软件版本钉扎；手稿清除全部「待补充/待修改」占位。
+
+**Carlisle 等容量教学要点（wet_train）：** H-LSG 维 13 → RMSE 0.094 m；原生全局维 1 → 0.112 m；`force_n_modes: 13` 受 *n*_train=8 限制实现为维 8 → RMSE 0.202 m 且 O2−O1=0；`residual_eof_modes: 0` 坍缩回原生全局。精确维 13 的全局匹配在 Max 路径上不可行。
 """
 
     # Assemble MD
@@ -1650,7 +1647,7 @@ th { background: var(--table-head); text-align: left; }
         f'<section id="{slug("数据与代码可用性")}">{md_to_simple_html(avail)}</section>',
         f'<section id="{slug("参考文献")}">{md_to_simple_html(refs)}</section>',
         appendix_html,
-        f'<section id="{slug("待补充清单")}">{md_to_simple_html(pending)}</section>',
+        f'<section id="{slug("范围边界与本轮已完成项")}">{md_to_simple_html(pending)}</section>',
         '<p class="callout"><strong>状态声明：</strong>工作区 <code>20260522-LSG-WRR</code> 仍无 <code>.git</code>；公开镜像通过 staging 副本推送到 <a href="https://github.com/Coucou2016/lsg-flood-surrogate-benchmark">github.com/Coucou2016/lsg-flood-surrogate-benchmark</a>（等容量负结果修订）。</p>',
     ]
 

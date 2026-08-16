@@ -78,13 +78,24 @@ def classify_extent_cells(
     depth_mat: np.ndarray,
     threshold_m: float = 0.03,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Return ``(wet_idx, af_idx, tf_idx)`` on the full mesh (Fraehr categories)."""
-    wet = np.where(spatial.wet_cell_mask(depth_mat, threshold_m))[0]
+    """Return ``(wet_idx, af_idx, tf_idx)`` on the full mesh (Fraehr categories).
+
+    ``wet_idx`` is the WSE support: every cell that is *ever* wet at/above
+    ``threshold_m``, including constant always-flooded (AF) cells. AF-only
+    cells with zero temporal variation are excluded by
+    :func:`spatial.wet_cell_mask` alone; leaving them out of WSE while EXT
+    forces them wet would reconstruct ``WSE=terrain`` → depth 0.
+    """
+    varying = np.where(spatial.wet_cell_mask(depth_mat, threshold_m))[0]
     af = np.where(spatial.always_wet_mask(depth_mat, threshold_m))[0]
     tf = np.where(spatial.temporary_wet_mask(depth_mat, threshold_m))[0]
     if tf.size == 0:
-        tf = wet
+        tf = varying
         af = np.array([], dtype=np.int64)
+    if af.size:
+        wet = np.unique(np.concatenate([varying, af]))
+    else:
+        wet = varying
     return (
         np.asarray(wet, dtype=np.int64),
         np.asarray(af, dtype=np.int64),
@@ -145,7 +156,7 @@ def _fit_branch(
         weights=w,
         n_components=cfg["lsg"]["max_eof_modes"],
     )
-    n_modes = eof.select_n_modes(pca, hf_wet.shape[0])
+    n_modes = eof.resolve_n_modes(pca, hf_wet.shape[0], cfg)
     modes = pca.components_[:n_modes]
     modes_full = pca.components_
 

@@ -45,7 +45,7 @@ Gaussian-process and related probabilistic emulators for flood depth or coastal 
 
 ### 2.4 Defensible novelty statement
 
-We implement and evaluate residual hierarchical LSG (global modes plus residual zonal EOFs on WSE; global EXT), Sparse-GP posterior propagation to inundation fields, CRPS-based variance calibration, and a staged O1–O4 oracle attribution on three public multi-fidelity cases. Multi-fidelity LSG remains the dominant skill source; residual zoning mainly reduces truncation gaps (O2−O1); UQ calibration improves probabilistic reliability where uncalibrated intervals are over-dispersed. We reject claims that zoning universally boosts CSI.
+We implement and evaluate residual hierarchical LSG (global modes plus residual zonal EOFs on WSE; global EXT), Sparse-GP posterior propagation to inundation fields, CRPS-based variance calibration, and a staged O1–O4 oracle attribution on three public multi-fidelity cases. Multi-fidelity LSG remains the dominant skill source; residual zoning mainly reduces held-out subspace-expressibility gaps (O2−O1); UQ calibration improves probabilistic reliability where uncalibrated intervals are over-dispersed. We reject claims that zoning universally boosts CSI.
 
 ---
 
@@ -284,7 +284,7 @@ Does CRPS-scale *s* transfer across events and sites without retuning? Chowilla�
 
 ## 9. Conclusions
 
-We present a reproducible EXT+WSE LSG methods stack with residual hierarchical zoning, O1–O4 oracle attribution, and CRPS-calibrated GP uncertainty on three public multi-fidelity flood cases. Multi-fidelity LSG provides the primary skill gains where LF is weak. Residual zoning mainly reduces truncation gaps and should not be marketed as a universal CSI upgrade. Strong-LF settings require explicit wet_train versus all_cells reporting. Calibrated variance scaling improves probabilistic scores on over-dispersed Max-path posteriors while leaving mean maps—and therefore CSI/RMSE—unchanged by construction. These results support methods reuse at WRR / JoH / EMS: diagnose error sources, publish uncertainty, and bound localization claims to verified case conditions rather than a universal zoning CSI story.
+We present a reproducible EXT+WSE LSG methods stack with residual hierarchical zoning, O1–O4 oracle attribution, and CRPS-calibrated GP uncertainty on three public multi-fidelity flood cases. Multi-fidelity LSG provides the primary skill gains where LF is weak. Residual zoning mainly reduces held-out O2−O1 (subspace-expressibility) gaps and should not be marketed as a universal CSI upgrade. Strong-LF settings require explicit wet_train versus all_cells reporting. Calibrated variance scaling improves probabilistic scores on over-dispersed Max-path posteriors while leaving mean maps—and therefore CSI/RMSE—unchanged by construction. These results support methods reuse at WRR / JoH / EMS: diagnose error sources, publish uncertainty, and bound localization claims to verified case conditions rather than a universal zoning CSI story.
 
 ---
 
@@ -319,9 +319,9 @@ We present a reproducible EXT+WSE LSG methods stack with residual hierarchical z
 
 ## References
 
-Chang, M., et al. (2020). Remote sensing-based flood inundation forecasting (FIER). *Remote Sensing of Environment*. https://doi.org/10.1016/j.rse.2020.111732
+Chang, C.-H., et al. (2020). Remote sensing-based flood inundation forecasting (FIER). *Remote Sensing of Environment*. https://doi.org/10.1016/j.rse.2020.111732
 
-Chang, M., et al. (2023). FIER-related environmental modelling software developments. *Environmental Modelling & Software*. https://doi.org/10.1016/j.envsoft.2023.105643
+Chang, C.-H., et al. (2023). FIER-related environmental modelling software developments. *Environmental Modelling & Software*. https://doi.org/10.1016/j.envsoft.2023.105643
 
 Donnelly, J., et al. (2022). Gaussian process flood emulator. *Water Research*. https://doi.org/10.1016/j.watres.2022.119100
 

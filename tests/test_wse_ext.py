@@ -111,3 +111,23 @@ def test_dual_vs_depth_both_run():
     )
     assert wet.size >= tf.size
     assert af.size + tf.size >= wet.size or tf.size == wet.size
+
+
+def test_constant_always_wet_in_wse_support():
+    """Constant AF cells must stay in WSE support (else EXT=1 & WSE=Z → depth 0)."""
+    # 3 cells × 4 samples: cell0 dry; cell1 temporary; cell2 constant AF at 0.5 m
+    depth = np.array(
+        [
+            [0.0, 0.0, 0.5],
+            [0.0, 0.4, 0.5],
+            [0.0, 0.0, 0.5],
+            [0.0, 0.6, 0.5],
+        ],
+        dtype=np.float64,
+    )
+    wet, af, tf = classify_extent_cells(depth, 0.03)
+    assert 2 in set(af.tolist())
+    assert 2 in set(wet.tolist()), "constant AF must be in WSE wet_idx"
+    assert 1 in set(tf.tolist())
+    assert 1 in set(wet.tolist())
+    assert 0 not in set(wet.tolist())

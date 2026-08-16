@@ -6,7 +6,9 @@ Oracle reconstructions on a wet-cell matrix:
 
 
 
-- **O1** HF true ECs, all training-rank modes → numerical SVD floor
+- **O1** HF true ECs at the retained training rank (min of full sample
+  rank and ``lsg.max_eof_modes`` when that cap binds) → SVD reconstruction
+  floor at that rank (not always the uncapped matrix rank)
 
 - **O2** HF true ECs, truncated to k modes → EOF truncation
 

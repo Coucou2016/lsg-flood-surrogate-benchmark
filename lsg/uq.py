@@ -35,9 +35,13 @@ We apply a single global multiplicative scale ``s`` to predictive variance,
 
     Var_cal = s * Var_raw ,
 
-with ``s`` chosen on a calibration split by minimising mean Gaussian CRPS
-(a proper scoring rule). The latent mean is untouched, so operational
-point maps (CSI / RMSE) are unchanged. Prefer this over isotonic PIT
+with ``s`` chosen on *training* predictions (same train events used for
+fitting; subsampled for LSG-TS via ``uq_calibration_max_rows``) by
+minimising mean Gaussian CRPS (a proper scoring rule). This is
+in-sample train tuning of variance only — not an independent held-out
+calibration split and not test-set leakage. The latent mean is untouched,
+so operational point maps (CSI / RMSE) are unchanged. Prefer this over
+isotonic PIT
 warping: one scalar, closed-form CRPS, no binning artefacts.
 """
 

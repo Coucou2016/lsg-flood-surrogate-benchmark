@@ -18,7 +18,7 @@ Fast flood inundation maps remain costly at high fidelity. Multi-fidelity Low-fi
 
 Flood inundation forecasting and scenario assessment require maps that resolve channels, floodplains, and temporary wet cells at resolutions that full hydrodynamic solvers can deliver only at high cost. Surrogate models trained on paired LF and HF inundation fields offer a route to near-instant prediction once HF training events exist, without re-running the HF solver for every new boundary condition.
 
-LSG couples an LF hydrodynamic field to an HF EOF basis through SGPR on expansion coefficients (ECs), recovering HF-like depth or water-surface maps from cheap LF runs (Fraehr et al., 2022, 2023). Subsequent work compared LSG with machine-learning surrogates on public Carlisle, Chowilla, and Burnett cubes (Fraehr et al., 2024a) and examined strategies for large floodplain applications, including LSG time-series (LSG-TS) versus maximum-surface (LSG-Max) training (Wang et al., 2026). Wang et al. (2026) explicitly name zonal EOF analysis as future work rather than a completed component of that study.
+LSG couples an LF hydrodynamic field to an HF EOF basis through SGPR on expansion coefficients (ECs), recovering HF-like depth or water-surface maps from cheap LF runs (Fraehr et al., 2022, 2023a). Subsequent work compared LSG with machine-learning surrogates on public Carlisle, Chowilla, and Burnett cubes (Fraehr et al., 2024a) and examined strategies for large floodplain applications, including LSG time-series (LSG-TS) versus maximum-surface (LSG-Max) training (Wang et al., 2026). Wang et al. (2026) explicitly name zonal EOF analysis as future work rather than a completed component of that study.
 
 Three practical gaps remain for methods-oriented reuse. First, spatial localization of EOF energy has been pursued in adjacent lines—rotated EOF with Sparse GP (REOF–SGP; Wang et al., 2025), regionalized LSG focus subdomains (Tan et al., 2025), and satellite REOF forecasting (FIER and watershed mosaicking; Chang et al., 2020, 2023; Markert et al., 2026)—yet whether a simultaneous whole-domain residual hierarchical decomposition (global modes plus residual zonal EOFs) actually improves multi-fidelity hydrodynamic LSG, once the extra parameters it introduces are controlled for, has not been tested on public data; localised variants add capacity (more retained modes, wider GP inputs) that a fair evaluation must match before crediting localisation. Second, error attribution in LSG is often summarized by end-to-end CSI/RMSE; Tan et al. (2025) introduce a two-part split, yet a staged counterfactual ladder that isolates truncation, LF expressibility, and GP mapping on the same dual EXT+WSE path is still needed for diagnosis. Third, probabilistic flood surrogates exist outside LSG (Donnelly et al., 2022; López-Lopera et al., 2022; Kohanpur et al., 2023; Siripatana et al., 2025; Zanchetta and Coulibaly, 2022), but calibrated propagation of LSG GP posteriors to inundation probability and depth CRPS, with an explicit variance scale that leaves point CSI/RMSE unchanged, remains underexplored.
 
@@ -32,11 +32,11 @@ We implement Fraehr-compatible EXT+WSE reconstruction, residual *k*-means H-LSG 
 
 ### 2.1 Multi-fidelity LSG lineage
 
-Fraehr et al. (2022) introduced LSG for upskilling LF hydrodynamic flood models via EOF compression and Sparse GPs. Fraehr et al. (2023) developed hybrid floodplain formulations separating extent-like and water-surface information. Nature Water commentary framed LSG as a route to “supercharging” inundation models (Fraehr et al., 2023b). Fraehr et al. (2024a) benchmarked LSG against four state-of-the-art surrogates (**1dCNN**, **LSTM-SRR**, **GP-EOF**, **LSTM-EOF**) on the public Carlisle, Chowilla, and Burnett cubes used here, using leave-one-group-out cross-validation, wet-train scoring, CSI for extent, and peak/hydrograph depth metrics, including 50%-larger extrapolation tests. Fraehr et al. (2024b) introduced LESS (low-fidelity event selection) to choose a minimal HF training-event set from LF candidates—orthogonal to our question of residual EOF *capacity* once a split is fixed. Wang et al. (2026) extended LSG strategies for large complex floodplains and retained zonal EOF as future work. Lu et al. (2025) studied GP kernel choice within LSG. Public data and companion code are deposited at Figshare DOI 10.26188/24312658 (Fraehr, 2024).
+Fraehr et al. (2022) introduced LSG for upskilling LF hydrodynamic flood models via EOF compression and Sparse GPs. Fraehr et al. (2023a) developed hybrid floodplain formulations separating extent-like and water-surface information. Nature Water commentary framed LSG as a route to “supercharging” inundation models (Fraehr et al., 2023b). Fraehr et al. (2024a) benchmarked LSG against four state-of-the-art surrogates (**1dCNN**, **LSTM-SRR**, **GP-EOF**, **LSTM-EOF**) on the public Carlisle, Chowilla, and Burnett cubes used here, using leave-one-group-out cross-validation, wet-train scoring, CSI for extent, and peak/hydrograph depth metrics, including 50%-larger extrapolation tests. Fraehr et al. (2024b) introduced LESS (low-fidelity event selection) to choose a minimal HF training-event set from LF candidates—orthogonal to our question of residual EOF *capacity* once a split is fixed. Wang et al. (2026) extended LSG strategies for large complex floodplains and retained zonal EOF as future work. Lu et al. (2025) studied GP kernel choice within LSG. Public data and companion code are deposited at Figshare DOI 10.26188/24312658 (Fraehr, 2024).
 
 ### 2.2 Localization and regionalization near LSG
 
-Tan et al. (2025) regionalize LSG training on focus subdomains and report a two-component error decomposition (downscaling versus LSG mapping). Wang et al. (2025) combine rotated EOF with Sparse GP for LF→HF hydrodynamic mapping. Satellite FIER and watershed-mosaic REOF systems partition space for extent forecasting (Chang et al., 2020, 2023; Wan et al., 2025; Markert et al., 2026). SFINCS–LSG abstracts discuss EOF compression in compound coastal settings (Eilander et al., 2025, 2026). These works constrain novelty: this paper does **not** claim the first localized EOF flood model, the first LSG error split, or the first probabilistic flood surrogate. Relative to Fraehr et al. (2024b), we do not re-select training events; LESS and capacity-matched zoning answer different budget questions.
+Tan et al. (2025) regionalize LSG training on focus subdomains and report a two-component error decomposition (downscaling versus LSG mapping). Wang et al. (2025) combine rotated EOF with Sparse GP for LF→HF hydrodynamic mapping. Satellite FIER and watershed-mosaic REOF systems partition space for extent forecasting (Chang et al., 2020, 2023; Wan et al., 2025; Markert et al., 2026). SFINCS–LSG abstracts discuss EOF compression in compound coastal settings (Eilander et al., 2025, 2026a), with accompanying open scripts and data on Zenodo (Eilander et al., 2026b). These works constrain novelty: this paper does **not** claim the first localized EOF flood model, the first LSG error split, or the first probabilistic flood surrogate. Relative to Fraehr et al. (2024b), we do not re-select training events; LESS and capacity-matched zoning answer different budget questions.
 
 ### 2.3 Probabilistic inundation surrogates and evaluation practice
 
@@ -56,7 +56,7 @@ Let **h**<sup>HF</sup> ∈ ℝ<sup>*n*</sup> and **h**<sup>LF→HF</sup> ∈ ℝ
 
 ### 3.2 Dual-field EXT+WSE reconstruction
 
-Following Fraehr et al. (2023), the operational field mode `wse_ext` fits two emulators:
+Following Fraehr et al. (2023a), the operational field mode `wse_ext` fits two emulators:
 
 1. **EXT** — binary wet/dry on TF cells (AF forced wet), reconstructed by EOF+GP.  
 2. **WSE** — water-surface elevation on wet cells, reconstructed by EOF+GP.
@@ -376,53 +376,53 @@ Public multi-fidelity HF/LF cubes are available from Fraehr (2024), DOI [10.2618
 
 ## References
 
-Bennett, N. D., et al. (2013). Characterising performance of environmental models. *Environmental Modelling & Software*, 40, 1–20. https://doi.org/10.1016/j.envsoft.2012.09.011
+Bennett, N. D., Croke, B. F. W., Guariso, G., Guillaume, J. H. A., Hamilton, S. H., Jakeman, A. J., Marsili-Libelli, S., Newham, L. T. H., Norton, J. P., Perrin, C., Pierce, S. A., Robson, B., Seppelt, R., Voinov, A. A., Fath, B. D., & Andreassian, V. (2013). Characterising performance of environmental models. *Environmental Modelling & Software*, 40, 1–20. https://doi.org/10.1016/j.envsoft.2012.09.011
 
-Chang, C.-H., et al. (2020). Remote sensing-based flood inundation forecasting (FIER). *Remote Sensing of Environment*. https://doi.org/10.1016/j.rse.2020.111732
+Chang, C.-H., Lee, H., Kim, D., Hwang, E., Hossain, F., Chishtie, F., Jayasinghe, S., & Basnayake, S. (2020). Hindcast and forecast of daily inundation extents using satellite SAR and altimetry data with rotated empirical orthogonal function analysis: Case study in Tonle Sap Lake Floodplain. *Remote Sensing of Environment*, 241, 111732. https://doi.org/10.1016/j.rse.2020.111732
 
-Chang, C.-H., et al. (2023). FIER-related environmental modelling software developments. *Environmental Modelling & Software*. https://doi.org/10.1016/j.envsoft.2023.105643
+Chang, C.-H., Lee, H., Do, S. K., Du, T. L. T., Markert, K., Hossain, F., Ahmad, S. K., Piman, T., Meechaiya, C., Bui, D. D., Bolten, J. D., Hwang, E., & Jung, H. C. (2023). Operational forecasting inundation extents using REOF analysis (FIER) over lower Mekong and its potential economic impact on agriculture. *Environmental Modelling & Software*, 162, 105643. https://doi.org/10.1016/j.envsoft.2023.105643
 
-Donnelly, J., et al. (2022). Gaussian process flood emulator. *Water Research*. https://doi.org/10.1016/j.watres.2022.119100
+Donnelly, J., Abolfathi, S., Pearson, J., Chatrabgoun, O., & Daneshkhah, A. (2022). Gaussian process emulation of spatio-temporal outputs of a 2D inland flood model. *Water Research*, 225, 119100. https://doi.org/10.1016/j.watres.2022.119100
 
-Eilander, D., et al. (2025). SFINCS–LSG (EGU abstract). https://doi.org/10.5194/egusphere-egu25-5209
+Eilander, D., Fraehr, N., Leijnse, T., & de Goede, R. (2025). Surrogate flood models for compound flood risk assessments and early warning. EGU General Assembly 2025, abstract EGU25-5209. https://doi.org/10.5194/egusphere-egu25-5209
 
-Eilander, D., et al. (2026). SFINCS–LSG (EGU abstract). https://doi.org/10.5194/egusphere-egu26-11062
+Eilander, D., de Goede, R., Leijnse, T., & Fraehr, N. (2026a). Hybrid surrogate modeling of compound flood events using SFINCS-LSG. EGU General Assembly 2026, abstract EGU26-11062. https://doi.org/10.5194/egusphere-egu26-11062
 
-Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2022). Upskilling low-fidelity hydrodynamic models of flood inundation via EOF and Sparse GP. *Water Resources Research*, 58, e2022WR032248. https://doi.org/10.1029/2022WR032248
+Eilander, D., de Goede, R., Leijnse, T., & Fraehr, N. (2026b). SFINCS-LSG dataset, model files, python environment and scripts (Version v1) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.20352880
 
-Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2023). Fast and accurate hybrid floodplain LSG. *Water Resources Research*, 59, e2022WR033836. https://doi.org/10.1029/2022WR033836
+Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2022). Upskilling low-fidelity hydrodynamic models of flood inundation through spatial analysis and Gaussian process learning. *Water Resources Research*, 58(8), e2022WR032248. https://doi.org/10.1029/2022WR032248
 
-Fraehr, N., et al. (2023b). Supercharging hydrodynamic inundation models. *Nature Water*. https://doi.org/10.1038/s44221-023-00132-2
+Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2023a). Development of a fast and accurate hybrid model for floodplain inundation simulations. *Water Resources Research*, 59(6), e2022WR033836. https://doi.org/10.1029/2022WR033836
+
+Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2023b). Supercharging hydrodynamic inundation models for instant flood insight. *Nature Water*, 1(10), 835–843. https://doi.org/10.1038/s44221-023-00132-2
 
 Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2024a). Assessment of surrogate models for flood inundation: The physics-guided LSG model vs. state-of-the-art machine learning models. *Water Research*, 252, 121202. https://doi.org/10.1016/j.watres.2024.121202
 
 Fraehr, N., Wang, Q. J., Wu, W., & Nathan, R. (2024b). Generation and selection of training events for surrogate flood inundation models. *Journal of Environmental Management*, 373, 123570. https://doi.org/10.1016/j.jenvman.2024.123570
 
-Fraehr, N. (2024). Public multi-fidelity flood cubes and code. Figshare. https://doi.org/10.26188/24312658
+Fraehr, N. (2024). Surrogate flood model comparison – Datasets and python code [Data set]. The University of Melbourne. https://doi.org/10.26188/24312658
 
-Gneiting, T., & Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. *Journal of the American Statistical Association*, 102(477), 359–378.
+Gneiting, T., & Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. *Journal of the American Statistical Association*, 102(477), 359–378. https://doi.org/10.1198/016214506000001437
 
-Kohanpur, A. H., et al. (2023). Physics-informed GPR flood UQ. *Water Resources Research*. https://doi.org/10.1029/2022WR033939
+Kohanpur, A. H., Saksena, S., Dey, S., Johnson, J. M., Riasi, M. S., Yeghiazarian, L., & Tartakovsky, A. M. (2023). Urban flood modeling: Uncertainty quantification and physics-informed Gaussian processes regression forecasting. *Water Resources Research*, 59(3), e2022WR033939. https://doi.org/10.1029/2022WR033939
 
-López-Lopera, A. F., et al. (2022). Multioutput GP coastal flood. *Reliability Engineering & System Safety*. https://doi.org/10.1016/j.ress.2021.108139
+López-Lopera, A. F., Idier, D., Rohmer, J., & Bachoc, F. (2022). Multioutput Gaussian processes with functional data: A study on coastal flood hazard assessment. *Reliability Engineering & System Safety*, 218, 108139. https://doi.org/10.1016/j.ress.2021.108139
 
-Lu, et al. (2025). GP kernel choice in LSG. *Journal of Hydrology*. https://doi.org/10.1016/j.jhydrol.2025.132949
+Lu, J., Wang, Q. J., Fraehr, N., Xiang, X., & Wu, X. (2025). Choice of Gaussian Process kernels used in LSG models for flood inundation predictions. *Journal of Hydrology*, 655, 132949. https://doi.org/10.1016/j.jhydrol.2025.132949
 
-Markert, K. N., et al. (2026). Scalable FIER by watershed mosaicking. *Hydrology and Earth System Sciences*, 30, 459. https://doi.org/10.5194/hess-30-459-2026
+Markert, K. N., Lee, H., Williams, G. P., Nelson, E. J., Ames, D. P., Griffin, R. E., & Meyer, F. J. (2026). Evaluating the feasibility of scaling the FIER framework for large-scale flood inundation prediction. *Hydrology and Earth System Sciences*, 30(2), 459–484. https://doi.org/10.5194/hess-30-459-2026
 
-Siripatana, A., et al. (2025). GPR versus PCE inundation UQ. *Water Resources Research*. https://doi.org/10.1029/2024WR039668
+Siripatana, A., Wilson, A. L., & Beevers, L. (2025). Uncertainty quantification for multi-input fluvial flood inundation using GPR- and PCE-based surrogates. *Water Resources Research*, 61(10), e2024WR039668. https://doi.org/10.1029/2024WR039668
 
-Tan, et al. (2025). Hybrid LSG downscaling and regionalized training. *Hydrology and Earth System Sciences*, 29, 3833. https://doi.org/10.5194/hess-29-3833-2025
+Tan, Z., Xu, D., Taraphdar, S., Ma, J., Bisht, G., & Leung, L. R. (2025). An efficient hybrid downscaling framework to estimate high-resolution river hydrodynamics. *Hydrology and Earth System Sciences*, 29(16), 3833–3852. https://doi.org/10.5194/hess-29-3833-2025
 
-Wan, et al. (2025). REOF flood extent ML. *Environmental Modelling & Software*. https://doi.org/10.1016/j.envsoft.2025.106562
+Wan, H.-H., Lee, H., Thuy Du, T. L., Rostami, A., Chang, C.-H., Markert, K. N., Nelson, E. J., Williams, G. P., Li, S., Straka, W., Helfrich, S. R., & Meyer, F. J. (2025). An interpretable and scalable model for rapid flood extent forecasting using satellite imagery and machine learning with rotated EOF analysis. *Environmental Modelling & Software*, 192, 106562. https://doi.org/10.1016/j.envsoft.2025.106562
 
-Wang, R., et al. (2025). REOF + Sparse GP LF→HF. *International Journal of Disaster Risk Science*. https://doi.org/10.1007/s13753-025-00642-5
+Wang, R., Lian, J., Yuan, X., Tian, F., Li, K., & Liu, Z. (2025). Rapid simulation of floods by considering the spatial and temporal characteristics of inundation. *International Journal of Disaster Risk Science*, 16(3), 481–495. https://doi.org/10.1007/s13753-025-00642-5
 
-Wang, W., Wang, Q. J., & Nathan, R. (2026). Strategies for predicting flood inundation in a large and complex floodplain. *Water Resources Research*, 62, e2025WR042481. https://doi.org/10.1029/2025WR042481
+Wang, W., Wang, Q. J., & Nathan, R. (2026). Strategies for predicting flood inundation in a large and complex floodplain based on low-fidelity hydrodynamic models. *Water Resources Research*, 62(5), e2025WR042481. https://doi.org/10.1029/2025WR042481
 
-Zanchetta, A. D. L., & Coulibaly, P. (2022). Probabilistic inundation maps via surrogates. *Geosciences*, 12(11), 426. https://doi.org/10.3390/geosciences12110426
-
-Zenodo SFINCS–LSG scripts/data: https://doi.org/10.5281/zenodo.20352880
+Zanchetta, A. D. L., & Coulibaly, P. (2022). Probabilistic forecasts of flood inundation maps using surrogate models. *Geosciences*, 12(11), 426. https://doi.org/10.3390/geosciences12110426
 
 ---
 

@@ -1,0 +1,220 @@
+[
+  {
+    "label": "global_diag_m2",
+    "overrides": {
+      "zoning": "none"
+    },
+    "n_modes_wse": 1,
+    "n_zones": 0,
+    "residual_n_modes": [],
+    "n_ecs_total": 1,
+    "zone_method": "none",
+    "csi_all": 0.9756919710408083,
+    "rmse_all": 0.09881832859333127,
+    "rfa_all": 0.016893017146342035,
+    "csi_wet": 0.9756919710408083,
+    "rmse_wet": 0.15392598073192112,
+    "budget": {
+      "train": {
+        "o1_rmse": 1.6400426149482784e-14,
+        "o2_rmse": 0.12457366267954724,
+        "o3_rmse": 0.18690153941606585,
+        "o4_rmse": 0.20296685603903172
+      },
+      "test": {
+        "o1_rmse": 0.04775240428729821,
+        "o2_rmse": 0.11175463929906106,
+        "o3_rmse": 0.12201624651184363,
+        "o4_rmse": 0.15392598073192112
+      }
+    },
+    "placement": "diag",
+    "inducing_floor": 0
+  },
+  {
+    "label": "global_data_all",
+    "overrides": {
+      "zoning": "none"
+    },
+    "n_modes_wse": 1,
+    "n_zones": 0,
+    "residual_n_modes": [],
+    "n_ecs_total": 1,
+    "zone_method": "none",
+    "csi_all": 0.9756919710408083,
+    "rmse_all": 0.07200493665402925,
+    "rfa_all": 0.016893017146342035,
+    "csi_wet": 0.9756919710408083,
+    "rmse_wet": 0.11215966359462666,
+    "budget": {
+      "train": {
+        "o1_rmse": 1.6400426149482784e-14,
+        "o2_rmse": 0.12457366267954724,
+        "o3_rmse": 0.18690153941606585,
+        "o4_rmse": 0.12457842703199602
+      },
+      "test": {
+        "o1_rmse": 0.04775240428729821,
+        "o2_rmse": 0.11175463929906106,
+        "o3_rmse": 0.12201624651184363,
+        "o4_rmse": 0.11215966359462666
+      }
+    },
+    "placement": "data",
+    "inducing_floor": 999
+  },
+  {
+    "label": "hlsg43_diag_all",
+    "overrides": {
+      "zoning": "residual_kmeans",
+      "n_zones": 4,
+      "residual_eof_modes": 3
+    },
+    "n_modes_wse": 1,
+    "n_zones": 4,
+    "residual_n_modes": [
+      3,
+      3,
+      3,
+      3
+    ],
+    "n_ecs_total": 13,
+    "zone_method": "residual_kmeans",
+    "csi_all": 0.9386957590932463,
+    "rmse_all": 0.17304389209065135,
+    "rfa_all": 0.05607085853022503,
+    "csi_wet": 0.9386957590932463,
+    "rmse_wet": 0.2695446399355491,
+    "budget": {
+      "train": {
+        "o1_rmse": 1.6400426149482784e-14,
+        "o2_rmse": 0.04163706502885976,
+        "o3_rmse": 0.1666322126420294,
+        "o4_rmse": 0.6941797600970373
+      },
+      "test": {
+        "o1_rmse": 0.04775240428729821,
+        "o2_rmse": 0.05248375118951823,
+        "o3_rmse": 0.06801932287176579,
+        "o4_rmse": 0.2695446399355491
+      }
+    },
+    "placement": "diag",
+    "inducing_floor": 999
+  },
+  {
+    "label": "hlsg43_data_all",
+    "overrides": {
+      "zoning": "residual_kmeans",
+      "n_zones": 4,
+      "residual_eof_modes": 3
+    },
+    "n_modes_wse": 1,
+    "n_zones": 4,
+    "residual_n_modes": [
+      3,
+      3,
+      3,
+      3
+    ],
+    "n_ecs_total": 13,
+    "zone_method": "residual_kmeans",
+    "csi_all": 0.9756919710408083,
+    "rmse_all": 0.06063747656665082,
+    "rfa_all": 0.016893017146342035,
+    "csi_wet": 0.9756919710408083,
+    "rmse_wet": 0.09445295404703394,
+    "budget": {
+      "train": {
+        "o1_rmse": 1.6400426149482784e-14,
+        "o2_rmse": 0.04163706502885976,
+        "o3_rmse": 0.1666322126420294,
+        "o4_rmse": 0.06441464055554487
+      },
+      "test": {
+        "o1_rmse": 0.04775240428729821,
+        "o2_rmse": 0.05248375118951823,
+        "o3_rmse": 0.06801932287176579,
+        "o4_rmse": 0.09445295404703394
+      }
+    },
+    "placement": "data",
+    "inducing_floor": 999
+  },
+  {
+    "label": "hlsg41_data_all",
+    "overrides": {
+      "zoning": "residual_kmeans",
+      "n_zones": 4,
+      "residual_eof_modes": 1
+    },
+    "n_modes_wse": 1,
+    "n_zones": 4,
+    "residual_n_modes": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "n_ecs_total": 5,
+    "zone_method": "residual_kmeans",
+    "csi_all": 0.9756965137067938,
+    "rmse_all": 0.07592196347884896,
+    "rfa_all": 0.01688840517160496,
+    "csi_wet": 0.9756965137067938,
+    "rmse_wet": 0.11826108429406867,
+    "budget": {
+      "train": {
+        "o1_rmse": 1.6400426149482784e-14,
+        "o2_rmse": 0.0883287123259192,
+        "o3_rmse": 0.1574318952537079,
+        "o4_rmse": 0.08836747058591793
+      },
+      "test": {
+        "o1_rmse": 0.04775240428729821,
+        "o2_rmse": 0.08751599778667933,
+        "o3_rmse": 0.09341724580768702,
+        "o4_rmse": 0.11826108429406867
+      }
+    },
+    "placement": "data",
+    "inducing_floor": 999
+  },
+  {
+    "label": "hlsg21_data_all",
+    "overrides": {
+      "zoning": "residual_kmeans",
+      "n_zones": 2,
+      "residual_eof_modes": 1
+    },
+    "n_modes_wse": 1,
+    "n_zones": 2,
+    "residual_n_modes": [
+      1,
+      1
+    ],
+    "n_ecs_total": 3,
+    "zone_method": "residual_kmeans",
+    "csi_all": 0.9756919710408083,
+    "rmse_all": 0.06688882552820677,
+    "rfa_all": 0.016893017146342035,
+    "csi_wet": 0.9756919710408083,
+    "rmse_wet": 0.10419046968307466,
+    "budget": {
+      "train": {
+        "o1_rmse": 1.6400426149482784e-14,
+        "o2_rmse": 0.09378399169652317,
+        "o3_rmse": 0.17666164774657633,
+        "o4_rmse": 0.09381581826266953
+      },
+      "test": {
+        "o1_rmse": 0.04775240428729821,
+        "o2_rmse": 0.08799360264113194,
+        "o3_rmse": 0.09288479268434555,
+        "o4_rmse": 0.10419046968307466
+      }
+    },
+    "placement": "data",
+    "inducing_floor": 999
+  }
+]

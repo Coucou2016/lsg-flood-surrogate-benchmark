@@ -1,0 +1,109 @@
+# Registry of LSG multi-fidelity flood cases.
+# Paths are relative to the repository root.
+#
+# LSG needs paired HF/LF inundation fields. Solver brand (HEC-RAS, LISFLOOD,
+# TUFLOW) does not matter. We do not re-run hydrodynamics when a published
+# result dump already exists.
+
+benchmark:
+  title: Multi-region public-data multi-fidelity flood surrogate benchmark
+  method: LSG (EOF + Sparse GP; LSG-TS and LSG-Max)
+  policy: use already-computed public HF/LF cubes; do not self-run solvers
+  next_step: Burnett Grp1 max documented; optional Burnett global A/B + full-TS smoke
+
+existing_published:
+  carlisle:
+    status: primary
+    config: config/carlisle.yaml
+    hf: LISFLOOD-FP
+    lf: HEC-RAS
+    data: data/external/carlisle
+    figshare_doi: 10.26188/24312658
+    zip_bytes: 9603961435
+    downloaded: true
+    unzipped: true
+    python_data: unzipped
+    comparison_results: unzipped
+    comparison_results_path: data/external/carlisle/comparison_results
+    published_metrics: data/external/carlisle/Result_data/Validation_results.npz
+    splits: data/external/carlisle/Train_test_split_data
+    note: >
+      Carlisle.zip downloaded (9,603,961,435 bytes, MD5 ok) and unzipped
+      2026-08-15. Geometry_data / HD_model_data / Train_test_split_data /
+      Result_data present. Comparison_results unzipped; CSI/RMSE arrays are
+      Result_data/Validation_results.npz. Do not install HEC-RAS. Ingest smoke 2026-08-15: E1-E9 found; LF HDF WSE 5991 cells vs LF geometry NPZ 5681 — workflow not yet end-to-end.
+    priority: 1
+  chowilla:
+    status: secondary
+    config: config/chowilla.yaml
+    hf: fine HEC-RAS
+    lf: coarse HEC-RAS (model G)
+    data: data/external/chowilla
+    figshare_doi: 10.26188/24312658
+    hdf_doi: 10.26188/21235782
+    zip_bytes: 31986950697
+    downloaded: true
+    unzipped: true
+    published_metrics: data/external/chowilla/Result_data/Validation_results.npz
+    splits: data/external/chowilla/Train_test_split_data
+    note: >
+      2026-08-16: case folders junctioned from sibling Fraehr unzip (Chowilla.zip
+      MD5 16e3f4d2…). 29 paired plans p01–p29; Geometry HF 109914 / LF 1434.
+      Stack = Carlisle (wse_ext + residual_kmeans + SGPR floor + crps_scale UQ).
+      Default ingest.time_reduction=max (full 29-event TS OOM). Grp1 max summary:
+      outputs/evaluation/chowilla/workflow_summary_grp1_wse_ext_hlsg_max.json.
+      Zoning kept residual_kmeans (stable). Paper anti-case: LF all-cells CSI ~0.93;
+      LSG wet_train CSI ~0.976 / RMSE ~0.093 (published LSG Grp1 CSI 0.982).
+    priority: 2
+  burnett:
+    status: tertiary
+    config: config/burnett.yaml
+    hf: TUFLOW
+    lf: HEC-RAS (Model B)
+    data: data/external/burnett
+    figshare_doi: 10.26188/24312658
+    zip_bytes: 31986950697
+    downloaded: true
+    unzipped: true
+    published_metrics: data/external/burnett/Result_data/Validation_results.npz
+    splits: data/external/burnett/Train_test_split_data
+    note: >
+      2026-08-16: junctions to sibling Fraehr BurnettRV unzip (zip MD5 93df54d5…).
+      74 CV events / 4 groups; Geometry HF 780785 (TUFLOW) / LF 15256 (HEC-RAS).
+      Stack = Carlisle (wse_ext + residual_kmeans + SGPR floor + crps_scale UQ).
+      Default ingest.time_reduction=max; TUFLOW wl_data skips 48-step pad.
+      Event ids = LF plan (p12→E12) via BurnettRV_event_summary.csv.
+      Grp1 max (56 train / 18 val): 
+      outputs/evaluation/burnett/workflow_summary_grp1_wse_ext_hlsg_max.json.
+      Zoning kept residual_kmeans (stable). wet_train LSG CSI ~0.975 / RMSE ~0.387;
+      LF CSI ~0.853 / RMSE ~0.990 (much weaker LF than Chowilla). O2−O1 test ~0.0085.
+      Steep coastal river: clear LSG lift over LF; zonal residual gain modest.
+    priority: 3
+
+deferred_generator_only:
+  merced:
+    status: not_required
+    config: config/merced.yaml
+    data: data/external/hecras_merced
+    note: >
+      USACE tutorial ZIP has terrain/GIS/DSS only — no result HDF.
+      Kept as an optional generator if someone later wants to self-run RAS.
+      Not on the main path.
+  bald_eagle:
+    status: not_required
+    config: config/bald_eagle.yaml
+    data: data/external/hecras_bald_eagle
+    note: Same as Merced — tutorial inputs, not computed inundation.
+
+historical_optional:
+  brisbane:
+    status: optional_appendix
+    config: config/brisbane.yaml
+    licence: Queensland Government / BRCFS (not public)
+    note: Keep ingest pipeline and metadata. Not the unique main case.
+
+deferred:
+  floodcastbench:
+    note: >
+      ~21.6 GB. UK 2015 60 m is resampled from 30 m, not a re-run LF solver.
+      Revisit only after Carlisle trains end-to-end.

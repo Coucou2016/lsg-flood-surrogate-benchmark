@@ -1,0 +1,105 @@
+# Merced River (Yosemite Valley) — independent HEC-RAS 2D case
+#
+# Official tutorial (do not modify the original ZIP contents):
+# https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/2d-unsteady-flow/2d-model-development-and-refinement
+#
+# Official computational mesh in the workshop is 200 ft. This study's
+# multi-fidelity set is HF 100 ft / LF 400 ft / LF 800 ft — those geometries
+# must be built in HEC-RAS Mapper. Folders are skeletons until then.
+
+study_area:
+  id: merced
+  name: Merced River (Yosemite Valley)
+  crs: EPSG:2227
+  crs_note: >
+    NAD83 / California zone 3 (ftUS) is the usual local mapping CRS for
+    Yosemite Valley HEC-RAS workshops. Confirm in the official projection
+    file after unzipping.
+  notes: >
+    Public USACE HEC-RAS 2D tutorial. Base inflow is USGS 15-min discharge
+    at Happy Isles Bridge (11264500) for the January 1997 flood. Downstream
+    BC is Normal Depth. Official workshop mesh is 200 ft.
+
+paths:
+  project_root: null
+  case_root: data/external/hecras_merced
+  dem: data/external/hecras_merced/terrain
+  hf_results: data/external/hecras_merced/hf_100ft
+  lf_results: data/external/hecras_merced/lf_400ft
+  lf_resolutions:
+    lf400: data/external/hecras_merced/lf_400ft
+    lf800: data/external/hecras_merced/lf_800ft
+  processed: data/processed/merced
+  models: outputs/models/merced
+  evaluation: outputs/evaluation/merced
+  metadata: data/external/hecras_merced/events
+
+hydrodynamic:
+  depth_threshold_m: 0.03
+  extent_binary_threshold: 0.5
+  hf_cell_size_ft: 100
+  hf_cell_size_m: 30.48
+  official_cell_size_ft: 200
+  timestep_hours: 0.25
+  lf_resolutions_ft:
+    lf400:
+      computational_ft: 400
+      computational_m: 121.92
+    lf800:
+      computational_ft: 800
+      computational_m: 243.84
+
+lsg:
+  weight_by_cell_area: true
+  max_eof_modes: 100
+  inducing_point_fraction: 0.02
+  gp_kernel: exponential
+  train_test_split: 0.8
+  random_seed: 20260814
+  zoning: none
+  n_zones: 4
+  residual_eof_modes: 3
+
+events:
+  catalog: data/external/hecras_merced/events/event_parameters.csv
+  splits_file: data/external/hecras_merced/events/event_protocol.yaml
+  output_dir: data/external/hecras_merced/events
+  base_hydrograph: data/external/hecras_merced/boundary/usgs_11264500_happy_isles_1997_iv.txt
+  n_events_design: 40
+  n_events_pilot_hydrographs: 10
+  seed: 20260814
+  id_prefix: ME
+  drives:
+    - hf_100ft
+    - lf_400ft
+    - lf_800ft
+  tributaries: []
+  synthetic_only: false
+  splits:
+    # Filled after scripts/generate_hecras_events.py; 24 / 6 / 10 design.
+    validation: []
+    lsg_ts_train: []
+
+variants:
+  lsg_ts:
+    use_time_series: true
+    derive_max_from_ts: true
+  lsg_max:
+    use_time_series: false
+    train_on_max_surface: true
+
+evaluation:
+  metrics:
+    - rmse_depth
+    - csi
+    - pod
+    - rfa
+  contingency_threshold_m: 0.03
+
+hecras:
+  tutorial_url: https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/2d-unsteady-flow/2d-model-development-and-refinement
+  zip_url: https://www.hec.usace.army.mil/confluence/rasdocs/hgt/files/latest/217579855/217579980/1/1729558697904/2D+Model+Development+and+Refinement.zip
+  official_plan_note: >
+    Do not edit the official 200 ft / 1997 tutorial model. Use it to confirm
+    HDF reading. HF 100 ft and LF 400/800 ft are new geometries, not in the ZIP.
+  run_timeout_s: 1200

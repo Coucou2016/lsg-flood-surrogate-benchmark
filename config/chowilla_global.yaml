@@ -1,0 +1,160 @@
+# Chowilla floodplain (AU) — published LSG benchmark with already-computed HF/LF.
+#
+# Fraehr (2024) Figshare 10.26188/24312658, file Chowilla.zip (~32 GB, CC BY 4.0).
+# HF = fine HEC-RAS, LF = coarse HEC-RAS (model G). Do not re-run HEC-RAS.
+#
+# Local data: junctions under data/external/chowilla/ → sibling unzip at
+# I:\Projects\202606-JOH-zonal-LSG\data\external\fraehr2024\Chowilla (or a
+# fresh unzip of Chowilla.zip). Same Fraehr layout as Carlisle.
+
+study_area:
+  id: chowilla_global
+  name: Chowilla floodplain, Australia
+  notes: >
+    Published multi-fidelity benchmark (fine/coarse HEC-RAS). Paper anti-case
+    candidate: LF already strong; LSG gain may be small. 29 CV events in 10
+    groups (Grp1 = single event E1 / p01).
+
+ingest:
+  kind: fraehr
+  # Full TS for 29 events × ~110k HF cells does not fit in RAM. Use HEC-RAS
+  # Summary Maximum Water Surface for LSG-Max / fold metrics; override with
+  # --time-reduction full on a small --events subset for LSG-TS smoke.
+  time_reduction: max
+
+paths:
+  project_root: null
+  case_root: data/external/chowilla
+  dem: data/external/chowilla
+  hf_results: data/external/chowilla
+  lf_results: data/external/chowilla
+  processed: data/processed/chowilla
+  models: outputs/models/chowilla
+  evaluation: outputs/evaluation/chowilla
+  metadata: data/external/chowilla
+
+hydrodynamic:
+  depth_threshold_m: 0.03
+  extent_binary_threshold: 0.5
+  # Unstructured HEC-RAS mesh; nominal DEM resolution ~5 m (see Geometry_data).
+  hf_cell_size_m: 5
+  timestep_hours: 1
+
+lsg:
+  # Same Carlisle-proven stack: EXT+WSE dual path.
+  field: wse_ext
+  weight_by_cell_area: true
+  max_eof_modes: 100
+  inducing_point_fraction: 0.02
+  min_inducing_points: 16
+  gp_kernel: exponential
+  train_test_split: 0.8
+  random_seed: 20260814
+  # Prefer residual_kmeans (Carlisle). If residual EOF / zone fit is unstable
+  # on this floodplain, switch to none and document in README / cases.yaml.
+  zoning: none
+  n_zones: 4
+  residual_eof_modes: 3
+
+events:
+  synthetic_only: false
+  # Fraehr leave-one-group-out: ValidateOnGrp_1 holds out Group 1 (= Event 1).
+  # Event ids E1..E29 map to plans p01..p29 (CSV Event / HEC_RAS_plan columns).
+  # include: [E1, E2, E3]   # uncomment for smoke ingest
+  splits:
+    validation: [E1]
+    lsg_ts_train:
+      - E2
+      - E3
+      - E4
+      - E5
+      - E6
+      - E7
+      - E8
+      - E9
+      - E10
+      - E11
+      - E12
+      - E13
+      - E14
+      - E15
+      - E16
+      - E17
+      - E18
+      - E19
+      - E20
+      - E21
+      - E22
+      - E23
+      - E24
+      - E25
+      - E26
+      - E27
+      - E28
+      - E29
+    lsg_max_train:
+      - E2
+      - E3
+      - E4
+      - E5
+      - E6
+      - E7
+      - E8
+      - E9
+      - E10
+      - E11
+      - E12
+      - E13
+      - E14
+      - E15
+      - E16
+      - E17
+      - E18
+      - E19
+      - E20
+      - E21
+      - E22
+      - E23
+      - E24
+      - E25
+      - E26
+      - E27
+      - E28
+      - E29
+
+variants:
+  lsg_ts:
+    use_time_series: true
+    derive_max_from_ts: true
+  lsg_max:
+    use_time_series: false
+    train_on_max_surface: true
+
+evaluation:
+  metrics:
+    - rmse_depth
+    - csi
+    - pod
+    - rfa
+    - crps
+    - brier
+  uq: true
+  uq_calibration: crps_scale
+  # Chowilla TS rows are much larger than Carlisle; keep calibration subsampled.
+  uq_calibration_max_rows: 256
+  error_budget: true
+  contingency_threshold_m: 0.03
+  cell_mask: wet_train
+
+figshare:
+  doi: 10.26188/24312658
+  file: Chowilla.zip
+  file_id: 44120567
+  bytes: 31986950697
+  md5: 16e3f4d2b8514b1493a1d78af2751707
+  downloaded: true
+  unzipped: true
+  source_note: >
+    Geometry_data / HD_model_data / Train_test_split_data / Result_data are
+    directory junctions to an existing Fraehr unzip (same MD5 zip). Prefer
+    that over a second 32 GB download.

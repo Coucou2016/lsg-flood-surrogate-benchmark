@@ -1,0 +1,104 @@
+# Bald Eagle Creek (Lock Haven, Pennsylvania) — independent HEC-RAS 2D case
+#
+# Official tutorial:
+# https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/2d-unsteady-flow/creating-a-simple-2d-model
+#
+# Multi-tributary inflows: Sayers Dam, Marsh Creek, Beech Creek, Fishing Creek.
+# Meshes HF 200 ft / LF 500 ft / LF 1000 ft are study specifications; build in
+# HEC-RAS Mapper. Folders are skeletons until then.
+
+study_area:
+  id: bald_eagle
+  name: Bald Eagle Creek (Lock Haven, PA)
+  crs: EPSG:2272
+  crs_note: >
+    NAD83 / Pennsylvania North (ftUS) is a common local CRS. Confirm against
+    the official tutorial projection after unzipping.
+  notes: >
+    Public USACE HEC-RAS 2D tutorial. Multiple inflow hydrographs plus a
+    Normal Depth downstream boundary.
+
+paths:
+  project_root: null
+  case_root: data/external/hecras_bald_eagle
+  dem: data/external/hecras_bald_eagle/terrain
+  hf_results: data/external/hecras_bald_eagle/hf_200ft
+  lf_results: data/external/hecras_bald_eagle/lf_500ft
+  lf_resolutions:
+    lf500: data/external/hecras_bald_eagle/lf_500ft
+    lf1000: data/external/hecras_bald_eagle/lf_1000ft
+  processed: data/processed/bald_eagle
+  models: outputs/models/bald_eagle
+  evaluation: outputs/evaluation/bald_eagle
+  metadata: data/external/hecras_bald_eagle/events
+
+hydrodynamic:
+  depth_threshold_m: 0.03
+  extent_binary_threshold: 0.5
+  hf_cell_size_ft: 200
+  hf_cell_size_m: 60.96
+  timestep_hours: 0.25
+  lf_resolutions_ft:
+    lf500:
+      computational_ft: 500
+      computational_m: 152.4
+    lf1000:
+      computational_ft: 1000
+      computational_m: 304.8
+
+lsg:
+  weight_by_cell_area: true
+  max_eof_modes: 100
+  inducing_point_fraction: 0.02
+  gp_kernel: exponential
+  train_test_split: 0.8
+  random_seed: 20260814
+  zoning: none
+  n_zones: 4
+  residual_eof_modes: 3
+
+events:
+  catalog: data/external/hecras_bald_eagle/events/event_parameters.csv
+  splits_file: data/external/hecras_bald_eagle/events/event_protocol.yaml
+  output_dir: data/external/hecras_bald_eagle/events
+  n_events_design: 40
+  n_events_pilot_hydrographs: 10
+  seed: 20260814
+  id_prefix: BE
+  drives:
+    - hf_200ft
+    - lf_500ft
+    - lf_1000ft
+  tributaries:
+    - sayers_dam
+    - marsh_creek
+    - beech_creek
+    - fishing_creek
+  synthetic_only: false
+  splits:
+    validation: []
+    lsg_ts_train: []
+
+variants:
+  lsg_ts:
+    use_time_series: true
+    derive_max_from_ts: true
+  lsg_max:
+    use_time_series: false
+    train_on_max_surface: true
+
+evaluation:
+  metrics:
+    - rmse_depth
+    - csi
+    - pod
+    - rfa
+  contingency_threshold_m: 0.03
+
+hecras:
+  tutorial_url: https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/2d-unsteady-flow/creating-a-simple-2d-model
+  zip_url: https://www.hec.usace.army.mil/confluence/rasdocs/hgt/files/latest/213685242/213685260/1/1728427351910/Creating+a+Simple+2D+Model.zip
+  official_plan_note: >
+    Multi-tributary scaling uses a_j = a_storm * (1+eps_j) with
+    eps_j ~ U(-0.15, 0.15). Same s and tau for all inflows of an event.
+  run_timeout_s: 1200

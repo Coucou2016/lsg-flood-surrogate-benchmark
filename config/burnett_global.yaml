@@ -1,0 +1,212 @@
+# Burnett River (AU) — global-only A/B twin of config/burnett.yaml
+# (lsg.zoning: none). Same data paths, Grp1 splits, and paper stack otherwise.
+
+study_area:
+  id: burnett_global
+  name: Burnett River, Australia
+  notes: >
+    Global-only control for H-LSG residual_kmeans A/B on Burnett. Same Fraehr
+    TUFLOW × HEC-RAS dump and Grp1 leave-one-group-out as config/burnett.yaml.
+
+ingest:
+  kind: fraehr
+  time_reduction: max
+
+paths:
+  project_root: null
+  case_root: data/external/burnett
+  dem: data/external/burnett
+  hf_results: data/external/burnett
+  lf_results: data/external/burnett
+  processed: data/processed/burnett
+  models: outputs/models/burnett
+  evaluation: outputs/evaluation/burnett
+  metadata: data/external/burnett
+
+hydrodynamic:
+  depth_threshold_m: 0.03
+  extent_binary_threshold: 0.5
+  hf_cell_size_m: 10
+  timestep_hours: 1
+
+lsg:
+  field: wse_ext
+  weight_by_cell_area: true
+  max_eof_modes: 100
+  inducing_point_fraction: 0.02
+  min_inducing_points: 16
+  gp_kernel: exponential
+  train_test_split: 0.8
+  random_seed: 20260814
+  zoning: none
+  n_zones: 4
+  residual_eof_modes: 3
+
+events:
+  synthetic_only: false
+  splits:
+    validation:
+      - E12
+      - E13
+      - E14
+      - E15
+      - E16
+      - E11
+      - E17
+      - E18
+      - E19
+      - E10
+      - E9
+      - E8
+      - E7
+      - E6
+      - E1
+      - E5
+      - E4
+      - E3
+    lsg_ts_train:
+      - E30
+      - E31
+      - E32
+      - E33
+      - E29
+      - E34
+      - E35
+      - E36
+      - E37
+      - E21
+      - E22
+      - E23
+      - E24
+      - E20
+      - E25
+      - E26
+      - E27
+      - E28
+      - E49
+      - E50
+      - E51
+      - E52
+      - E53
+      - E54
+      - E55
+      - E56
+      - E48
+      - E57
+      - E39
+      - E40
+      - E41
+      - E42
+      - E43
+      - E44
+      - E45
+      - E46
+      - E38
+      - E47
+      - E68
+      - E67
+      - E69
+      - E70
+      - E71
+      - E72
+      - E73
+      - E74
+      - E75
+      - E59
+      - E58
+      - E60
+      - E61
+      - E62
+      - E63
+      - E64
+      - E65
+      - E66
+    lsg_max_train:
+      - E30
+      - E31
+      - E32
+      - E33
+      - E29
+      - E34
+      - E35
+      - E36
+      - E37
+      - E21
+      - E22
+      - E23
+      - E24
+      - E20
+      - E25
+      - E26
+      - E27
+      - E28
+      - E49
+      - E50
+      - E51
+      - E52
+      - E53
+      - E54
+      - E55
+      - E56
+      - E48
+      - E57
+      - E39
+      - E40
+      - E41
+      - E42
+      - E43
+      - E44
+      - E45
+      - E46
+      - E38
+      - E47
+      - E68
+      - E67
+      - E69
+      - E70
+      - E71
+      - E72
+      - E73
+      - E74
+      - E75
+      - E59
+      - E58
+      - E60
+      - E61
+      - E62
+      - E63
+      - E64
+      - E65
+      - E66
+
+variants:
+  lsg_ts:
+    use_time_series: true
+    derive_max_from_ts: true
+  lsg_max:
+    use_time_series: false
+    train_on_max_surface: true
+
+evaluation:
+  metrics:
+    - rmse_depth
+    - csi
+    - pod
+    - rfa
+    - crps
+    - brier
+  uq: true
+  uq_calibration: crps_scale
+  uq_calibration_max_rows: 256
+  error_budget: true
+  contingency_threshold_m: 0.03
+  cell_mask: wet_train
+
+figshare:
+  doi: 10.26188/24312658
+  file: BurnettRV.zip
+  file_id: 44120564
+  bytes: 31986950697
+  md5: 93df54d5bb54e9b23a09e648648146d8
+  downloaded: true
+  unzipped: true

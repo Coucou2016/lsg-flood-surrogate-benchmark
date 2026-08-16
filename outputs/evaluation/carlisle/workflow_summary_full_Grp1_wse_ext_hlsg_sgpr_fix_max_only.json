@@ -1,0 +1,24 @@
+{
+  "note": "LSG-Max only, Grp1 E1 holdout, after SGPR inducing fix; scored from saved dual state + max-surface cache",
+  "lsg_zoning": "residual_kmeans",
+  "lsg_field": "wse_ext",
+  "lsg_max": {
+    "csi": 0.9756919710408083,
+    "rmse": 0.060655535221958067,
+    "rmse_wet_train": 0.09448108340591337,
+    "error_budget_test": {
+      "o1_rmse": 0.04775236737908132,
+      "o2_rmse": 0.05248375120082625,
+      "o3_rmse": 0.06801932286270815,
+      "o4_rmse": 0.09448108340591337
+    },
+    "before_fix": {
+      "rmse": 0.171625,
+      "o4_rmse": 0.267335
+    },
+    "global_pre_fix": {
+      "rmse": 0.098818,
+      "o4_rmse": 0.153926
+    }
+  }
+}

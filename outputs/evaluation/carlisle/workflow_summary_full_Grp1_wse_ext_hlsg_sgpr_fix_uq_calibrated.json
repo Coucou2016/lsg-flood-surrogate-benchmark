@@ -1,0 +1,475 @@
+{
+  "project_root": "I:\\Projects\\20260522-LSG-WRR",
+  "data_source": "fraehr",
+  "data_mode": "real",
+  "lsg_field": "wse_ext",
+  "lsg_zoning": "residual_kmeans",
+  "event_ids": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "uq_calibration_method": "crps_scale",
+  "uq_calibration_max_rows": 256,
+  "baseline_summary": "I:\\Projects\\20260522-LSG-WRR\\outputs\\evaluation\\carlisle\\workflow_summary_full_Grp1_wse_ext_hlsg_sgpr_fix.json",
+  "note": "UQ re-score from saved states with CRPS (or coverage_90) global variance scale fit on train; latent mean / point CSI-RMSE unchanged.",
+  "resolution": {
+    "hf_cell_size_m": 5.0,
+    "hf_output_cell_size_m": null,
+    "lf_main_cell_size_m": null,
+    "lf120_m": 120,
+    "lf300_m": 300
+  },
+  "split_protocol": "splits.yaml / Wang et al. 2026",
+  "score_protocol": {
+    "threshold_m": 0.03,
+    "lsg_field": "wse_ext",
+    "notes": "all_cells = full HF mesh; wet_train = Fraehr Categories wet_idx (CSI unchanged vs all_cells when FAs lie inside the mask; RMSE rises). With lsg.field=wse_ext the official LSG prediction is trained EXT+WSE. lf_extent_gated remains a diagnostic only (not the model).",
+    "lf_only": {
+      "all_cells": {
+        "pod": 0.9946302750208349,
+        "rfa": 0.03480758184951178,
+        "csi": 0.960189066506978,
+        "rmse": 0.07380462109525882,
+        "ct_hits": 210050,
+        "ct_misses": 1134,
+        "ct_false_alarms": 7575,
+        "ct_correct_negatives": 362302
+      },
+      "wet_train": {
+        "pod": 0.9946302750208349,
+        "rfa": 0.028895053166897826,
+        "csi": 0.9660402696910326,
+        "rmse": 0.10102650307975437,
+        "ct_hits": 210050,
+        "ct_misses": 1134,
+        "ct_false_alarms": 6250,
+        "ct_correct_negatives": 22048
+      }
+    },
+    "lsg_max": {
+      "all_cells": {
+        "pod": 0.9923289643154785,
+        "rfa": 0.016893017146342035,
+        "csi": 0.9756919710408083,
+        "rmse": 0.06065553519101902,
+        "ct_hits": 209564,
+        "ct_misses": 1620,
+        "ct_false_alarms": 3601,
+        "ct_correct_negatives": 366276
+      },
+      "wet_train": {
+        "pod": 0.9923289643154785,
+        "rfa": 0.016893017146342035,
+        "csi": 0.9756919710408083,
+        "rmse": 0.09448108335772064,
+        "ct_hits": 209564,
+        "ct_misses": 1620,
+        "ct_false_alarms": 3601,
+        "ct_correct_negatives": 24697
+      },
+      "lf_extent_gated": {
+        "pod": 0.987120236381544,
+        "rfa": 0.005396121090674873,
+        "csi": 0.9818618562042248,
+        "rmse": 0.05930193741231067,
+        "ct_hits": 208464,
+        "ct_misses": 2720,
+        "ct_false_alarms": 1131,
+        "ct_correct_negatives": 368746
+      },
+      "lf_extent_gated_wet_train": {
+        "pod": 0.987120236381544,
+        "rfa": 0.005396121090674873,
+        "csi": 0.9818618562042248,
+        "rmse": 0.09237262970777402,
+        "ct_hits": 208464,
+        "ct_misses": 2720,
+        "ct_false_alarms": 1131,
+        "ct_correct_negatives": 27167
+      }
+    },
+    "lsg_ts": {
+      "all_cells": {
+        "pod": 0.9946776270929616,
+        "rfa": 0.024745809926180418,
+        "csi": 0.9701913040265294,
+        "rmse": 0.0990329345274575,
+        "ct_hits": 210060,
+        "ct_misses": 1124,
+        "ct_false_alarms": 5330,
+        "ct_correct_negatives": 364547
+      },
+      "wet_train": {
+        "pod": 0.9946776270929616,
+        "rfa": 0.024745809926180418,
+        "csi": 0.9701913040265294,
+        "rmse": 0.15426026516428812,
+        "ct_hits": 210060,
+        "ct_misses": 1124,
+        "ct_false_alarms": 5330,
+        "ct_correct_negatives": 22968
+      },
+      "lf_extent_gated": {
+        "pod": 0.9899092734298053,
+        "rfa": 0.015577248176454245,
+        "csi": 0.9746424109057681,
+        "rmse": 0.09895600805079506,
+        "ct_hits": 209053,
+        "ct_misses": 2131,
+        "ct_false_alarms": 3308,
+        "ct_correct_negatives": 366569
+      },
+      "lf_extent_gated_wet_train": {
+        "pod": 0.9899092734298053,
+        "rfa": 0.015577248176454245,
+        "csi": 0.9746424109057681,
+        "rmse": 0.15414043938365543,
+        "ct_hits": 209053,
+        "ct_misses": 2131,
+        "ct_false_alarms": 3308,
+        "ct_correct_negatives": 24990
+      }
+    }
+  },
+  "lf_only_max": {
+    "pod": 0.9946302750208349,
+    "rfa": 0.03480758184951178,
+    "csi": 0.960189066506978,
+    "rmse": 0.07380462109525882,
+    "ct_hits": 210050,
+    "ct_misses": 1134,
+    "ct_false_alarms": 7575,
+    "ct_correct_negatives": 362302
+  },
+  "lsg_max": {
+    "pod": 0.9923289643154785,
+    "rfa": 0.016893017146342035,
+    "csi": 0.9756919710408083,
+    "rmse": 0.060655535191033144,
+    "ct_hits": 209564,
+    "ct_misses": 1620,
+    "ct_false_alarms": 3601,
+    "ct_correct_negatives": 366276,
+    "runtime_predict_s": 1.8041081000119448,
+    "uq_uncalibrated": {
+      "crps": 0.038868853448828844,
+      "brier": 0.007632696261879414,
+      "coverage_90": 0.9963497808319608,
+      "coverage_50": 0.9742109692441929,
+      "coverage_90_active": 0.9901250087296599,
+      "coverage_50_active": 0.9302325581395349,
+      "pit_mean_wet": 0.45743568710635485,
+      "rmse_censored_mean": 0.06099481654436771,
+      "rmse_point": 0.060655535191033144,
+      "mean_inundation_prob": 0.36419636072670913,
+      "var_scale": 1.0,
+      "reliability": {
+        "predicted": [
+          0.0,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          0.6744132950319248,
+          0.771624623915216,
+          0.8616504131935971,
+          0.9950173915728677
+        ],
+        "observed": [
+          0.004403418357361863,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          0.3333333333333333,
+          0.2958904109589041,
+          0.2864355435880175,
+          0.9942139228078203
+        ],
+        "count": [
+          367896,
+          0,
+          0,
+          0,
+          0,
+          0,
+          15,
+          365,
+          2971,
+          209814
+        ]
+      },
+      "baseline_summary_coverage_90": 0.9963497808319608,
+      "baseline_summary_crps": 0.03886885344875743
+    },
+    "uq": {
+      "crps": 0.028463846088341595,
+      "brier": 0.008456949777899164,
+      "coverage_90": 0.987407518315633,
+      "coverage_50": 0.9600678758340346,
+      "coverage_90_active": 0.9659333752357008,
+      "coverage_50_active": 0.8919710408082501,
+      "pit_mean_wet": 0.43589118500078156,
+      "rmse_censored_mean": 0.06067128699339489,
+      "rmse_point": 0.060655535191033144,
+      "mean_inundation_prob": 0.3663487809679429,
+      "var_scale": 0.4171616585792615,
+      "reliability": {
+        "predicted": [
+          0.0,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          0.7656303587164344,
+          0.8707201660568131,
+          0.9988272222869462
+        ],
+        "observed": [
+          0.004403418357361863,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          0.42105263157894735,
+          0.31715210355987056,
+          0.9841240009960674
+        ],
+        "count": [
+          367896,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          19,
+          309,
+          212837
+        ]
+      },
+      "calibration": {
+        "method": "crps_scale",
+        "var_scale": 0.4171616585792615,
+        "active_only": true,
+        "n_calib_cells": 1569678,
+        "n_calib_pool": 1569678,
+        "n_calib_rows": 8,
+        "fit_s": 16.43882120028138
+      }
+    },
+    "uq_calibration": {
+      "method": "crps_scale",
+      "var_scale": 0.4171616585792615,
+      "active_only": true,
+      "n_calib_cells": 1569678,
+      "n_calib_pool": 1569678,
+      "n_calib_rows": 8,
+      "fit_s": 16.43882120028138
+    },
+    "gp_backend": "gpflow",
+    "split": "paper:lsg_max_train",
+    "train_ids": [
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+    ],
+    "test_ids": [
+      "E1"
+    ],
+    "model_path": "I:\\Projects\\20260522-LSG-WRR\\outputs\\models\\carlisle\\lsg_max_state.npz",
+    "n_train": 8,
+    "n_test": 1,
+    "baseline_csi": 0.9756919710408083,
+    "baseline_rmse": 0.06065553519101902
+  },
+  "lsg_ts": {
+    "ts_pod": 0.9752060385714221,
+    "ts_rfa": 0.01707657756656554,
+    "ts_csi": 0.958958876368084,
+    "ts_rmse": 0.0654647617579231,
+    "ts_ct_hits": 35599953,
+    "ts_ct_misses": 905105,
+    "ts_ct_false_alarms": 618487,
+    "ts_ct_correct_negatives": 117438681,
+    "max_pod": 0.9946776270929616,
+    "max_rfa": 0.024745809926180418,
+    "max_csi": 0.9701913040265294,
+    "max_rmse": 0.09903293452745765,
+    "max_ct_hits": 210060,
+    "max_ct_misses": 1124,
+    "max_ct_false_alarms": 5330,
+    "max_ct_correct_negatives": 364547,
+    "eval_pod": 0.9946776270929616,
+    "eval_rfa": 0.024745809926180418,
+    "eval_csi": 0.9701913040265294,
+    "eval_rmse": 0.09903293452745765,
+    "eval_ct_hits": 210060,
+    "eval_ct_misses": 1124,
+    "eval_ct_false_alarms": 5330,
+    "eval_ct_correct_negatives": 364547,
+    "runtime_predict_s": 46.68067350005731,
+    "uq_uncalibrated": {
+      "crps": 0.016544849309030846,
+      "brier": 0.008883783096057342,
+      "coverage_90": 0.9627002978075639,
+      "coverage_50": 0.8781120556584117,
+      "coverage_90_active": 0.844704351375926,
+      "coverage_50_active": 0.4925249730326131,
+      "pit_mean_wet": 0.3950221145063517,
+      "rmse_censored_mean": 0.06547870138093959,
+      "rmse_point": 0.0654647617579231,
+      "mean_inundation_prob": 0.2322653587410418,
+      "var_scale": 1.0,
+      "reliability": {
+        "predicted": [
+          2.388810358255938e-05,
+          0.1548622615432363,
+          0.24186424734008632,
+          0.3564338848409011,
+          0.42261028116087906,
+          0.5524668560670092,
+          0.6536566594428562,
+          0.7547346197225566,
+          0.8556929553835746,
+          0.9977522760493868
+        ],
+        "observed": [
+          0.0060444040594035955,
+          0.7284672694538112,
+          0.8500991998604661,
+          0.526382861472756,
+          0.2832095529343236,
+          0.7310956036287509,
+          0.7428889090362509,
+          0.7401263300739752,
+          0.7824068836247886,
+          0.9915855124874942
+        ],
+        "count": [
+          118059116,
+          100533,
+          91734,
+          58068,
+          34335,
+          143300,
+          209567,
+          347819,
+          654074,
+          34863680
+        ]
+      },
+      "baseline_summary_coverage_90": 0.9627002978075639,
+      "baseline_summary_crps": 0.01654484930903101
+    },
+    "uq": {
+      "crps": 0.01656215512849673,
+      "brier": 0.00891915210757792,
+      "coverage_90": 0.9579690318383484,
+      "coverage_50": 0.8736033278920297,
+      "coverage_90_active": 0.8250059362595894,
+      "coverage_50_active": 0.47375308581117453,
+      "pit_mean_wet": 0.39096816625517017,
+      "rmse_censored_mean": 0.06547330153323522,
+      "rmse_point": 0.0654647617579231,
+      "mean_inundation_prob": 0.23242824566213294,
+      "var_scale": 0.9000063569822135,
+      "reliability": {
+        "predicted": [
+          2.8096076785615237e-05,
+          0.15366129753257818,
+          0.24008584530622448,
+          0.357465120987848,
+          0.42220011935149204,
+          0.5523423516139943,
+          0.6534434307477848,
+          0.7545809603016745,
+          0.855897702431674,
+          0.9978839962735998
+        ],
+        "observed": [
+          0.006070261300276789,
+          0.7875573667472816,
+          0.8351901230960295,
+          0.500425807330699,
+          0.26399260121942864,
+          0.7303275044457617,
+          0.743834448549358,
+          0.7390069983394305,
+          0.770948470492287,
+          0.9910919909847827
+        ],
+        "count": [
+          118068723,
+          105026,
+          82131,
+          58712,
+          29194,
+          134960,
+          193535,
+          317361,
+          603266,
+          34969318
+        ]
+      },
+      "calibration": {
+        "method": "crps_scale",
+        "var_scale": 0.9000063569822135,
+        "active_only": true,
+        "n_calib_cells": 2000000,
+        "n_calib_pool": 36275017,
+        "n_calib_rows": 256,
+        "fit_s": 67.2594562000595
+      }
+    },
+    "uq_calibration": {
+      "method": "crps_scale",
+      "var_scale": 0.9000063569822135,
+      "active_only": true,
+      "n_calib_cells": 2000000,
+      "n_calib_pool": 36275017,
+      "n_calib_rows": 256,
+      "fit_s": 67.2594562000595
+    },
+    "gp_backend": "gpflow",
+    "split": "paper:lsg_ts_train",
+    "train_ids": [
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+    ],
+    "test_ids": [
+      "E1"
+    ],
+    "model_path": "I:\\Projects\\20260522-LSG-WRR\\outputs\\models\\carlisle\\lsg_ts_state.npz",
+    "n_train": 8,
+    "n_test": 1,
+    "baseline_csi": 0.9701913040265294,
+    "baseline_rmse": 0.0990329345274575,
+    "baseline_max_csi": 0.9701913040265294,
+    "baseline_max_rmse": 0.0990329345274575
+  }
+}

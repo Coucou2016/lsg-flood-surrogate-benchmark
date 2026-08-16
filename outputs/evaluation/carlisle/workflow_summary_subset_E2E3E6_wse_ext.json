@@ -1,0 +1,392 @@
+{
+  "project_root": "I:\\Projects\\20260522-LSG-WRR",
+  "data_source": "fraehr",
+  "data_mode": "real",
+  "lsg_field": "wse_ext",
+  "gpflow_enabled": true,
+  "gp_backend": "gpflow",
+  "event_ids": [
+    "E2",
+    "E3",
+    "E6"
+  ],
+  "real_data_available": true,
+  "resolution": {
+    "hf_cell_size_m": 5.0,
+    "hf_output_cell_size_m": null,
+    "lf_main_cell_size_m": null,
+    "lf120_m": 120,
+    "lf300_m": 300
+  },
+  "split_protocol": "splits.yaml / Wang et al. 2026",
+  "lsg_max": {
+    "pod": 0.9595709993200909,
+    "rfa": 0.07969485131714568,
+    "csi": 0.8859526557722293,
+    "rmse": 0.6211057434094767,
+    "ct_hits": 131253,
+    "ct_misses": 5530,
+    "ct_false_alarms": 11366,
+    "ct_correct_negatives": 432912,
+    "holdout": {
+      "E2": {
+        "pod": 0.9595709993200909,
+        "rfa": 0.07969485131714568,
+        "csi": 0.8859526557722293,
+        "rmse": 0.6211057434094767,
+        "ct_hits": 131253,
+        "ct_misses": 5530,
+        "ct_false_alarms": 11366,
+        "ct_correct_negatives": 432912,
+        "ve_label": null
+      }
+    },
+    "runtime_train_s": 6.873414699919522,
+    "runtime_predict_s": 1.2013962003402412,
+    "n_train": 2,
+    "n_test": 1,
+    "gp_backend": "gpflow",
+    "uq": {
+      "crps": 0.27573606188482935,
+      "brier": 0.029077796170726207,
+      "coverage_90": 0.7492104959720236,
+      "coverage_50": 0.7463312801926132,
+      "pit_mean_wet": 0.05328437558381721,
+      "rmse_censored_mean": 0.6211057444300657,
+      "rmse_point": 0.6211057434094767,
+      "mean_inundation_prob": 0.2454458060203675,
+      "reliability": {
+        "predicted": [
+          0.0,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          0.9999998982744288
+        ],
+        "observed": [
+          0.01261284274772946,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          0.9203051486828543
+        ],
+        "count": [
+          438442,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          142619
+        ]
+      }
+    },
+    "error_budget": [
+      {
+        "split": "train",
+        "n_samples": 0,
+        "n_modes": 1,
+        "n_modes_full": 2,
+        "o1_rmse": null,
+        "o2_rmse": null,
+        "o3_rmse": null,
+        "o4_rmse": null,
+        "o2_minus_o1": null,
+        "in_sample_full_rank": false,
+        "notes": "O1\u2013O4 depth-path budget skipped for lsg.field=wse_ext (separate EXT + WSE EOFs)."
+      },
+      {
+        "split": "test",
+        "n_samples": 0,
+        "n_modes": 1,
+        "n_modes_full": 2,
+        "o1_rmse": null,
+        "o2_rmse": null,
+        "o3_rmse": null,
+        "o4_rmse": null,
+        "o2_minus_o1": null,
+        "in_sample_full_rank": false,
+        "notes": "O1\u2013O4 depth-path budget skipped for lsg.field=wse_ext (separate EXT + WSE EOFs)."
+      }
+    ],
+    "split": "random_fraction",
+    "train_ids": [
+      "E3",
+      "E6"
+    ],
+    "test_ids": [
+      "E2"
+    ],
+    "model_path": "I:\\Projects\\20260522-LSG-WRR\\outputs\\models\\carlisle\\lsg_max_state.npz",
+    "model_reload_ok": true
+  },
+  "lsg_ts": {
+    "ts_pod": 0.9267803251064874,
+    "ts_rfa": 0.07972613344683138,
+    "ts_csi": 0.8578997213607719,
+    "ts_rmse": 0.12221581869030979,
+    "ts_ct_hits": 22017763,
+    "ts_ct_misses": 1739499,
+    "ts_ct_false_alarms": 1907466,
+    "ts_ct_correct_negatives": 114952034,
+    "max_pod": 0.9842378073298582,
+    "max_rfa": 0.042121140970636156,
+    "max_csi": 0.9434069360840347,
+    "max_rmse": 0.07969119693907545,
+    "max_ct_hits": 134627,
+    "max_ct_misses": 2156,
+    "max_ct_false_alarms": 5920,
+    "max_ct_correct_negatives": 438358,
+    "eval_pod": 0.9842378073298582,
+    "eval_rfa": 0.042121140970636156,
+    "eval_csi": 0.9434069360840347,
+    "eval_rmse": 0.07969119693907545,
+    "eval_ct_hits": 134627,
+    "eval_ct_misses": 2156,
+    "eval_ct_false_alarms": 5920,
+    "eval_ct_correct_negatives": 438358,
+    "holdout": {
+      "E2": {
+        "pod": 0.9842378073298582,
+        "rfa": 0.042121140970636156,
+        "csi": 0.9434069360840347,
+        "rmse": 0.07969119693907545,
+        "ct_hits": 134627,
+        "ct_misses": 2156,
+        "ct_false_alarms": 5920,
+        "ct_correct_negatives": 438358,
+        "ve_label": null
+      }
+    },
+    "runtime_train_s": 160.86908819992095,
+    "runtime_predict_s": 22.85433360002935,
+    "n_train": 2,
+    "n_test": 1,
+    "gp_backend": "gpflow",
+    "uq": {
+      "crps": 0.028644042747438123,
+      "brier": 0.02368573664489206,
+      "coverage_90": 0.9643970965566679,
+      "coverage_50": 0.8921596274560781,
+      "pit_mean_wet": 0.35386669182918107,
+      "rmse_censored_mean": 0.12258537800585424,
+      "rmse_point": 0.12221581869030979,
+      "mean_inundation_prob": 0.16693724798063858,
+      "reliability": {
+        "predicted": [
+          0.0,
+          NaN,
+          NaN,
+          0.3945286019018627,
+          0.41877086398562746,
+          0.5558611431773974,
+          0.6563806680553694,
+          0.7594316169732112,
+          0.8603682694260404,
+          0.9915398358168984
+        ],
+        "observed": [
+          0.014872257993003393,
+          NaN,
+          NaN,
+          0.015636363636363636,
+          0.20595486440356534,
+          0.2867851339309116,
+          0.41503214259624516,
+          0.3987929417052195,
+          0.5337713346571532,
+          0.9481422187185553
+        ],
+        "count": [
+          116667691,
+          0,
+          0,
+          2750,
+          21092,
+          57231,
+          109512,
+          280351,
+          1005172,
+          22472963
+        ]
+      }
+    },
+    "error_budget": [
+      {
+        "split": "train",
+        "n_samples": 0,
+        "n_modes": 12,
+        "n_modes_full": 100,
+        "o1_rmse": null,
+        "o2_rmse": null,
+        "o3_rmse": null,
+        "o4_rmse": null,
+        "o2_minus_o1": null,
+        "in_sample_full_rank": false,
+        "notes": "O1\u2013O4 depth-path budget skipped for lsg.field=wse_ext (separate EXT + WSE EOFs)."
+      },
+      {
+        "split": "test",
+        "n_samples": 0,
+        "n_modes": 12,
+        "n_modes_full": 100,
+        "o1_rmse": null,
+        "o2_rmse": null,
+        "o3_rmse": null,
+        "o4_rmse": null,
+        "o2_minus_o1": null,
+        "in_sample_full_rank": false,
+        "notes": "O1\u2013O4 depth-path budget skipped for lsg.field=wse_ext (separate EXT + WSE EOFs)."
+      }
+    ],
+    "split": "random_fraction",
+    "train_ids": [
+      "E3",
+      "E6"
+    ],
+    "test_ids": [
+      "E2"
+    ],
+    "model_path": "I:\\Projects\\20260522-LSG-WRR\\outputs\\models\\carlisle\\lsg_ts_state.npz",
+    "model_reload_ok": true
+  },
+  "resolution_comparison": {
+    "_mode": "skipped",
+    "reason": "published case has a single LF mesh; no lf120/lf300 pair"
+  },
+  "lf_only_max": {
+    "pod": 0.9962202905331803,
+    "rfa": 0.18202773275706824,
+    "csi": 0.8154416032841233,
+    "rmse": 0.23299334153893203,
+    "ct_hits": 136266,
+    "ct_misses": 517,
+    "ct_false_alarms": 30324,
+    "ct_correct_negatives": 413954
+  },
+  "score_protocol": {
+    "threshold_m": 0.03,
+    "lsg_field": "wse_ext",
+    "notes": "all_cells = full HF mesh; wet_train = Fraehr Categories wet_idx (CSI unchanged vs all_cells when FAs lie inside the mask; RMSE rises). With lsg.field=wse_ext the official LSG prediction is trained EXT+WSE. lf_extent_gated remains a diagnostic only (not the model).",
+    "lf_only": {
+      "all_cells": {
+        "pod": 0.9962202905331803,
+        "rfa": 0.18202773275706824,
+        "csi": 0.8154416032841233,
+        "rmse": 0.23299334153893203,
+        "ct_hits": 136266,
+        "ct_misses": 517,
+        "ct_false_alarms": 30324,
+        "ct_correct_negatives": 413954
+      },
+      "wet_train": {
+        "pod": 0.9962202905331803,
+        "rfa": 0.17763924176679682,
+        "csi": 0.8198029094321915,
+        "rmse": 0.3617207193998458,
+        "ct_hits": 136266,
+        "ct_misses": 517,
+        "ct_false_alarms": 29435,
+        "ct_correct_negatives": 72728
+      }
+    },
+    "lsg_max": {
+      "all_cells": {
+        "pod": 0.9595709993200909,
+        "rfa": 0.07969485131714568,
+        "csi": 0.8859526557722293,
+        "rmse": 0.6211057434094767,
+        "ct_hits": 131253,
+        "ct_misses": 5530,
+        "ct_false_alarms": 11366,
+        "ct_correct_negatives": 432912
+      },
+      "wet_train": {
+        "pod": 0.9595709993200909,
+        "rfa": 0.07969485131714568,
+        "csi": 0.8859526557722293,
+        "rmse": 0.9685599933728343,
+        "ct_hits": 131253,
+        "ct_misses": 5530,
+        "ct_false_alarms": 11366,
+        "ct_correct_negatives": 90797
+      },
+      "lf_extent_gated": {
+        "pod": 0.9590519289677811,
+        "rfa": 0.06052294228441701,
+        "csi": 0.9032457964388504,
+        "rmse": 0.6166559809248681,
+        "ct_hits": 131182,
+        "ct_misses": 5601,
+        "ct_false_alarms": 8451,
+        "ct_correct_negatives": 435827
+      },
+      "lf_extent_gated_wet_train": {
+        "pod": 0.9590519289677811,
+        "rfa": 0.06052294228441701,
+        "csi": 0.9032457964388504,
+        "rmse": 0.9616209786103165,
+        "ct_hits": 131182,
+        "ct_misses": 5601,
+        "ct_false_alarms": 8451,
+        "ct_correct_negatives": 93712
+      }
+    },
+    "lsg_ts": {
+      "all_cells": {
+        "pod": 0.9842378073298582,
+        "rfa": 0.042121140970636156,
+        "csi": 0.9434069360840347,
+        "rmse": 0.07969119693907545,
+        "ct_hits": 134627,
+        "ct_misses": 2156,
+        "ct_false_alarms": 5920,
+        "ct_correct_negatives": 438358
+      },
+      "wet_train": {
+        "pod": 0.9842378073298582,
+        "rfa": 0.042121140970636156,
+        "csi": 0.9434069360840347,
+        "rmse": 0.12427144008600466,
+        "ct_hits": 134627,
+        "ct_misses": 2156,
+        "ct_false_alarms": 5920,
+        "ct_correct_negatives": 96243
+      },
+      "lf_extent_gated": {
+        "pod": 0.9820591740201633,
+        "rfa": 0.04096610907637059,
+        "csi": 0.9425207513278745,
+        "rmse": 0.07962509368603543,
+        "ct_hits": 134329,
+        "ct_misses": 2454,
+        "ct_false_alarms": 5738,
+        "ct_correct_negatives": 438540
+      },
+      "lf_extent_gated_wet_train": {
+        "pod": 0.9820591740201633,
+        "rfa": 0.04096610907637059,
+        "csi": 0.9425207513278745,
+        "rmse": 0.12416835785402446,
+        "ct_hits": 134329,
+        "ct_misses": 2454,
+        "ct_false_alarms": 5738,
+        "ct_correct_negatives": 96425
+      }
+    }
+  },
+  "pred_examples": "I:\\Projects\\20260522-LSG-WRR\\outputs\\evaluation\\carlisle\\pred_examples.npz"
+}

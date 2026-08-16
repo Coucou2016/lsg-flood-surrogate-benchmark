@@ -1,0 +1,40 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.DS_Store
+*.npz
+*.h5
+*.hdf
+*.hdf5
+*.zip
+*.pkl
+*.pt
+*.ckpt
+
+# Bulk data and large binaries (never publish)
+data/external/
+data/raw/
+data/synthetic/*.npz
+
+# Heavy outputs except curated JSON/SVG/PDF
+outputs/models/
+outputs/**/*.npz
+outputs/**/*.png
+!outputs/figures/*.svg
+!outputs/figures/*.pdf
+!outputs/figures/figure_manifest.json
+!outputs/evaluation/**/*.json
+
+# Local secrets / credentials
+.env
+.env.*
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+credentials*.json
+**/secrets/**
+.npmrc
+.pypirc

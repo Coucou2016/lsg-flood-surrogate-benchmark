@@ -1549,7 +1549,7 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml</pre>
         refs,
         appendix,
         pending,
-        "\n---\n\n**状态声明：** 仅本地修改，未提交、未推送、未创建 PR、未部署。\n",
+        "\n---\n\n**状态声明：** 工作区 `20260522-LSG-WRR` 仍无 `.git`；公开镜像通过 staging 副本 `I:\\Projects\\_publish_lsg-flood-surrogate-benchmark` 推送到 https://github.com/Coucou2016/lsg-flood-surrogate-benchmark （等容量负结果修订）。\n",
     ]
     md_text = "\n\n".join(md_parts)
     (OUT / "report.md").write_text(md_text, encoding="utf-8")
@@ -1651,7 +1651,7 @@ th { background: var(--table-head); text-align: left; }
         f'<section id="{slug("参考文献")}">{md_to_simple_html(refs)}</section>',
         appendix_html,
         f'<section id="{slug("待补充清单")}">{md_to_simple_html(pending)}</section>',
-        '<p class="callout"><strong>状态声明：</strong>仅本地修改，未提交、未推送、未创建 PR、未部署。</p>',
+        '<p class="callout"><strong>状态声明：</strong>工作区 <code>20260522-LSG-WRR</code> 仍无 <code>.git</code>；公开镜像通过 staging 副本推送到 <a href="https://github.com/Coucou2016/lsg-flood-surrogate-benchmark">github.com/Coucou2016/lsg-flood-surrogate-benchmark</a>（等容量负结果修订）。</p>',
     ]
 
     html_doc = f"""<!DOCTYPE html>

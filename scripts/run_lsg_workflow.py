@@ -157,7 +157,15 @@ def run_variant(
     backend = "numpy"
     if model.state is not None:
         backend = model.state.gp_backend
+        cap = base.capacity_snapshot(model.state)
+        forced = (model.cfg.get("lsg") or {}).get("force_n_modes", None)
+        if isinstance(cap.get("wse"), dict):
+            cap["wse"]["force_n_modes"] = forced
+        else:
+            cap["force_n_modes"] = forced
+        metrics["capacity"] = cap
     metrics["gp_backend"] = backend
+
     ev = model.cfg.get("evaluation") or {}
     xy_h, xy_l = mesh.get("xy_hf"), mesh.get("xy_lf")
     time_series = name == "lsg_ts"

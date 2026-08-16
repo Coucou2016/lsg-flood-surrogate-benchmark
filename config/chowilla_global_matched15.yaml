@@ -8,7 +8,7 @@
 # fresh unzip of Chowilla.zip). Same Fraehr layout as Carlisle.
 
 study_area:
-  id: chowilla_global
+  id: chowilla_global_matched15
   name: Chowilla floodplain, Australia
   notes: >
     Published multi-fidelity benchmark (fine/coarse HEC-RAS). Paper anti-case
@@ -30,7 +30,7 @@ paths:
   lf_results: data/external/chowilla
   processed: data/processed/chowilla
   # Separate from H-LSG residual_kmeans states under outputs/models/chowilla
-  models: outputs/models/chowilla_global
+  models: outputs/models/chowilla_global_matched15
   evaluation: outputs/evaluation/chowilla
   metadata: data/external/chowilla
 
@@ -56,6 +56,8 @@ lsg:
   zoning: none
   n_zones: 4
   residual_eof_modes: 3
+  # Capacity-matched control: override North/Kaiser retained count.
+  force_n_modes: 15
 
 events:
   synthetic_only: false

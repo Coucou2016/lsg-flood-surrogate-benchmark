@@ -142,3 +142,24 @@ def test_hlsg_state_roundtrip(tmp_path):
     assert loaded.state is not None
     assert loaded.state.zone_ids is not None
     assert loaded.state.residual_var is not None
+
+
+def test_capacity_snapshot_matches_gp_input_dim():
+    from lsg.base import LSGState, capacity_snapshot
+
+    state = LSGState(
+        wet_idx=np.arange(5),
+        hf_mean=np.zeros(5),
+        eof_modes=np.ones((2, 5)),
+        weights=None,
+        n_modes=2,
+        zone_method="residual_kmeans",
+        residual_eof_modes=[np.ones((3, 2)), np.ones((3, 3))],
+        residual_eof_mean=[np.zeros(2), np.zeros(3)],
+        zone_ids=np.array([0, 0, 1, 1, 1], dtype=np.int32),
+    )
+    snap = capacity_snapshot(state)
+    assert snap["n_modes_global"] == 2
+    assert snap["n_residual_ec"] == 6
+    assert snap["gp_input_dim"] == 8
+    assert snap["residual_n_modes"] == [3, 3]

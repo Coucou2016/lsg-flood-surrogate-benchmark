@@ -1,0 +1,90 @@
+{
+  "case": "chowilla",
+  "split": "paper:lsg_max_train",
+  "model_path": "outputs\\models\\chowilla\\lsg_max_state.npz",
+  "n_train": 28,
+  "n_test": 1,
+  "max_folds": 8,
+  "folds_used": [
+    "E4",
+    "E6",
+    "E9",
+    "E14",
+    "E18",
+    "E26",
+    "E27",
+    "E29"
+  ],
+  "full_train_var_scale": 0.3088493703087255,
+  "fold_var_scale_mean": 0.3099085864714775,
+  "fold_var_scale_std": 0.007296297977779907,
+  "fold_var_scale_min": 0.29837263412927495,
+  "fold_var_scale_max": 0.3238370640017535,
+  "folds": [
+    {
+      "holdout_train_id": "E4",
+      "var_scale": 0.3069776907083113,
+      "holdout_crps": 2.150601083955964,
+      "holdout_coverage_90": 0.5023381916771293,
+      "test_crps": 2.1554521929589963,
+      "test_coverage_90": 0.4535454992084721
+    },
+    {
+      "holdout_train_id": "E6",
+      "var_scale": 0.3238370640017535,
+      "holdout_crps": 2.1454828146114253,
+      "holdout_coverage_90": 0.515512127663446,
+      "test_crps": 2.155440113533213,
+      "test_coverage_90": 0.4546372618592718
+    },
+    {
+      "holdout_train_id": "E9",
+      "var_scale": 0.30778940675554034,
+      "holdout_crps": 2.152585945590497,
+      "holdout_coverage_90": 0.47142311261531744,
+      "test_crps": 2.1554515774306653,
+      "test_coverage_90": 0.4536091853631021
+    },
+    {
+      "holdout_train_id": "E14",
+      "var_scale": 0.302994291204683,
+      "holdout_crps": 2.1480024145961867,
+      "holdout_coverage_90": 0.4862619866441036,
+      "test_crps": 2.1554552655310126,
+      "test_coverage_90": 0.45320887239114216
+    },
+    {
+      "holdout_train_id": "E18",
+      "var_scale": 0.31531562871412866,
+      "holdout_crps": 2.1451694627346227,
+      "holdout_coverage_90": 0.5254107756973634,
+      "test_crps": 2.155446036623776,
+      "test_coverage_90": 0.45410957657805195
+    },
+    {
+      "holdout_train_id": "E26",
+      "var_scale": 0.31206019748975317,
+      "holdout_crps": 2.1464512817996937,
+      "holdout_coverage_90": 0.5104718234255873,
+      "test_crps": 2.1554483967968396,
+      "test_coverage_90": 0.45390942009207197
+    },
+    {
+      "holdout_train_id": "E27",
+      "var_scale": 0.29837263412927495,
+      "holdout_crps": 2.150722393547802,
+      "holdout_coverage_90": 0.4042160234365049,
+      "test_crps": 2.1554589407216227,
+      "test_coverage_90": 0.4528995396400822
+    },
+    {
+      "holdout_train_id": "E29",
+      "var_scale": 0.3119217787683753,
+      "holdout_crps": 2.148005861891803,
+      "holdout_coverage_90": 0.5036301108139091,
+      "test_crps": 2.1554484983718947,
+      "test_coverage_90": 0.45390942009207197
+    }
+  ],
+  "runtime_s": 83.74199609970674
+}

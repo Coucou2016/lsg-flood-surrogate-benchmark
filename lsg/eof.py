@@ -150,3 +150,23 @@ def select_n_modes(pca: EOFResult, n_samples: int) -> int:
     n_north = norths_rule(pca, n_samples)
     n_kaiser = kaiser_significant(pca)
     return max(1, min(n_north, n_kaiser, pca.n_components_))
+
+
+def resolve_n_modes(
+    pca: EOFResult,
+    n_samples: int,
+    cfg: dict | None = None,
+) -> int:
+    """North/Kaiser selection, optionally overridden by ``lsg.force_n_modes``.
+
+    Equal-capacity A/B controls set ``force_n_modes`` so a global-only baseline
+    can retain the same total EC count that H-LSG uses (global + residual).
+    """
+    auto = select_n_modes(pca, n_samples)
+    if not cfg:
+        return auto
+    forced = (cfg.get("lsg") or {}).get("force_n_modes", None)
+    if forced is None or forced == "" or str(forced).lower() in {"none", "auto", "null"}:
+        return auto
+    k = int(forced)
+    return max(1, min(k, int(pca.n_components_)))

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>LSG 多保真洪水淹没代理模型：残差层次分区、神谕误差预算与 CRPS 方差标定的公开数据研究报告</title>
+<title>残差层次分区能否改进多保真洪水代理？一个带神谕误差预算与 CRPS 标定的等容量负结果（公开数据研究报告）</title>
 <style>
 
 :root {
@@ -76,11 +76,11 @@ th { background: var(--table-head); text-align: left; }
 
 <section class="cover page-break-after">
 <p class="eyebrow">LSG 公开数据基准 · 科学研究报告</p>
-<h1>LSG 多保真洪水淹没代理模型：残差层次分区、神谕误差预算与 CRPS 方差标定的公开数据研究报告</h1>
-<p class="subtitle">Low-fidelity, Spatial analysis, and Gaussian Process Learning（LSG）公共基准复现与诊断扩展</p>
+<h1>残差层次分区能否改进多保真洪水代理？一个带神谕误差预算与 CRPS 标定的等容量负结果（公开数据研究报告）</h1>
+<p class="subtitle">Low-fidelity, Spatial analysis, and Gaussian Process Learning（LSG）公共基准复现、诊断扩展与局部化的等容量负结果</p>
 <table class="meta">
 <tr><th>报告类型</th><td>正式科学研究报告（方法/诊断导向）</td></tr>
-<tr><th>项目路径</th><td><code>repository root</code></td></tr>
+<tr><th>项目路径</th><td><code>I:\Projects\20260522-LSG-WRR</code></td></tr>
 <tr><th>案例</th><td>Carlisle（主）、Chowilla（次）、Burnett（第三）</td></tr>
 <tr><th>证据截止日期</th><td>2026-08-16</td></tr>
 <tr><th>nature-writing 轴</th><td>task=manuscript · paper_type=methods · language=zh（报告体）· journal=generic（WRR/JoH/EMS 语境）</td></tr>
@@ -91,15 +91,15 @@ th { background: var(--table-head); text-align: left; }
 </table>
 <p class="lede"><strong>报告读法：</strong>优先沿“问题→证据→诊断→最小处理→验证→边界”主线；O1–O4 为机制诊断/反事实归因，非可加因果贡献率；方差标定改善概率评分，CSI/RMSE 因均值不变按构造保持。</p>
 </section>
-<nav class="toc page-break-after"><h2>目录</h2><ol><li><a href="#报告读法结构边界">报告读法（结构边界）</a></li><li><a href="#摘要与执行概要">摘要与执行概要</a></li><li><a href="#研究背景与目标">研究背景与目标</a></li><li><a href="#文献与科学缺口">文献与科学缺口</a></li><li><a href="#数据来源与案例研究">数据来源与案例研究</a></li><li><a href="#方法学基础">方法学基础</a></li><li><a href="#完整研究过程与时间线">完整研究过程与时间线</a></li><li><a href="#数据摄取与对齐修复">数据摄取与对齐修复</a></li><li><a href="#extwse-双场模型">EXT+WSE 双场模型</a></li><li><a href="#sgpr-诱导点问题与修复">SGPR 诱导点问题与修复</a></li><li><a href="#层次残差-eofh-lsg">层次残差 EOF（H-LSG）</a></li><li><a href="#不确定性量化与标定">不确定性量化与标定</a></li><li><a href="#o1o4-误差预算">O1–O4 误差预算</a></li><li><a href="#实验设计与评价指标">实验设计与评价指标</a></li><li><a href="#分案例结果">分案例结果</a></li><li><a href="#跨案例比较">跨案例比较</a></li><li><a href="#详细图件解读">详细图件解读</a></li><li><a href="#讨论与因果分析">讨论与因果分析</a></li><li><a href="#创新点">创新点</a></li><li><a href="#可复现性与质量保证">可复现性与质量保证</a></li><li><a href="#局限性">局限性</a></li><li><a href="#未来工作">未来工作</a></li><li><a href="#结论">结论</a></li><li><a href="#数据与代码可用性">数据与代码可用性</a></li><li><a href="#参考文献">参考文献</a></li><li><a href="#附录">附录</a></li><li><a href="#待补充清单">待补充清单</a></li></ol></nav><section id="摘要与执行概要"><h2 id="摘要与执行概要">摘要与执行概要</h2>
+<nav class="toc page-break-after"><h2>目录</h2><ol><li><a href="#报告读法结构边界">报告读法（结构边界）</a></li><li><a href="#摘要与执行概要">摘要与执行概要</a></li><li><a href="#研究背景与目标">研究背景与目标</a></li><li><a href="#文献与科学缺口">文献与科学缺口</a></li><li><a href="#数据来源与案例研究">数据来源与案例研究</a></li><li><a href="#方法学基础">方法学基础</a></li><li><a href="#完整研究过程与时间线">完整研究过程与时间线</a></li><li><a href="#数据摄取与对齐修复">数据摄取与对齐修复</a></li><li><a href="#extwse-双场模型">EXT+WSE 双场模型</a></li><li><a href="#sgpr-诱导点问题与修复">SGPR 诱导点问题与修复</a></li><li><a href="#层次残差-eofh-lsg">层次残差 EOF（H-LSG）</a></li><li><a href="#不确定性量化与标定">不确定性量化与标定</a></li><li><a href="#o1o4-误差预算">O1–O4 误差预算</a></li><li><a href="#实验设计与评价指标">实验设计与评价指标</a></li><li><a href="#分案例结果">分案例结果</a></li><li><a href="#跨案例比较">跨案例比较</a></li><li><a href="#等容量对照实验局部化不成立">等容量对照实验（局部化不成立）</a></li><li><a href="#详细图件解读">详细图件解读</a></li><li><a href="#讨论与因果分析">讨论与因果分析</a></li><li><a href="#创新点">创新点</a></li><li><a href="#可复现性与质量保证">可复现性与质量保证</a></li><li><a href="#局限性">局限性</a></li><li><a href="#未来工作">未来工作</a></li><li><a href="#结论">结论</a></li><li><a href="#数据与代码可用性">数据与代码可用性</a></li><li><a href="#参考文献">参考文献</a></li><li><a href="#附录">附录</a></li><li><a href="#待补充清单">待补充清单</a></li></ol></nav><section id="摘要与执行概要"><h2 id="摘要与执行概要">摘要与执行概要</h2>
 <p>本报告系统记录并解释仓库 <code>20260522-LSG-WRR</code> 中基于公开多保真淹没立方体的 LSG（Low-fidelity, Spatial analysis, and Gaussian Process Learning，低保真—空间分析—高斯过程学习）实现、诊断与概率扩展。LSG 不依赖 HEC-RAS、TUFLOW 或任一特定求解器品牌：它只要求成对的高精度（high-fidelity, HF）与低精度（low-fidelity, LF）淹没场。</p>
-<p>在 Fraehr 风格的 Grp1 / <code>wet_train</code> 协议下，三案例点技能的主结论是：（1）相对 LF-only，多保真 LSG 在 Burnett 等弱 LF 情景给出清晰的 CSI（Critical Success Index，临界成功指数）与湿单元 RMSE（root mean square error，均方根误差）提升；（2）层次残差分区（H-LSG，<code>residual_kmeans</code>）主要缩小截断间隙 O2−O1，而不是以大幅 CSI 超越全局 EOF（empirical orthogonal function，经验正交函数）作为 headline；（3）Carlisle Max 路径上 CRPS（Continuous Ranked Probability Score，连续分级概率评分）方差标定把方差尺度压到 s≈0.417，CRPS 由 0.039 降至 0.028，而 CSI/RMSE 因均值不变而按构造保持不变；（4）Chowilla 在 all_cells 上出现 CSI≈0.3902 的“崩溃”，但在 <code>wet_train</code> 上 CSI≈0.9756、RMSE≈0.093 m——这是强 LF 范围情景下的评分协议反例，不是静默失败。评价单元是 hold-out 事件（Carlisle/Chowilla Max：N=1；Burnett：N=18），不是栅格单元。</p>
+<p>在 Fraehr 风格的 Grp1 / <code>wet_train</code> 协议下，三案例的主结论是：（1）相对 LF-only，多保真 LSG 在 Burnett 等弱 LF 情景给出清晰的 CSI（Critical Success Index，临界成功指数）与湿单元 RMSE（root mean square error，均方根误差）提升——<strong>技能来自多保真映射本身</strong>；（2）<strong>关于局部化的结论是负面的</strong>：层次残差分区（H-LSG，<code>residual_kmeans</code>）在原生容量下看似缩小截断间隙 O2−O1（empirical orthogonal function，经验正交函数），但<strong>一旦把 GP 输入维度对齐</strong>，全局模型复现（Burnett）甚至超越（Chowilla）该收缩，且 Chowilla 上 matched-15 全局拿到<strong>更低</strong>的 wet RMSE（0.085 vs 0.093 m），Burnett 上额外残差容量通过退化的 LF→HF GP 映射（O4−O2 0.304 vs 0.056 m，EXT 门控相同）<strong>恶化</strong>深度 RMSE；诱导点预算与分区数对 RMSE 的影响不亚于分区本身——因此<strong>表观分区优势是容量/近似混淆，而非空间局部化</strong>；（3）Carlisle Max 路径上 CRPS（Continuous Ranked Probability Score，连续分级概率评分）方差标定把方差尺度压到 s≈0.417，CRPS 由 0.039 降至 0.028，而 CSI/RMSE 因均值不变而按构造保持不变；（4）Chowilla 在 all_cells 上出现 CSI≈0.3902 的“崩溃”，但在 <code>wet_train</code> 上 CSI≈0.9756、RMSE≈0.093 m——这是强 LF 范围情景下的评分协议反例，不是静默失败。评价单元是 hold-out 事件（Carlisle/Chowilla Max：N=1；Burnett：N=18），不是栅格单元。本报告因此把 H-LSG 从“分区精度胜利”重新定位为<strong>带等容量对照的截断诊断工具 + 诚实的负结果</strong>。</p>
 <p>报告按教学体例撰写：每个图/表前说明动机，之后逐面板解读，并给出机制诊断时序（问题→证据→诊断→最小处理→验证→边界）。缺失资产一律标为「待补充」，不编造。</p></section><section id="研究背景与目标"><h2 id="研究背景与目标">研究背景与目标</h2>
 <h3 id="背景">背景</h3>
 <p>快速、可重复的淹没图是洪水风险管理、应急推演与情景分析的核心需求。高精度二维水动力模型计算昂贵；低精度模型快但不准。Fraehr 等人提出的 LSG 用 HF 场做 EOF 降维，把 LF 场投影为伪展开系数（pseudo expansion coefficients, 伪 EC），再用稀疏高斯过程（Sparse GP / SGPR）学习 LF→HF 的模态系数映射，从而在秒—分钟级给出接近 HF 的淹没重构。</p>
 <p>Wang 等（2026）在大型复杂洪泛区进一步讨论 LSG-TS 与 LSG-Max，并在文中将“分区 EOF（zonal EOF）”列为未来工作。本仓库的科学任务不是“发明 LF→HF”这一想法，而是在<strong>可公开复现的三案例立方体</strong>上，实现并严格评估：残差层次分区、校准后的 GP 地图不确定性、以及 O1–O4 神谕误差阶梯。</p>
 <h3 id="研究问题与-02_paper_frameworkmd-对齐">研究问题（与 `02_paper_framework.md` 对齐）</h3>
-<p>1. <strong>RQ1（技能）</strong>：相对 LF-only 与全局 LSG，残差层次 LSG 在公开 Carlisle/Chowilla/Burnett 折上增加多少技能？
+<p>1. <strong>RQ1（容量对照的技能）</strong>：在<strong>对齐 GP 输入维度</strong>后，残差层次分区相对全局 LSG 的表观优势是否幸存？（结论：否——见「等容量对照」节。）
 2. <strong>RQ2（归因）</strong>：剩余误差集中在截断、LF 投影，还是 GP 映射？
 3. <strong>RQ3（UQ）</strong>：CRPS 尺度方差标定能否在不改 CSI/RMSE 的前提下改善概率评分？
 4. <strong>RQ4（边界）</strong>：强 LF 范围何时制造 all-cells 反例，协议应如何报告？</p>
@@ -110,7 +110,7 @@ th { background: var(--table-head); text-align: left; }
 <h3 id="最近约束新颖性的工作">最近约束新颖性的工作</h3>
 <ul><li>Zeli Tan et al. 2025 HESS（10.5194/hess-29-3833-2025）：区域化训练 + 降维/映射两段误差分解（阻断“首个 LSG 局部化/首个误差分解”）。</li><li>Rukai Wang et al. 2025（10.1007/s13753-025-00642-5）：REOF + Sparse GP（阻断宽泛“首个局部 EOF 多保真代理”；文中已有 SGP 方差数学）。</li><li>FIER / Markert et al. 2026（10.5194/hess-30-459-2026）：流域拼图式 REOF 预报（术语风险，非 LF→HF LSG）。</li><li>SFINCS–LSG：EGU25/EGU26 摘要已核验；SSRN 预印本 10.2139/ssrn.6727349（非同行评审期刊）。</li><li>多种非 LSG 概率淹没代理（Donnelly、Kohanpur、Siripatana 等）：阻断“首个概率淹没图代理”。</li></ul>
 <h3 id="本项目可辩护新颖性严格边界">本项目可辩护新颖性（严格边界）</h3>
-<p>可主张：同时域残差层次多分区 LSG（全局模态 + WSE 残差局部基；EXT 全局）+ CRPS 标定的 LSG 地图后验 + O1–O4 神谕阶梯的公开三案例评估。不可主张：首个局部 EOF、首个 LSG 误差分解、zoning 总是大幅提升 CSI。</p></section>
+<p>可主张：（i）对残差层次分区 LSG 的<strong>等容量负结果</strong>——在公开数据上用 <code>force_n_modes</code> 匹配容量、并做诱导点/分区数扫描，证明表观 O2−O1 优势是容量混淆而非局部化，且不转化为留出深度技能；（ii）Fraehr 兼容的 EXT+WSE 双场 + O1–O4 神谕阶梯 + CRPS 标定的 LSG 地图后验的公开三案例评估；（iii）可复现开放基准 + 诚实负结果。不可主张：首个局部 EOF、首个 LSG 误差分解、zoning 提升 CSI/RMSE、局部化在容量对齐后仍成立。</p></section>
 <section id="数据来源与案例研究">
 <h2>数据来源与案例研究</h2>
 <figure class="table-wrap"><figcaption>案例与数据集清单（来自 data/DATA_INVENTORY.md / README）</figcaption><div class="table-scroll"><table><thead><tr><th scope='col'>案例</th><th scope='col'>角色</th><th scope='col'>HF / LF</th><th scope='col'>配置</th><th scope='col'>几何规模（文档）</th><th scope='col'>默认时间处理</th><th scope='col'>数据状态</th></tr></thead><tbody><tr><td>Carlisle（英国）</td><td>主案例</td><td>LISFLOOD-FP × HEC-RAS</td><td><code>config/carlisle.yaml</code></td><td>HF ≈ 581 061 单元；LF 有效 5 681（去 ghost）</td><td>完整时间序列可训（LSG-TS）</td><td>已解压（~9.6 GB，Figshare 10.26188/24312658）</td></tr><tr><td>Chowilla（澳大利亚）</td><td>次案例</td><td>细网格 / 粗网格 HEC-RAS</td><td><code>config/chowilla.yaml</code></td><td>HF ≈ 110k 单元；29 事件 / 10 组</td><td><code>time_reduction: max</code></td><td>可用（junction / zip）</td></tr><tr><td>Burnett（澳大利亚）</td><td>第三案例</td><td>TUFLOW × HEC-RAS</td><td><code>config/burnett.yaml</code></td><td>HF ≈ 780 785；LF ≈ 15 256；74 事件 / 4 组</td><td><code>time_reduction: max</code></td><td>可用（junction / zip）</td></tr><tr><td>Brisbane（附录）</td><td>许可门控附录</td><td>TUFLOW × URBS（Wang 2026）</td><td><code>config/brisbane.yaml</code></td><td>待补充（许可数据未到）</td><td>待补充</td><td>未运行（许可门控）</td></tr></tbody></table></div></figure>
@@ -207,7 +207,7 @@ th { background: var(--table-head); text-align: left; }
 <h3 id="chowilla次协议反例">Chowilla（次；协议反例）</h3>
 <ul><li>LF 已很强：CSI(all)≈0.9305</li><li>LSG-Max H-LSG：CSI(all)≈0.3902 vs CSI(wet)≈0.9756；RMSE(wet)≈0.093 m（相对 LF 湿 RMSE≈0.690 大幅下降）</li><li>解释：EXT 在训练湿掩膜上学习；all_cells 暴露掩膜外系统偏差——必须双报协议</li></ul>
 <h3 id="burnett第三">Burnett（第三）</h3>
-<ul><li>LF CSI≈0.8533，RMSE≈0.989 m</li><li>LSG-Max H-LSG CSI≈0.9752，RMSE≈0.387 m</li><li>LSG-Max global CSI≈0.9751，RMSE≈0.179 m；O2−O1 global≈0.049 vs H-LSG≈0.009</li><li>这是“多保真 LSG 为主技能源”的最清晰跨案例证据；分区收益仍以 O2−O1 为主</li></ul></section>
+<ul><li>LF CSI≈0.8533，RMSE≈0.989 m</li><li>LSG-Max H-LSG CSI≈0.9752，RMSE≈0.387 m</li><li>LSG-Max global CSI≈0.9751，RMSE≈0.179 m；O2−O1 global≈0.049 vs H-LSG≈0.009</li><li>这是“多保真 LSG 为主技能源”的最清晰跨案例证据；但 H-LSG 虽有更小 O2−O1，其 wet RMSE 反而<strong>更差</strong>——见「等容量对照」节：这是 LF→HF GP 映射（O4−O2）退化，而非分区收益，且 matched-18 全局在纯容量下复现同一失败</li></ul></section>
 <section id="跨案例比较">
 <h2>跨案例比较</h2>
 <figure class="table-wrap"><figcaption>跨案例点技能（JSON 核验）</figcaption><div class="table-scroll"><table><thead><tr><th scope='col'>案例</th><th scope='col'>变体</th><th scope='col'>掩膜</th><th scope='col'>CSI</th><th scope='col'>RMSE (m)</th><th scope='col'>来源 JSON</th></tr></thead><tbody><tr><td>Carlisle</td><td>LF only</td><td>all_cells</td><td>0.9602</td><td>0.074</td><td>…sgpr_fix.json</td></tr><tr><td>Carlisle</td><td>LF only</td><td>wet_train</td><td>0.9660</td><td>0.101</td><td>同上</td></tr><tr><td>Carlisle</td><td>LSG-TS (max surface)</td><td>all / wet_train</td><td>0.9702 / 0.9702</td><td>0.099 / 0.154</td><td>同上</td></tr><tr><td>Carlisle</td><td>LSG-Max H-LSG+SGPR fix</td><td>all / wet_train</td><td>0.9757 / 0.9757</td><td>0.061 / 0.094</td><td>同上</td></tr><tr><td>Chowilla</td><td>LF only</td><td>all / wet_train</td><td>0.9305 / 0.9247</td><td>0.690 / 0.690</td><td>…hlsg_max.json</td></tr><tr><td>Chowilla</td><td>LSG-Max H-LSG</td><td>all / wet_train</td><td><strong>0.3902</strong> / <strong>0.9756</strong></td><td><strong>3.789</strong> / <strong>0.093</strong></td><td>同上；all-cells 反例</td></tr><tr><td>Chowilla</td><td>LSG-Max global</td><td>wet_train</td><td>0.9744</td><td>0.088</td><td>…global_max.json</td></tr><tr><td>Chowilla</td><td>LSG-Max wet_correlation</td><td>wet_train</td><td>0.9778</td><td>0.094</td><td>…wet_correlation_max.json</td></tr><tr><td>Burnett</td><td>LF only</td><td>all / wet_train</td><td>0.8528 / 0.8533</td><td>0.983 / 0.989</td><td>…hlsg_max.json</td></tr><tr><td>Burnett</td><td>LSG-Max H-LSG</td><td>all / wet_train</td><td>0.9752 / 0.9752</td><td>0.384 / 0.387</td><td>同上</td></tr><tr><td>Burnett</td><td>LSG-Max global</td><td>wet_train</td><td>0.9751</td><td>0.179</td><td>…global_max.json</td></tr></tbody></table></div></figure>
@@ -217,6 +217,29 @@ th { background: var(--table-head); text-align: left; }
 <li>Chowilla 必须双报 all_cells 与 wet_train。</li>
 <li>UQ before/after：Carlisle 改善；Burnett 改善；Chowilla CRPS 近乎持平（如实）。</li>
 </ol>
+</section>
+
+<section id="等容量对照实验局部化不成立">
+<h2>等容量对照实验（局部化不成立）</h2>
+<div class="callout">本节是本轮修订的<strong>核心新增诊断</strong>：把 GP 输入维度（<code>gp_input_dim</code>）钉死后重跑，检验 H-LSG 相对全局 EOF 的“优势”是真局部化还是多容量。结论：<strong>一旦容量对齐，局部化优势不成立。</strong></div>
+<h3>怎么读这些表（教学说明）</h3>
+<ul>
+<li><strong>WSE 维度</strong>＝进入 WSE 分支 GP 的 EC 总数（<code>capacity.gp_input_dim_wse</code>）；H-LSG 天然更高，这是容量混淆来源。</li>
+<li><strong>O2−O1（截断间隙）</strong>＝HF 神谕下从截断到全秩的深度 RMSE 差，衡量子空间表达力；任何增加保留方差的手段都会缩小它——奖励容量，不是分区。</li>
+<li><strong>RMSE(wet)</strong> 才是执行技能；用 <code>force_n_modes</code> 给全局灌到 H-LSG 相同维度，再用 <code>residual_eof_modes:0</code> 看 H-LSG 是否塌回全局。</li>
+</ul>
+<h3>Chowilla 等容量对照</h3>
+<figure class="table-wrap"><figcaption>表 6. Chowilla 等容量对照（Grp1 Max, wet_train）</figcaption><div class="table-scroll"><table><thead><tr><th scope='col'>模型</th><th scope='col'>WSE 维度</th><th scope='col'>CSI(wet)</th><th scope='col'>RMSE(m, wet)</th><th scope='col'>测试 O2−O1(m)</th></tr></thead><tbody><tr><td>全局（原生）</td><td>3</td><td>0.9744</td><td>0.088</td><td>0.057</td></tr><tr><td>H-LSG `residual_kmeans`</td><td>15</td><td>0.9756</td><td>0.093</td><td>0.013</td></tr><tr><td>全局 matched-15（`force_n_modes:15`）</td><td>15</td><td>0.9752</td><td>0.085</td><td>0.002</td></tr><tr><td>H-LSG `residual_eof_modes:0`</td><td>3</td><td>0.9744</td><td>0.088</td><td>0.057</td></tr></tbody></table></div></figure>
+<p><strong>解读：</strong>给全局灌到 15 维后拿到最低 wet RMSE（0.085 m）与最小 O2−O1（0.002 m）；关掉 H-LSG 残差即塌回原生全局。分区的 O2−O1 收缩只要多留全局模态就能复现甚至超过，容量对齐后分区在 wet RMSE 上无优势。</p>
+<h3>Burnett 等容量对照与误差归因</h3>
+<figure class="table-wrap"><figcaption>表 7. Burnett 等容量对照与神谕归因（Grp1 Max, wet_train / test）</figcaption><div class="table-scroll"><table><thead><tr><th scope='col'>模型</th><th scope='col'>WSE 维度</th><th scope='col'>CSI(wet)</th><th scope='col'>RMSE(m, wet)</th><th scope='col'>测试 O2−O1(m)</th><th scope='col'>测试 O4−O2(m)</th></tr></thead><tbody><tr><td>全局（原生）</td><td>6</td><td>0.9751</td><td>0.179</td><td>0.049</td><td>0.056</td></tr><tr><td>H-LSG `residual_kmeans`</td><td>18</td><td>0.9752</td><td>0.387</td><td>0.009</td><td>0.304</td></tr><tr><td>全局 matched-18（`force_n_modes:18`）</td><td>18</td><td>0.9720</td><td>0.416</td><td>0.004</td><td>0.337</td></tr></tbody></table></div></figure>
+<p><strong>解读：</strong>额外容量缩小 O2−O1 却恶化 wet RMSE（原生全局 0.179 m → H-LSG 0.387 m、matched-18 0.416 m）。神谕定位到 LF→HF GP 映射：H-LSG 的 O4−O2＝0.304 m ≈ 全局（0.056 m）的 5.5 倍；两模型 EXT 门控相同（agreement 0.986），非 extent 故事。</p>
+<h3>诱导点与分区数混淆</h3>
+<figure class="table-wrap"><figcaption>表 8. Chowilla H-LSG 诱导点与分区数扫描（Grp1 Max, wet_train）</figcaption><div class="table-scroll"><table><thead><tr><th scope='col'>因子</th><th scope='col'>设置</th><th scope='col'>WSE 维度</th><th scope='col'>CSI(wet)</th><th scope='col'>RMSE(m, wet)</th><th scope='col'>测试 O2−O1(m)</th></tr></thead><tbody><tr><td>诱导点 `min_inducing_points`</td><td>2</td><td>15</td><td>0.9467</td><td>0.244</td><td>0.013</td></tr><tr><td></td><td>8</td><td>15</td><td>0.9899</td><td>0.096</td><td>0.013</td></tr><tr><td></td><td>16（默认）</td><td>15</td><td>0.9756</td><td>0.093</td><td>0.013</td></tr><tr><td></td><td>28（= n_train）</td><td>15</td><td>0.9825</td><td>0.073</td><td>0.013</td></tr><tr><td>分区数 `n_zones`</td><td>2</td><td>9</td><td>0.9752</td><td>0.087</td><td>0.019</td></tr><tr><td></td><td>4（默认）</td><td>15</td><td>0.9756</td><td>0.093</td><td>0.013</td></tr><tr><td></td><td>6</td><td>21</td><td>0.9754</td><td>0.103</td><td>0.012</td></tr></tbody></table></div></figure>
+<p><strong>解读：</strong>诱导点预算主宰深度 RMSE 而 O2−O1 不变（低 m 崩溃易被误读为“分区有害”）；<code>n_zones</code> 2→6 缩小 O2−O1 却恶化 RMSE。两者都是容量/近似效应。</p>
+<h3>CRPS 尺度的折稳定性</h3>
+<p>8 折留一训练事件交叉验证：<em>s</em> = 0.310 ± 0.007（范围 0.298–0.324），围绕全训练值 0.309，稳定；不声称 Chowilla 标定有用，只排除估计器不稳（<code>nested_crps_scale_cv.json</code>）。</p>
+<div class="callout"><strong>底线：</strong>H-LSG 应定位为带等容量对照的 O2−O1 <strong>诊断工具</strong>，不是 CSI/RMSE 升级；Burnett 上由 GP/LF 映射（O4−O2）而非 EXT 门控致其 RMSE 恶化。</div>
 </section>
 <section id="详细图件解读"><h2>详细图件解读</h2>
 <div class="callout"><strong>figure_manifest.json</strong>：当前 <code>skips=[]</code>（Fig.3–6 含 Burnett global、UQ before/after、P(wet)、wet_correlation）。</div>
@@ -17736,19 +17759,20 @@ L 502.169141 159.789713
 
 </section><section id="讨论与因果分析"><h2 id="讨论与因果分析">讨论与因果分析</h2>
 <h3 id="主因果叙事锁定">主因果叙事（锁定）</h3>
-<p>1. <strong>多保真 LSG vs LF</strong> 是技能主效应（Burnett 最清晰；Carlisle 在高位微调；Chowilla 深度 RMSE 在湿掩膜上大幅下降）。
-2. <strong>残差分区</strong> 的可重复收益是 O2−O1 缩小（Carlisle Max、Chowilla），不是 CSI 排行榜。
-3. <strong>SGPR 诱导点</strong> 曾把“分区有害”的假象写入 Max O4；修复后假象消失——方法论文必须报告失败模式。
-4. <strong>UQ 标定</strong> 解决过宽区间；与点估计正交。
-5. <strong>Chowilla all-cells</strong> 是评分协议与 EXT 学习域的相互作用，应作为结果写进正文，而非附录藏匿。</p>
+<p>1. <strong>多保真 LSG vs LF</strong> 是技能主效应（Burnett 最清晰；Carlisle 在高位微调；Chowilla 深度 RMSE 在湿掩膜上大幅下降）——技能在多保真映射，不在局部化。
+2. <strong>残差分区的表观优势是容量混淆</strong>：等容量对照（表 6–8）显示，对齐 GP 维度后全局模型复现/超越 O2−O1 收缩，Chowilla 上 matched-15 全局 wet RMSE 更低；O2−O1 奖励的是保留方差（容量），不是空间分区。
+3. <strong>Burnett 的失败机制</strong>：残差容量让子空间更可表达（O2−O1 更小），却让 LF→HF GP 映射退化（O4−O2 约 5.5×），EXT 门控相同——不是 extent 故事；matched-18 全局在纯容量下复现同一失败。
+4. <strong>干扰因子</strong>：SGPR 诱导点预算与 <code>n_zones</code> 对 RMSE 的影响不亚于分区；低 m 的 H-LSG 崩溃易被误读为“分区有害”。方法论文必须报告这些近似/容量因子。
+5. <strong>UQ 标定</strong> 解决过宽区间；与点估计正交（CRPS 尺度经嵌套 CV 证明折稳定）。
+6. <strong>Chowilla all-cells</strong> 是评分协议与 EXT 学习域的相互作用，应作为结果写进正文，而非附录藏匿。</p>
 <h3 id="开放科学问题来自进度评论">开放科学问题（来自进度评论）</h3>
-<p>1. 为何正确 SGPR 后 O2−O1 增益显得“谦逊”？可能因为全局模态已吸收大部分能量。
+<p>1. O2−O1 作为诊断很有信息量，但与执行技能解耦——未来应报告“容量匹配后的留出技能”而非单看 O2−O1。
 2. 强 LF 反例的社区评分规范应如何标准化？
 3. <code>var_scale</code> 能否跨事件/站点迁移而不重拟合？（待补充实验）
-4. 与 REOF-SGP、Tan 区域化 LSG 的精细边界还需对照表持续维护。</p></section>
+4. 与 REOF-SGP、Tan 区域化 LSG 的精细边界还需对照表持续维护；未来局部 EOF 洪水代理应默认报告等容量基线。</p></section>
 <section id="创新点">
 <h2>创新点</h2>
-<figure class="table-wrap"><figcaption>创新点 vs 既往工作（有边界）</figcaption><div class="table-scroll"><table><thead><tr><th scope='col'>主张</th><th scope='col'>相对既往工作的边界</th><th scope='col'>本仓库证据</th></tr></thead><tbody><tr><td>残差层次多分区 LSG（全局+局部残差基；EXT 全局 / WSE 残差）</td><td>≠ REOF-SGP（Wang 2025）；≠ Tan 2025 单焦点区域重训；实现 Wang 2026 点名的 zonal EOF future work</td><td>residual_kmeans 默认；O2−O1 缩小；CSI 不宣称大幅超越 global</td></tr><tr><td>CRPS 尺度标定的 LSG 地图后验方差</td><td>≠“首个概率淹没代理”（已有多种非 LSG GP/PCE UQ）</td><td>Carlisle Max s≈0.417，CRPS 0.039→0.028；均值不动</td></tr><tr><td>O1–O4 神谕阶梯</td><td>≠ Tan 的两段式 ER_DR/ER_LSG；本报告为四段反事实深度 RMSE</td><td>三案例 test budgets 可复现</td></tr><tr><td>SGPR 诱导点下限与训练行初始化</td><td>工程稳健性，非 headline 新颖性</td><td>Max pre-fix O4=0.267 → post-fix 0.094</td></tr></tbody></table></div></figure>
+<figure class="table-wrap"><figcaption>创新点 vs 既往工作（有边界）</figcaption><div class="table-scroll"><table><thead><tr><th scope='col'>主张</th><th scope='col'>相对既往工作的边界</th><th scope='col'>本仓库证据</th></tr></thead><tbody><tr><td>残差层次分区 LSG 的**等容量负结果**（capacity-controlled negative result）</td><td>≠ REOF-SGP（Wang 2025）；≠ Tan 2025 单焦点区域重训；对 Wang 2026 点名的 zonal EOF 给出容量对照下的**否定**评估</td><td>force_n_modes 匹配容量 + 诱导点/分区数扫描：表观 O2−O1 优势是容量混淆，不转化为留出技能（表 6–8）</td></tr><tr><td>CRPS 尺度标定的 LSG 地图后验方差</td><td>≠“首个概率淹没代理”（已有多种非 LSG GP/PCE UQ）</td><td>Carlisle Max s≈0.417，CRPS 0.039→0.028；均值不动</td></tr><tr><td>O1–O4 神谕阶梯</td><td>≠ Tan 的两段式 ER_DR/ER_LSG；本报告为四段反事实深度 RMSE</td><td>三案例 test budgets 可复现</td></tr><tr><td>SGPR 诱导点下限与训练行初始化</td><td>工程稳健性，非 headline 新颖性</td><td>Max pre-fix O4=0.267 → post-fix 0.094</td></tr></tbody></table></div></figure>
 </section>
 
 <section id="可复现性与质量保证">
@@ -17761,15 +17785,15 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml</pre>
 
 <section id="局限性">
 <h2>局限性</h2>
-<figure class="table-wrap"><figcaption>局限性与缺口</figcaption><div class="table-scroll"><table><thead><tr><th scope='col'>限制 / 缺口</th><th scope='col'>状态</th><th scope='col'>影响</th></tr></thead><tbody><tr><td>Chowilla / Burnett 全时序 Grp1 折</td><td>未运行（内存；Burnett HF 堆叠≈199 GB ≫ ~128 GB RAM）</td><td>不能声称三案例均完成 LSG-TS</td></tr><tr><td>等容量 global vs H-LSG；非残差地理分区对照</td><td>未运行（除 Chowilla wet_correlation 敏感性）</td><td>不能把分区收益与额外容量完全拆开</td></tr><tr><td>Carlisle/Chowilla Max Grp1 测试事件数</td><td>N_event=1（Burnett=18）</td><td>单事件对比不可过度外推</td></tr><tr><td>CRPS 尺度嵌套 CV；oracle 顺序置换</td><td>未运行</td><td>s 为训练集拟合；O1–O4 为路径有序反事实</td></tr><tr><td>Chowilla Max CRPS 标定</td><td>rescore：CRPS 近乎持平、coverage 远离名义</td><td>不可把 Carlisle 标定收益外推为普适</td></tr><tr><td>Brisbane 许可数据</td><td>未运行</td><td>附录级，不作主结论</td></tr><tr><td>FloodCastBench</td><td>未运行 / 推迟</td><td>外部基准未接</td></tr><tr><td>跨事件/站点的 var_scale 迁移</td><td>开放问题</td><td>当前每案例重拟合</td></tr><tr><td>residual_kmeans 空间连通性图</td><td>待补充</td><td>分区指残差响应类，未必地理连通</td></tr></tbody></table></div></figure>
+<figure class="table-wrap"><figcaption>局限性与缺口</figcaption><div class="table-scroll"><table><thead><tr><th scope='col'>限制 / 缺口</th><th scope='col'>状态</th><th scope='col'>影响</th></tr></thead><tbody><tr><td>Chowilla / Burnett 全时序 Grp1 折</td><td>未运行（内存；Burnett HF 堆叠≈199 GB ≫ ~128 GB RAM）</td><td>等容量负结果目前建立在 Max 面折上</td></tr><tr><td>等容量 global vs H-LSG（Chowilla/Burnett Max）</td><td>**已完成**（force_n_modes 匹配 + 诱导点/分区数扫描，表 6–8）</td><td>分区优势已与容量拆开：局部化不成立</td></tr><tr><td>Carlisle 等容量对照；非残差地理分区对照；容量×分区×站点析因</td><td>未运行（除 Chowilla wet_correlation 敏感性）</td><td>最便宜的 Chowilla Max 已回答局部化问题</td></tr><tr><td>Carlisle/Chowilla Max Grp1 测试事件数</td><td>N_event=1（Burnett=18）</td><td>单事件对比不可过度外推；负结果为受控效应量对比而非 p 值检验</td></tr><tr><td>Burnett/Carlisle 的 CRPS 尺度嵌套 CV；oracle 顺序置换</td><td>未运行（Chowilla 已完成）</td><td>s 为训练集拟合；O1–O4 为路径有序反事实</td></tr><tr><td>Chowilla Max CRPS 标定</td><td>rescore：CRPS 近乎持平、coverage 远离名义</td><td>不可把 Carlisle 标定收益外推为普适</td></tr><tr><td>Brisbane 许可数据</td><td>未运行</td><td>附录级，不作主结论</td></tr><tr><td>FloodCastBench</td><td>未运行 / 推迟</td><td>外部基准未接</td></tr><tr><td>跨事件/站点的 var_scale 迁移</td><td>开放问题</td><td>当前每案例重拟合</td></tr><tr><td>residual_kmeans 空间连通性图</td><td>待补充</td><td>分区指残差响应类，未必地理连通</td></tr></tbody></table></div></figure>
 </section>
 <section id="未来工作"><h2 id="未来工作">未来工作</h2>
-<p>1. 在内存允许或流式摄取就绪时补跑 Chowilla/Burnett 全时序 Grp1（Burnett HF 堆叠≈199 GB，当前主机 ~128 GB RAM 不可行）。
-2. 等容量（匹配总模态/诱导点）global vs H-LSG；残差区连通性图。
-3. CRPS <em>s</em> 嵌套 CV 与跨站点迁移；解释 Chowilla 标定持平/coverage 恶化。
+<p>1. 在内存允许或流式摄取就绪时补跑 Chowilla/Burnett 全时序 Grp1（Burnett HF 堆叠≈199 GB，当前主机 ~128 GB RAM 不可行）——检验负结果在全时序折上是否依旧。
+2. 把等容量对照扩展到 Carlisle，并做容量 × 分区 × 站点的完整析因（本轮已完成 Chowilla/Burnett Max 的等容量、诱导点与分区数扫描）。
+3. residual_kmeans 区划连通性图与非残差地理分区对照；Burnett/Carlisle 的 CRPS <em>s</em> 嵌套 CV。
 4. 许可到来后的 Brisbane 附录复现；FloodCastBench。
-5. 区数/残差模态更系统的扫描（wet_correlation 已有单折证据）。</p></section><section id="结论"><h2 id="结论">结论</h2>
-<p>在三个公开多保真案例上，本项目复现并扩展了 LSG 栈：EXT+WSE 双场、残差层次分区、SGPR 诱导点稳健化、CRPS 方差标定与 O1–O4 神谕预算。<strong>技能提升的主导因素是多保真 LSG 本身</strong>；残差分区稳定地表现为截断间隙（O2−O1）的缩小（Chowilla/Burnett global A/B 均已齐）；概率标定在 Carlisle/Burnett 改善可靠性，在 Chowilla Max 上 CRPS 近乎持平——必须如实报告；点估计 CSI/RMSE 因均值不变而<strong>按构造</strong>保持不变；单元级 P(wet) 与 Chowilla <code>wet_correlation</code> 敏感性已补齐。Chowilla 提醒社区必须同时报告 all_cells 与 wet_train。评价单元是 hold-out 事件（Carlisle/Chowilla Max 为 N=1，Burnett 为 N=18），不是栅格单元。这些结论均锚定于本仓库 JSON/图件，可独立复核。</p></section><section id="数据与代码可用性"><h2 id="数据与代码可用性">数据与代码可用性</h2>
+5. 发展“容量匹配后可预测局部化增益”的训练期判据（若存在）。</p></section><section id="结论"><h2 id="结论">结论</h2>
+<p>在三个公开多保真案例上，本项目复现并扩展了 LSG 栈：EXT+WSE 双场、SGPR 诱导点稳健化、CRPS 方差标定与 O1–O4 神谕预算，并对残差层次分区做了<strong>等容量对照</strong>。关于局部化的 headline 结论是<strong>负面</strong>的：一旦对齐 GP 输入维度，残差分区在截断间隙 O2−O1 上的表观优势会被等容量全局模型复现或超越，且不转化为留出深度技能——Chowilla 上 matched-15 全局拿到最低 wet RMSE，Burnett 上额外残差容量通过退化的 LF→HF GP 映射（EXT 门控相同）恶化 RMSE；诱导点预算与分区数对 RMSE 的影响也不亚于分区本身。<strong>可辩护的核心</strong>依然成立：多保真 LSG 在弱 LF 情景提供主要技能；O1–O4 阶梯定位误差部件；CRPS 方差标定在 Carlisle/Burnett 改善可靠性而<strong>按构造</strong>不动 CSI/RMSE，在 Chowilla Max 上 CRPS 近乎持平（如实报告）；残差层次分区最宜用作<strong>截断诊断</strong>而非精度升级。Chowilla 提醒社区必须同时报告 all_cells 与 wet_train，并在采信局部 EOF 变体前先做等容量基线。评价单元是 hold-out 事件（Carlisle/Chowilla Max 为 N=1，Burnett 为 N=18），不是栅格单元。所有结论均锚定于本仓库 JSON/图件，可独立复核。</p></section><section id="数据与代码可用性"><h2 id="数据与代码可用性">数据与代码可用性</h2>
 <ul><li>公共立方体：Figshare DOI [10.26188/24312658](https://doi.org/10.26188/24312658)（CC BY 4.0）。</li><li>本仓库配置与脚本：<code>config/*.yaml</code>、<code>lsg/</code>、<code>scripts/</code>（无密钥）。</li><li>Brisbane TUFLOW/URBS：昆士兰州政府许可，需申请；本地为 missing。</li><li>Hybrid LSG 参考代码：https://github.com/nfraehr/Hybrid_LSG_model</li></ul></section><section id="参考文献"><h2 id="参考文献">参考文献</h2>
 <p>1. Fraehr, N., Wang, Q. J., Wu, W., &amp; Nathan, R. (2022). Water Resources Research, 58, e2022WR032248. https://doi.org/10.1029/2022WR032248
 2. Fraehr, N., Wang, Q. J., Wu, W., &amp; Nathan, R. (2023). Water Resources Research, 59, e2022WR033836. https://doi.org/10.1029/2022WR033836
@@ -17794,12 +17818,13 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml</pre>
 </ul>
 </section>
 <section id="待补充清单"><h2 id="待补充清单">待补充清单</h2>
-<p>1. Chowilla / Burnett <strong>全时序</strong> Grp1 折 — <strong>未运行</strong>（Burnett HF 堆叠≈199 GB ≫ ~128 GB RAM；Chowilla 双场+UQ 同样受限）。
-2. 等容量 global vs H-LSG、非残差地理分区对照（除已完成的 Chowilla <code>wet_correlation</code> 单折）、oracle 顺序置换 — 未运行。
+<p>1. Chowilla / Burnett <strong>全时序</strong> Grp1 折 — <strong>未运行</strong>（Burnett HF 堆叠≈199 GB ≫ ~128 GB RAM；Chowilla 双场+UQ 同样受限）。等容量负结果目前建立在 Max 面折上。
+2. <strong>Carlisle 等容量对照</strong>、非残差地理分区对照（除已完成的 Chowilla <code>wet_correlation</code> 单折）、容量 × 分区 × 站点完整析因、oracle 顺序置换 — 未运行。
 3. Brisbane 许可立方体复现 — 未运行。
 4. FloodCastBench — 未运行/推迟。
 5. 训练硬件型号与完整墙钟时间表 — 仅有 JSON 秒数，机型待补充。
-6. 跨站点 <code>var_scale</code> 迁移 / 嵌套 CV — 开放问题（Chowilla 标定持平已提示不可盲目迁移）。
-7. residual_kmeans 区划连通性图 — 待补充。</p></section><p class="callout"><strong>状态声明：</strong>仅本地修改，未提交、未推送、未创建 PR、未部署。</p>
+6. <strong>Burnett/Carlisle</strong> 的 CRPS <em>s</em> 嵌套 CV 与跨站点 <code>var_scale</code> 迁移 — 待补充（Chowilla 已完成，标定持平提示不可盲目迁移）。
+7. residual_kmeans 区划连通性图 — 待补充。</p>
+<p><strong>本轮已清除（等容量对照）：</strong> Chowilla 与 Burnett 等容量 global vs H-LSG（表 6–7）；Chowilla 诱导点与分区数扫描（表 8）；Burnett 神谕归因（表 7）；Chowilla CRPS <em>s</em> 嵌套 CV（等容量对照节）。</p></section><p class="callout"><strong>状态声明：</strong>仅本地修改，未提交、未推送、未创建 PR、未部署。</p>
 </body>
 </html>

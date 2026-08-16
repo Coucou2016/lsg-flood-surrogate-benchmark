@@ -8,7 +8,7 @@
 # fresh unzip of Chowilla.zip). Same Fraehr layout as Carlisle.
 
 study_area:
-  id: chowilla_global
+  id: chowilla_nzones_2
   name: Chowilla floodplain, Australia
   notes: >
     Published multi-fidelity benchmark (fine/coarse HEC-RAS). Paper anti-case
@@ -29,8 +29,7 @@ paths:
   hf_results: data/external/chowilla
   lf_results: data/external/chowilla
   processed: data/processed/chowilla
-  # Separate from H-LSG residual_kmeans states under outputs/models/chowilla
-  models: outputs/models/chowilla_global
+  models: outputs/models/chowilla_nzones_2
   evaluation: outputs/evaluation/chowilla
   metadata: data/external/chowilla
 
@@ -53,8 +52,8 @@ lsg:
   random_seed: 20260814
   # Prefer residual_kmeans (Carlisle). If residual EOF / zone fit is unstable
   # on this floodplain, switch to none and document in README / cases.yaml.
-  zoning: none
-  n_zones: 4
+  zoning: residual_kmeans
+  n_zones: 2
   residual_eof_modes: 3
 
 events:

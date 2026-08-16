@@ -8,7 +8,7 @@
 # fresh unzip of Chowilla.zip). Same Fraehr layout as Carlisle.
 
 study_area:
-  id: chowilla_global
+  id: chowilla_global_inducing_m2
   name: Chowilla floodplain, Australia
   notes: >
     Published multi-fidelity benchmark (fine/coarse HEC-RAS). Paper anti-case
@@ -30,7 +30,7 @@ paths:
   lf_results: data/external/chowilla
   processed: data/processed/chowilla
   # Separate from H-LSG residual_kmeans states under outputs/models/chowilla
-  models: outputs/models/chowilla_global
+  models: outputs/models/chowilla_global_inducing_m2
   evaluation: outputs/evaluation/chowilla
   metadata: data/external/chowilla
 
@@ -47,7 +47,7 @@ lsg:
   weight_by_cell_area: true
   max_eof_modes: 100
   inducing_point_fraction: 0.02
-  min_inducing_points: 16
+  min_inducing_points: 2
   gp_kernel: exponential
   train_test_split: 0.8
   random_seed: 20260814

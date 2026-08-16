@@ -213,11 +213,18 @@ points from training rows and floor the budget at
 (>2000 rows) still uses the fraction rule (~42 points). Default config keeps
 `zoning: residual_kmeans`.
 
-Takeaway: residual zones cut Max-path truncation gap (O2−O1). With the SGPR
-fix, Max O4/RMSE recover and beat the global baseline; TS O4 also improves
-(0.149 → 0.102) and CSI stays flat/slightly up. The pre-fix TS max-surface
-RMSE of 0.055 coincided with a defective residual GP and does **not** survive
-a correct SGPR (post-fix 0.099); treat that older number as an artifact.
+Takeaway: at **native** capacity, residual zones cut Max-path truncation gap
+(O2−O1). With the SGPR fix, Max O4/RMSE recover and beat the global baseline;
+TS O4 also improves (0.149 → 0.102) and CSI stays flat/slightly up. The
+pre-fix TS max-surface RMSE of 0.055 coincided with a defective residual GP
+and does **not** survive a correct SGPR (post-fix 0.099); treat that older
+number as an artifact. **Capacity-matched controls** (see
+`docs/paper/04_capacity_controls.md` and manuscript §6.8) show the O2−O1
+shrinkage is a capacity confound: matching the global EOF budget to H-LSG’s
+GP input dimension (`force_n_modes`) reproduces or exceeds the O2−O1 reduction
+and does **not** yield a localization-driven wet-RMSE win. Prefer H-LSG as a
+truncation diagnostic with matched-capacity baselines, not as an accuracy
+upgrade.
 
 **UQ calibration (post SGPR-fix stack):** CRPS-optimal global variance scale on
 train (`crps_scale`). Summary:
@@ -262,19 +269,26 @@ smoke: `--events E1,E2,E3 --time-reduction full`.
 | LSG-Max H-LSG (`wse_ext`) | 0.390 / **0.976** | 3.79 / **0.093** |
 | Fraehr published LSG (Grp1) | — / 0.982 | — / 0.108 |
 
-**Zoning:** kept `residual_kmeans` (stable O1–O4). Vs global (`config/chowilla_global.yaml`):
-wet CSI 0.9756 vs 0.9744; RMSE 0.093 vs 0.088; test **O2−O1** 0.013 vs 0.057
-(residual zones shrink truncation gap, same Carlisle Max story). UQ `var_scale`
-≈ 0.31 H-LSG / 0.42 global (Carlisle Max ≈ 0.42).
+**Zoning:** native-capacity H-LSG vs global (`config/chowilla_global.yaml`):
+wet CSI 0.9756 vs 0.9744; RMSE 0.093 vs 0.088; test **O2−O1** 0.013 vs 0.057.
+**Equal-capacity control** (`config/chowilla_global_matched15.yaml`,
+`force_n_modes: 15`): matched global wet RMSE **0.085** and O2−O1 **0.002** —
+beats H-LSG; the O2−O1 shrink is capacity, not localization (see
+`docs/paper/04_capacity_controls.md`). UQ `var_scale` ≈ 0.31 H-LSG / 0.42 global
+(Carlisle Max ≈ 0.42).
 **Anti-case read:** LF extent already strong (CSI ~0.93 all-cells). On Fraehr
 `wet_train`, LSG still cuts depth RMSE sharply (0.69 → 0.09) and lifts CSI
 (0.925 → 0.976). All-cells LSG CSI is low because EXT learns only on the train
 wet mask (Fraehr Categories) — score `wet_train` for protocol comparison.
 Summaries: `outputs/evaluation/chowilla/workflow_summary_grp1_wse_ext_hlsg_max.json`
-and `..._global_max.json`.
+and `..._global_max.json` (+ `..._global_matched15_max.json`).
 ## Remaining gaps
 
-- Chowilla full-TS Grp1 fold (memory); optional `wet_correlation` / global A/B polish.
+- Chowilla / Burnett full-TS Grp1 folds (memory); Carlisle equal-capacity control;
+  zone contiguity maps; Burnett/Carlisle nested CV for CRPS *s*.
+- Chowilla Max equal-capacity, inducing, and zone sweeps: **done** (see
+  `docs/paper/04_capacity_controls.md`).
+- Optional `wet_correlation` polish already run; Brisbane / FloodCastBench deferred.
 - Brisbane TUFLOW/URBS remains licence-gated; ingest under `data/raw/` is unchanged.
 - Optional H-LSG A/B: `wet_correlation` zoning; further residual-mode / zone sweeps
   after the SGPR inducing fix.

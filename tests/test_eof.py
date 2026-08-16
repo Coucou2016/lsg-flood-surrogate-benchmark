@@ -20,3 +20,16 @@ def test_norths_rule_positive():
     pca, _ = eof.fit_eof(data, n_components=15)
     n = eof.select_n_modes(pca, 30)
     assert 1 <= n <= 15
+
+
+def test_resolve_n_modes_force_override():
+    rng = np.random.default_rng(2)
+    data = rng.normal(size=(24, 32))
+    pca, _ = eof.fit_eof(data, n_components=12)
+    auto = eof.select_n_modes(pca, 24)
+    forced = eof.resolve_n_modes(pca, 24, {"lsg": {"force_n_modes": 7}})
+    assert forced == min(7, pca.n_components_)
+    assert eof.resolve_n_modes(pca, 24, {"lsg": {}}) == auto
+    assert eof.resolve_n_modes(pca, 24, {"lsg": {"force_n_modes": None}}) == auto
+    capped = eof.resolve_n_modes(pca, 24, {"lsg": {"force_n_modes": 999}})
+    assert capped == pca.n_components_

@@ -1,0 +1,162 @@
+{
+  "case": "burnett",
+  "split": "paper:lsg_max_train",
+  "test_ids": [
+    "E1",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E18",
+    "E19"
+  ],
+  "n_test": 18,
+  "runtime_s": 2135.838775699958,
+  "models": {
+    "hlsg": "I:\\Projects\\20260522-LSG-WRR\\outputs\\models\\burnett\\lsg_max_state.npz",
+    "global": "I:\\Projects\\20260522-LSG-WRR\\outputs\\models\\burnett_global\\lsg_max_state.npz"
+  },
+  "rows": [
+    {
+      "label": "hlsg",
+      "zone_method": "residual_kmeans",
+      "capacity": {
+        "field": "wse_ext",
+        "wse": {
+          "field": "wse",
+          "zone_method": "residual_kmeans",
+          "n_modes_global": 6,
+          "n_zones": 4,
+          "residual_n_modes": [
+            3,
+            3,
+            3,
+            3
+          ],
+          "n_residual_ec": 12,
+          "gp_input_dim": 18,
+          "force_n_modes": null
+        },
+        "ext": {
+          "field": "extent",
+          "zone_method": "none",
+          "n_modes_global": 4,
+          "n_zones": 0,
+          "residual_n_modes": [],
+          "n_residual_ec": 0,
+          "gp_input_dim": 4,
+          "force_n_modes": null
+        },
+        "gp_input_dim_wse": 18,
+        "gp_input_dim_ext": 4,
+        "n_modes_global_wse": 6,
+        "n_residual_ec_wse": 12
+      },
+      "csi_wet": 0.9751522776919259,
+      "rmse_wet": 0.38675133878175916,
+      "ext_cell_agree": 0.9861387364425973,
+      "frac_wse_floor_clipped_wet": 0.19793252312814902,
+      "rmse_wse_depth_ungated_wet": 0.442027807621083,
+      "rmse_both_wet": 0.509491242863347,
+      "rmse_gate_miss": 0.8574289759170691,
+      "rmse_gate_fa": 0.6284869295208938,
+      "rmse_both_dry": 0.0,
+      "frac_both_wet": 0.5515372981506287,
+      "frac_gate_miss": 0.0025100395084376045,
+      "frac_gate_fa": 0.011550685605425774,
+      "residual_n_modes": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "budget_from_summary": {
+        "path": "I:\\Projects\\20260522-LSG-WRR\\outputs\\evaluation\\burnett\\workflow_summary_grp1_wse_ext_hlsg_max.json",
+        "test_o1": 0.07436485931840023,
+        "test_o2": 0.08287994812779881,
+        "test_o3": 0.6678254387708641,
+        "test_o4": 0.3867513387808349,
+        "test_o2_minus_o1": 0.00851508880939858,
+        "train_o4": 0.3595350814777702,
+        "train_o2_minus_o1": 0.05654853145272749,
+        "o4_minus_o2_test": 0.3038713906530361,
+        "o4_minus_o3_test": -0.2810740999900292
+      }
+    },
+    {
+      "label": "global",
+      "zone_method": "none",
+      "capacity": {
+        "field": "wse_ext",
+        "wse": {
+          "field": "wse",
+          "zone_method": "none",
+          "n_modes_global": 6,
+          "n_zones": 0,
+          "residual_n_modes": [],
+          "n_residual_ec": 0,
+          "gp_input_dim": 6,
+          "force_n_modes": null
+        },
+        "ext": {
+          "field": "extent",
+          "zone_method": "none",
+          "n_modes_global": 4,
+          "n_zones": 0,
+          "residual_n_modes": [],
+          "n_residual_ec": 0,
+          "gp_input_dim": 4,
+          "force_n_modes": null
+        },
+        "gp_input_dim_wse": 6,
+        "gp_input_dim_ext": 4,
+        "n_modes_global_wse": 6,
+        "n_residual_ec_wse": 0
+      },
+      "csi_wet": 0.9751084663961234,
+      "rmse_wet": 0.1787874045629806,
+      "ext_cell_agree": 0.9861387364425973,
+      "frac_wse_floor_clipped_wet": 0.29255399695786904,
+      "rmse_wse_depth_ungated_wet": 0.19337087702046565,
+      "rmse_both_wet": 0.22044071279955002,
+      "rmse_gate_miss": 0.8574289759170691,
+      "rmse_gate_fa": 0.5359729681831392,
+      "rmse_both_dry": 0.0,
+      "frac_both_wet": 0.5515372981506287,
+      "frac_gate_miss": 0.0025100395084376045,
+      "frac_gate_fa": 0.011550685605425774,
+      "residual_n_modes": [],
+      "budget_from_summary": {
+        "path": "I:\\Projects\\20260522-LSG-WRR\\outputs\\evaluation\\burnett\\workflow_summary_grp1_wse_ext_global_max.json",
+        "test_o1": 0.07436485931840023,
+        "test_o2": 0.12327204611405436,
+        "test_o3": 0.7080171369432378,
+        "test_o4": 0.17878740456298037,
+        "test_o2_minus_o1": 0.04890718679565413,
+        "train_o4": 0.11502736733829724,
+        "train_o2_minus_o1": 0.08171749984130719,
+        "o4_minus_o2_test": 0.05551535844892601,
+        "o4_minus_o3_test": -0.5292297323802574
+      }
+    }
+  ],
+  "interpretation_hooks": {
+    "o2_minus_o1": "HF projection truncation gap (expressibility)",
+    "o4_minus_o2": "LF projection + GP mapping + gating beyond truncated HF basis",
+    "rmse_both_wet": "depth error where EXT gate and truth agree wet",
+    "rmse_gate_miss": "depth error on truth-wet / pred-dry cells",
+    "rmse_gate_fa": "depth error on truth-dry / pred-wet cells",
+    "frac_wse_floor_clipped_wet": "share of wet cells where predicted WSE hits DEM+tau floor"
+  }
+}

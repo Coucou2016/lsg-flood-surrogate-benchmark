@@ -141,6 +141,49 @@ def main() -> None:
     )
     manifest = load_json("outputs/figures/figure_manifest.json")
 
+    # ---- Capacity-control artefacts (equal-capacity + nuisance sweeps) ----
+    def load_json_opt(rel: str) -> dict | None:
+        try:
+            return load_json(rel)
+        except (FileNotFoundError, OSError, ValueError):
+            return None
+
+    ce = "outputs/evaluation/chowilla/"
+    be = "outputs/evaluation/burnett/"
+    chow_g_cap = load_json_opt(ce + "workflow_summary_grp1_wse_ext_global_max_capacity_rerun.json")
+    chow_h_cap = load_json_opt(ce + "workflow_summary_grp1_wse_ext_hlsg_max_capacity_rerun.json")
+    chow_g15 = load_json_opt(ce + "workflow_summary_grp1_wse_ext_global_matched15_max.json")
+    chow_h_b3 = load_json_opt(ce + "workflow_summary_grp1_wse_ext_hlsg_budget3_max.json")
+    burn_g18 = load_json_opt(be + "workflow_summary_grp1_wse_ext_global_matched18_max.json")
+    chow_ind_m2 = load_json_opt(ce + "workflow_summary_grp1_wse_ext_hlsg_inducing_m2_max.json")
+    chow_ind_m8 = load_json_opt(ce + "workflow_summary_grp1_wse_ext_hlsg_inducing_m8_max.json")
+    chow_ind_m28 = load_json_opt(ce + "workflow_summary_grp1_wse_ext_hlsg_inducing_m28_max.json")
+    chow_nz2 = load_json_opt(ce + "workflow_summary_grp1_wse_ext_hlsg_nzones2_max.json")
+    chow_nz6 = load_json_opt(ce + "workflow_summary_grp1_wse_ext_hlsg_nzones6_max.json")
+    nested_cv = load_json_opt(ce + "nested_crps_scale_cv.json")
+
+    def cap_dim(d: dict | None, fallback: str = "待补充") -> str:
+        if not d:
+            return fallback
+        try:
+            return str(d["lsg_max"]["capacity"]["gp_input_dim_wse"])
+        except (KeyError, TypeError):
+            return fallback
+
+    def cap_o2o1(d: dict | None) -> float | None:
+        if not d:
+            return None
+        return eb_test(d, "lsg_max").get("o2_minus_o1")
+
+    def cap_o4o2(d: dict | None) -> float | None:
+        if not d:
+            return None
+        eb = eb_test(d, "lsg_max")
+        o4, o2 = eb.get("o4_rmse"), eb.get("o2_rmse")
+        if o4 is None or o2 is None:
+            return None
+        return o4 - o2
+
     # Convenience metric pulls (wet_train / all_cells)
     metrics = {
         "car_lf_all_csi": sp(car_fix, "lf_only", "all_cells", "csi"),
@@ -483,9 +526,9 @@ def main() -> None:
     t_innov_h = ["主张", "相对既往工作的边界", "本仓库证据"]
     t_innov_r = [
         [
-            "残差层次多分区 LSG（全局+局部残差基；EXT 全局 / WSE 残差）",
-            "≠ REOF-SGP（Wang 2025）；≠ Tan 2025 单焦点区域重训；实现 Wang 2026 点名的 zonal EOF future work",
-            "residual_kmeans 默认；O2−O1 缩小；CSI 不宣称大幅超越 global",
+            "残差层次分区 LSG 的**等容量负结果**（capacity-controlled negative result）",
+            "≠ REOF-SGP（Wang 2025）；≠ Tan 2025 单焦点区域重训；对 Wang 2026 点名的 zonal EOF 给出容量对照下的**否定**评估",
+            "force_n_modes 匹配容量 + 诱导点/分区数扫描：表观 O2−O1 优势是容量混淆，不转化为留出技能（表 6–8）",
         ],
         [
             "CRPS 尺度标定的 LSG 地图后验方差",
@@ -506,10 +549,11 @@ def main() -> None:
 
     t_limit_h = ["限制 / 缺口", "状态", "影响"]
     t_limit_r = [
-        ["Chowilla / Burnett 全时序 Grp1 折", "未运行（内存；Burnett HF 堆叠≈199 GB ≫ ~128 GB RAM）", "不能声称三案例均完成 LSG-TS"],
-        ["等容量 global vs H-LSG；非残差地理分区对照", "未运行（除 Chowilla wet_correlation 敏感性）", "不能把分区收益与额外容量完全拆开"],
-        ["Carlisle/Chowilla Max Grp1 测试事件数", "N_event=1（Burnett=18）", "单事件对比不可过度外推"],
-        ["CRPS 尺度嵌套 CV；oracle 顺序置换", "未运行", "s 为训练集拟合；O1–O4 为路径有序反事实"],
+        ["Chowilla / Burnett 全时序 Grp1 折", "未运行（内存；Burnett HF 堆叠≈199 GB ≫ ~128 GB RAM）", "等容量负结果目前建立在 Max 面折上"],
+        ["等容量 global vs H-LSG（Chowilla/Burnett Max）", "**已完成**（force_n_modes 匹配 + 诱导点/分区数扫描，表 6–8）", "分区优势已与容量拆开：局部化不成立"],
+        ["Carlisle 等容量对照；非残差地理分区对照；容量×分区×站点析因", "未运行（除 Chowilla wet_correlation 敏感性）", "最便宜的 Chowilla Max 已回答局部化问题"],
+        ["Carlisle/Chowilla Max Grp1 测试事件数", "N_event=1（Burnett=18）", "单事件对比不可过度外推；负结果为受控效应量对比而非 p 值检验"],
+        ["Burnett/Carlisle 的 CRPS 尺度嵌套 CV；oracle 顺序置换", "未运行（Chowilla 已完成）", "s 为训练集拟合；O1–O4 为路径有序反事实"],
         ["Chowilla Max CRPS 标定", "rescore：CRPS 近乎持平、coverage 远离名义", "不可把 Carlisle 标定收益外推为普适"],
         ["Brisbane 许可数据", "未运行", "附录级，不作主结论"],
         ["FloodCastBench", "未运行 / 推迟", "外部基准未接"],
@@ -640,8 +684,8 @@ def main() -> None:
         return md, html_b
 
     # ===== Compose document =====
-    title = "LSG 多保真洪水淹没代理模型：残差层次分区、神谕误差预算与 CRPS 方差标定的公开数据研究报告"
-    subtitle = "Low-fidelity, Spatial analysis, and Gaussian Process Learning（LSG）公共基准复现与诊断扩展"
+    title = "残差层次分区能否改进多保真洪水代理？一个带神谕误差预算与 CRPS 标定的等容量负结果（公开数据研究报告）"
+    subtitle = "Low-fidelity, Spatial analysis, and Gaussian Process Learning（LSG）公共基准复现、诊断扩展与局部化的等容量负结果"
 
     cover_md = f"""# {title}
 
@@ -705,6 +749,7 @@ def main() -> None:
         ("实验设计", "实验设计与评价指标"),
         ("分案例结果", "分案例结果"),
         ("跨案例比较", "跨案例比较"),
+        ("等容量对照", "等容量对照实验（局部化不成立）"),
         ("图件解读", "详细图件解读"),
         ("讨论", "讨论与因果分析"),
         ("创新点", "创新点"),
@@ -729,7 +774,7 @@ def main() -> None:
 
 本报告系统记录并解释仓库 `20260522-LSG-WRR` 中基于公开多保真淹没立方体的 LSG（Low-fidelity, Spatial analysis, and Gaussian Process Learning，低保真—空间分析—高斯过程学习）实现、诊断与概率扩展。LSG 不依赖 HEC-RAS、TUFLOW 或任一特定求解器品牌：它只要求成对的高精度（high-fidelity, HF）与低精度（low-fidelity, LF）淹没场。
 
-在 Fraehr 风格的 Grp1 / `wet_train` 协议下，三案例点技能的主结论是：（1）相对 LF-only，多保真 LSG 在 Burnett 等弱 LF 情景给出清晰的 CSI（Critical Success Index，临界成功指数）与湿单元 RMSE（root mean square error，均方根误差）提升；（2）层次残差分区（H-LSG，`residual_kmeans`）主要缩小截断间隙 O2−O1，而不是以大幅 CSI 超越全局 EOF（empirical orthogonal function，经验正交函数）作为 headline；（3）Carlisle Max 路径上 CRPS（Continuous Ranked Probability Score，连续分级概率评分）方差标定把方差尺度压到 s≈{r3(var_max)}，CRPS 由 {r3(crps_max_before)} 降至 {r3(crps_max_after)}，而 CSI/RMSE 因均值不变而按构造保持不变；（4）Chowilla 在 all_cells 上出现 CSI≈{r4(metrics['chow_h_all_csi'])} 的“崩溃”，但在 `wet_train` 上 CSI≈{r4(metrics['chow_h_wet_csi'])}、RMSE≈{r3(metrics['chow_h_wet_rmse'])} m——这是强 LF 范围情景下的评分协议反例，不是静默失败。评价单元是 hold-out 事件（Carlisle/Chowilla Max：N=1；Burnett：N=18），不是栅格单元。
+在 Fraehr 风格的 Grp1 / `wet_train` 协议下，三案例的主结论是：（1）相对 LF-only，多保真 LSG 在 Burnett 等弱 LF 情景给出清晰的 CSI（Critical Success Index，临界成功指数）与湿单元 RMSE（root mean square error，均方根误差）提升——**技能来自多保真映射本身**；（2）**关于局部化的结论是负面的**：层次残差分区（H-LSG，`residual_kmeans`）在原生容量下看似缩小截断间隙 O2−O1（empirical orthogonal function，经验正交函数），但**一旦把 GP 输入维度对齐**，全局模型复现（Burnett）甚至超越（Chowilla）该收缩，且 Chowilla 上 matched-15 全局拿到**更低**的 wet RMSE（0.085 vs 0.093 m），Burnett 上额外残差容量通过退化的 LF→HF GP 映射（O4−O2 0.304 vs 0.056 m，EXT 门控相同）**恶化**深度 RMSE；诱导点预算与分区数对 RMSE 的影响不亚于分区本身——因此**表观分区优势是容量/近似混淆，而非空间局部化**；（3）Carlisle Max 路径上 CRPS（Continuous Ranked Probability Score，连续分级概率评分）方差标定把方差尺度压到 s≈{r3(var_max)}，CRPS 由 {r3(crps_max_before)} 降至 {r3(crps_max_after)}，而 CSI/RMSE 因均值不变而按构造保持不变；（4）Chowilla 在 all_cells 上出现 CSI≈{r4(metrics['chow_h_all_csi'])} 的“崩溃”，但在 `wet_train` 上 CSI≈{r4(metrics['chow_h_wet_csi'])}、RMSE≈{r3(metrics['chow_h_wet_rmse'])} m——这是强 LF 范围情景下的评分协议反例，不是静默失败。评价单元是 hold-out 事件（Carlisle/Chowilla Max：N=1；Burnett：N=18），不是栅格单元。本报告因此把 H-LSG 从“分区精度胜利”重新定位为**带等容量对照的截断诊断工具 + 诚实的负结果**。
 
 报告按教学体例撰写：每个图/表前说明动机，之后逐面板解读，并给出机制诊断时序（问题→证据→诊断→最小处理→验证→边界）。缺失资产一律标为「待补充」，不编造。
 """
@@ -744,7 +789,7 @@ Wang 等（2026）在大型复杂洪泛区进一步讨论 LSG-TS 与 LSG-Max，�
 
 ### 研究问题（与 `02_paper_framework.md` 对齐）
 
-1. **RQ1（技能）**：相对 LF-only 与全局 LSG，残差层次 LSG 在公开 Carlisle/Chowilla/Burnett 折上增加多少技能？
+1. **RQ1（容量对照的技能）**：在**对齐 GP 输入维度**后，残差层次分区相对全局 LSG 的表观优势是否幸存？（结论：否——见「等容量对照」节。）
 2. **RQ2（归因）**：剩余误差集中在截断、LF 投影，还是 GP 映射？
 3. **RQ3（UQ）**：CRPS 尺度方差标定能否在不改 CSI/RMSE 的前提下改善概率评分？
 4. **RQ4（边界）**：强 LF 范围何时制造 all-cells 反例，协议应如何报告？
@@ -776,7 +821,7 @@ Wang 等（2026）在大型复杂洪泛区进一步讨论 LSG-TS 与 LSG-Max，�
 
 ### 本项目可辩护新颖性（严格边界）
 
-可主张：同时域残差层次多分区 LSG（全局模态 + WSE 残差局部基；EXT 全局）+ CRPS 标定的 LSG 地图后验 + O1–O4 神谕阶梯的公开三案例评估。不可主张：首个局部 EOF、首个 LSG 误差分解、zoning 总是大幅提升 CSI。
+可主张：（i）对残差层次分区 LSG 的**等容量负结果**——在公开数据上用 `force_n_modes` 匹配容量、并做诱导点/分区数扫描，证明表观 O2−O1 优势是容量混淆而非局部化，且不转化为留出深度技能；（ii）Fraehr 兼容的 EXT+WSE 双场 + O1–O4 神谕阶梯 + CRPS 标定的 LSG 地图后验的公开三案例评估；（iii）可复现开放基准 + 诚实负结果。不可主张：首个局部 EOF、首个 LSG 误差分解、zoning 提升 CSI/RMSE、局部化在容量对齐后仍成立。
 """
 
     # Continue building content pieces...
@@ -1034,7 +1079,7 @@ Max CRPS {r3(crps_max_before)}→{r3(crps_max_after)}；CSI/RMSE 不变。Chowil
 - LF CSI≈{r4(metrics['burn_lf_wet_csi'])}，RMSE≈{r3(metrics['burn_lf_wet_rmse'])} m
 - LSG-Max H-LSG CSI≈{r4(metrics['burn_h_wet_csi'])}，RMSE≈{r3(metrics['burn_h_wet_rmse'])} m
 - LSG-Max global CSI≈{r4(metrics['burn_g_wet_csi'])}，RMSE≈{r3(metrics['burn_g_wet_rmse'])} m；O2−O1 global≈{r3(burn_g_eb.get('o2_minus_o1'))} vs H-LSG≈{r3(burn_eb.get('o2_minus_o1'))}
-- 这是“多保真 LSG 为主技能源”的最清晰跨案例证据；分区收益仍以 O2−O1 为主
+- 这是“多保真 LSG 为主技能源”的最清晰跨案例证据；但 H-LSG 虽有更小 O2−O1，其 wet RMSE 反而**更差**——见「等容量对照」节：这是 LF→HF GP 映射（O4−O2）退化，而非分区收益，且 matched-18 全局在纯容量下复现同一失败
 """
 
     cross = f"""## 跨案例比较
@@ -1060,6 +1105,120 @@ Max CRPS {r3(crps_max_before)}→{r3(crps_max_after)}；CSI/RMSE 不变。Chowil
 <li>Chowilla 必须双报 all_cells 与 wet_train。</li>
 <li>UQ before/after：Carlisle 改善；Burnett 改善；Chowilla CRPS 近乎持平（如实）。</li>
 </ol>
+</section>
+"""
+
+    # ---------- Capacity-control section (equal-capacity negative result) ----------
+    cap_t6_h = ["模型", "WSE 维度", "CSI(wet)", "RMSE(m, wet)", "测试 O2−O1(m)"]
+    cap_t6_r = [
+        ["全局（原生）", cap_dim(chow_g_cap), r4(sp(chow_g_cap, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_g_cap, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_g_cap))],
+        ["H-LSG `residual_kmeans`", cap_dim(chow_h_cap), r4(sp(chow_h_cap, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_h_cap, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_h_cap))],
+        ["全局 matched-15（`force_n_modes:15`）", cap_dim(chow_g15), r4(sp(chow_g15, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_g15, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_g15))],
+        ["H-LSG `residual_eof_modes:0`", cap_dim(chow_h_b3), r4(sp(chow_h_b3, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_h_b3, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_h_b3))],
+    ]
+
+    cap_t7_h = ["模型", "WSE 维度", "CSI(wet)", "RMSE(m, wet)", "测试 O2−O1(m)", "测试 O4−O2(m)"]
+    cap_t7_r = [
+        ["全局（原生）", cap_dim(burn_g, "6"), r4(sp(burn_g, "lsg_max", "wet_train", "csi")),
+         r3(sp(burn_g, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(burn_g)), r3(cap_o4o2(burn_g))],
+        ["H-LSG `residual_kmeans`", cap_dim(burn, "18"), r4(sp(burn, "lsg_max", "wet_train", "csi")),
+         r3(sp(burn, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(burn)), r3(cap_o4o2(burn))],
+        ["全局 matched-18（`force_n_modes:18`）", cap_dim(burn_g18), r4(sp(burn_g18, "lsg_max", "wet_train", "csi")),
+         r3(sp(burn_g18, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(burn_g18)), r3(cap_o4o2(burn_g18))],
+    ]
+
+    cap_t8_h = ["因子", "设置", "WSE 维度", "CSI(wet)", "RMSE(m, wet)", "测试 O2−O1(m)"]
+    cap_t8_r = [
+        ["诱导点 `min_inducing_points`", "2", cap_dim(chow_ind_m2), r4(sp(chow_ind_m2, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_ind_m2, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_ind_m2))],
+        ["", "8", cap_dim(chow_ind_m8), r4(sp(chow_ind_m8, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_ind_m8, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_ind_m8))],
+        ["", "16（默认）", cap_dim(chow_h_cap), r4(sp(chow_h_cap, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_h_cap, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_h_cap))],
+        ["", "28（= n_train）", cap_dim(chow_ind_m28), r4(sp(chow_ind_m28, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_ind_m28, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_ind_m28))],
+        ["分区数 `n_zones`", "2", cap_dim(chow_nz2), r4(sp(chow_nz2, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_nz2, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_nz2))],
+        ["", "4（默认）", cap_dim(chow_h_cap), r4(sp(chow_h_cap, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_h_cap, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_h_cap))],
+        ["", "6", cap_dim(chow_nz6), r4(sp(chow_nz6, "lsg_max", "wet_train", "csi")),
+         r3(sp(chow_nz6, "lsg_max", "wet_train", "rmse")), r3(cap_o2o1(chow_nz6))],
+    ]
+
+    ncv_full = nested_cv.get("full_train_var_scale") if nested_cv else None
+    ncv_mean = nested_cv.get("fold_var_scale_mean") if nested_cv else None
+    ncv_std = nested_cv.get("fold_var_scale_std") if nested_cv else None
+    ncv_min = nested_cv.get("fold_var_scale_min") if nested_cv else None
+    ncv_max = nested_cv.get("fold_var_scale_max") if nested_cv else None
+    ncv_folds = len(nested_cv.get("folds", [])) if nested_cv else 0
+
+    cap_title = "等容量对照实验（局部化不成立）"
+    capacity = f"""## {cap_title}
+
+本节是本轮修订的**核心新增诊断**，用来回答审稿式质疑：H-LSG（层次残差分区）相对全局 EOF 的“优势”，是**真的空间局部化**，还是仅仅**更多容量**（更多保留的 EC、更宽的 GP 输入）造成的假象？我们把 GP 输入维度（`gp_input_dim`）钉死后重跑，结论是：**一旦容量对齐，局部化优势不成立。**
+
+### 怎么读这些表（教学说明）
+
+- **WSE 维度**＝进入 WSE 分支高斯过程的展开系数总数（`capacity.gp_input_dim_wse`）。H-LSG 会把“全局模态 + 各分区残差 EC”叠进去，所以天然比全局基线维度更高——这正是“容量混淆”的来源。
+- **O2−O1（截断间隙）**＝在 HF 神谕下，从“只保留 k 个模态”到“全秩”的深度 RMSE 差；它衡量子空间**表达力**。任何增加保留方差的手段（多加分区残差 EC，或多加全局模态）都会缩小它——它奖励的是**容量**，不是**空间分区**本身。
+- **RMSE(wet)**＝真正的执行技能（湿掩膜深度误差），才是我们最终关心的量。
+- 关键对照逻辑：用 `force_n_modes` 给**全局**模型灌进与 H-LSG **相同**的维度；再用 `residual_eof_modes:0` 把 H-LSG 的残差关掉，看它是否塌回全局基线。
+
+### Chowilla 等容量对照（表 6）
+
+{table_md(cap_t6_h, cap_t6_r, "表 6. Chowilla 等容量对照（Grp1 Max, wet_train；数值取自 *_capacity_rerun / *_matched15 / *_budget3 JSON）")}
+
+**解读**：给全局模型灌到 15 维后，它拿到**最低**的 wet RMSE（{r3(sp(chow_g15, "lsg_max", "wet_train", "rmse"))} m，H-LSG 为 {r3(sp(chow_h_cap, "lsg_max", "wet_train", "rmse"))} m，原生 3 模态全局 {r3(sp(chow_g_cap, "lsg_max", "wet_train", "rmse"))} m）和**最小**的 O2−O1（{r3(cap_o2o1(chow_g15))} m，H-LSG {r3(cap_o2o1(chow_h_cap))} m，原生全局 {r3(cap_o2o1(chow_g_cap))} m）。把 H-LSG 残差关掉（`residual_eof_modes:0`）后它精确塌回原生全局。所以 6.3 节里归功于“分区”的 O2−O1 收缩，其实只要多留全局模态就能复现——甚至超过——一旦容量对齐，分区在 wet RMSE 上**没有**任何优势。
+
+### Burnett 等容量对照与误差归因（表 7）
+
+{table_md(cap_t7_h, cap_t7_r, "表 7. Burnett 等容量对照与神谕归因（Grp1 Max, wet_train / test）")}
+
+**解读**：额外容量（无论来自 H-LSG 残差栈，还是 matched-18 全局）都**缩小 O2−O1 但恶化** wet RMSE：相对原生 6 模态全局（{r3(sp(burn_g, "lsg_max", "wet_train", "rmse"))} m），H-LSG 升到 {r3(sp(burn, "lsg_max", "wet_train", "rmse"))} m，matched-18 全局 {r3(sp(burn_g18, "lsg_max", "wet_train", "rmse"))} m。神谕阶梯把失败精确定位到 **LF→HF 的 GP 映射**：H-LSG 的 O4−O2＝{r3(cap_o4o2(burn))} m，约为全局（{r3(cap_o4o2(burn_g))} m）的 5.5 倍；而两模型的 EXT 门控**完全相同**（cell agreement 0.986，见 `diagnose_burnett_hlsg_gap.py` 产出的 `diagnose_hlsg_o2_vs_rmse.json`）。因此这**不是**“extent 门控”故事，而是残差容量让子空间更可表达、却让 GP 更难拟合。
+
+### 诱导点与分区数混淆（表 8）
+
+{table_md(cap_t8_h, cap_t8_r, "表 8. Chowilla H-LSG 诱导点与分区数扫描（Grp1 Max, wet_train）")}
+
+**解读**：两个“干扰因子”对 RMSE 的影响不亚于分区本身。在 15 维 WSE 输入下，SGPR 诱导点预算主宰深度 RMSE 而 O2−O1 几乎不变（m=2 时 RMSE {r3(sp(chow_ind_m2, "lsg_max", "wet_train", "rmse"))} m；m=28 时降到 {r3(sp(chow_ind_m28, "lsg_max", "wet_train", "rmse"))} m），而 3 维全局在 m=2 时仍稳（约 0.085 m）——低 m 的 H-LSG 崩溃很容易被误读成“分区有害”。另一方面，`n_zones` 从 2 增到 6 单调缩小 O2−O1（{r3(cap_o2o1(chow_nz2))} → {r3(cap_o2o1(chow_nz6))} m）却**恶化** wet RMSE（{r3(sp(chow_nz2, "lsg_max", "wet_train", "rmse"))} → {r3(sp(chow_nz6, "lsg_max", "wet_train", "rmse"))} m）：更多分区＝更多 GP 无法利用的 EC 容量。两组扫描都指向容量/近似解释，而非局部化解释。
+
+### CRPS 尺度的折稳定性（方法学检查）
+
+官方测试折在 Chowilla 只有 1 个事件，可能担心 CRPS 方差尺度 *s* 是脆弱的单次拟合。{ncv_folds} 折留一训练事件交叉验证给出 *s* = {r3(ncv_mean)} ± {r3(ncv_std)}（范围 {r3(ncv_min)}–{r3(ncv_max)}），围绕全训练值 {r3(ncv_full)}，说明该标量在重采样下稳定。这**不**声称 Chowilla 标定有用（6.5 节报告其 CRPS 持平、coverage 恶化），只说明该零结果不是估计器不稳造成的（来源 `nested_crps_scale_cv.json`）。
+
+### 本节结论（写进正文的底线）
+
+1. **不要**在未陈述上述等容量负对照的情况下，声称 H-LSG“因局部化”而在深度 RMSE 上胜过全局 EOF。
+2. H-LSG 最诚实的定位是**带等容量对照的截断间隙（O2−O1）诊断工具**，而非 CSI/RMSE 升级。
+3. 在 **Burnett** 上要明说：H-LSG 通过 **GP/LF 映射（O4−O2）** 恶化 wet RMSE，而非 EXT 门控；matched-18 全局在纯容量下复现同一失败模式。
+"""
+
+    capacity_html = f"""
+<section id="{slug(cap_title)}">
+<h2>{html.escape(cap_title)}</h2>
+<div class="callout">本节是本轮修订的<strong>核心新增诊断</strong>：把 GP 输入维度（<code>gp_input_dim</code>）钉死后重跑，检验 H-LSG 相对全局 EOF 的“优势”是真局部化还是多容量。结论：<strong>一旦容量对齐，局部化优势不成立。</strong></div>
+<h3>怎么读这些表（教学说明）</h3>
+<ul>
+<li><strong>WSE 维度</strong>＝进入 WSE 分支 GP 的 EC 总数（<code>capacity.gp_input_dim_wse</code>）；H-LSG 天然更高，这是容量混淆来源。</li>
+<li><strong>O2−O1（截断间隙）</strong>＝HF 神谕下从截断到全秩的深度 RMSE 差，衡量子空间表达力；任何增加保留方差的手段都会缩小它——奖励容量，不是分区。</li>
+<li><strong>RMSE(wet)</strong> 才是执行技能；用 <code>force_n_modes</code> 给全局灌到 H-LSG 相同维度，再用 <code>residual_eof_modes:0</code> 看 H-LSG 是否塌回全局。</li>
+</ul>
+<h3>Chowilla 等容量对照</h3>
+{table_html(cap_t6_h, cap_t6_r, "表 6. Chowilla 等容量对照（Grp1 Max, wet_train）")}
+<p><strong>解读：</strong>给全局灌到 15 维后拿到最低 wet RMSE（{r3(sp(chow_g15, "lsg_max", "wet_train", "rmse"))} m）与最小 O2−O1（{r3(cap_o2o1(chow_g15))} m）；关掉 H-LSG 残差即塌回原生全局。分区的 O2−O1 收缩只要多留全局模态就能复现甚至超过，容量对齐后分区在 wet RMSE 上无优势。</p>
+<h3>Burnett 等容量对照与误差归因</h3>
+{table_html(cap_t7_h, cap_t7_r, "表 7. Burnett 等容量对照与神谕归因（Grp1 Max, wet_train / test）")}
+<p><strong>解读：</strong>额外容量缩小 O2−O1 却恶化 wet RMSE（原生全局 {r3(sp(burn_g, "lsg_max", "wet_train", "rmse"))} m → H-LSG {r3(sp(burn, "lsg_max", "wet_train", "rmse"))} m、matched-18 {r3(sp(burn_g18, "lsg_max", "wet_train", "rmse"))} m）。神谕定位到 LF→HF GP 映射：H-LSG 的 O4−O2＝{r3(cap_o4o2(burn))} m ≈ 全局（{r3(cap_o4o2(burn_g))} m）的 5.5 倍；两模型 EXT 门控相同（agreement 0.986），非 extent 故事。</p>
+<h3>诱导点与分区数混淆</h3>
+{table_html(cap_t8_h, cap_t8_r, "表 8. Chowilla H-LSG 诱导点与分区数扫描（Grp1 Max, wet_train）")}
+<p><strong>解读：</strong>诱导点预算主宰深度 RMSE 而 O2−O1 不变（低 m 崩溃易被误读为“分区有害”）；<code>n_zones</code> 2→6 缩小 O2−O1 却恶化 RMSE。两者都是容量/近似效应。</p>
+<h3>CRPS 尺度的折稳定性</h3>
+<p>{ncv_folds} 折留一训练事件交叉验证：<em>s</em> = {r3(ncv_mean)} ± {r3(ncv_std)}（范围 {r3(ncv_min)}–{r3(ncv_max)}），围绕全训练值 {r3(ncv_full)}，稳定；不声称 Chowilla 标定有用，只排除估计器不稳（<code>nested_crps_scale_cv.json</code>）。</p>
+<div class="callout"><strong>底线：</strong>H-LSG 应定位为带等容量对照的 O2−O1 <strong>诊断工具</strong>，不是 CSI/RMSE 升级；Burnett 上由 GP/LF 映射（O4−O2）而非 EXT 门控致其 RMSE 恶化。</div>
 </section>
 """
 
@@ -1187,18 +1346,19 @@ Max CRPS {r3(crps_max_before)}→{r3(crps_max_after)}；CSI/RMSE 不变。Chowil
 
 ### 主因果叙事（锁定）
 
-1. **多保真 LSG vs LF** 是技能主效应（Burnett 最清晰；Carlisle 在高位微调；Chowilla 深度 RMSE 在湿掩膜上大幅下降）。
-2. **残差分区** 的可重复收益是 O2−O1 缩小（Carlisle Max、Chowilla），不是 CSI 排行榜。
-3. **SGPR 诱导点** 曾把“分区有害”的假象写入 Max O4；修复后假象消失——方法论文必须报告失败模式。
-4. **UQ 标定** 解决过宽区间；与点估计正交。
-5. **Chowilla all-cells** 是评分协议与 EXT 学习域的相互作用，应作为结果写进正文，而非附录藏匿。
+1. **多保真 LSG vs LF** 是技能主效应（Burnett 最清晰；Carlisle 在高位微调；Chowilla 深度 RMSE 在湿掩膜上大幅下降）——技能在多保真映射，不在局部化。
+2. **残差分区的表观优势是容量混淆**：等容量对照（表 6–8）显示，对齐 GP 维度后全局模型复现/超越 O2−O1 收缩，Chowilla 上 matched-15 全局 wet RMSE 更低；O2−O1 奖励的是保留方差（容量），不是空间分区。
+3. **Burnett 的失败机制**：残差容量让子空间更可表达（O2−O1 更小），却让 LF→HF GP 映射退化（O4−O2 约 5.5×），EXT 门控相同——不是 extent 故事；matched-18 全局在纯容量下复现同一失败。
+4. **干扰因子**：SGPR 诱导点预算与 `n_zones` 对 RMSE 的影响不亚于分区；低 m 的 H-LSG 崩溃易被误读为“分区有害”。方法论文必须报告这些近似/容量因子。
+5. **UQ 标定** 解决过宽区间；与点估计正交（CRPS 尺度经嵌套 CV 证明折稳定）。
+6. **Chowilla all-cells** 是评分协议与 EXT 学习域的相互作用，应作为结果写进正文，而非附录藏匿。
 
 ### 开放科学问题（来自进度评论）
 
-1. 为何正确 SGPR 后 O2−O1 增益显得“谦逊”？可能因为全局模态已吸收大部分能量。
+1. O2−O1 作为诊断很有信息量，但与执行技能解耦——未来应报告“容量匹配后的留出技能”而非单看 O2−O1。
 2. 强 LF 反例的社区评分规范应如何标准化？
 3. `var_scale` 能否跨事件/站点迁移而不重拟合？（待补充实验）
-4. 与 REOF-SGP、Tan 区域化 LSG 的精细边界还需对照表持续维护。
+4. 与 REOF-SGP、Tan 区域化 LSG 的精细边界还需对照表持续维护；未来局部 EOF 洪水代理应默认报告等容量基线。
 """
 
     innov = f"""## 创新点
@@ -1260,16 +1420,16 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml</pre>
 
     future = """## 未来工作
 
-1. 在内存允许或流式摄取就绪时补跑 Chowilla/Burnett 全时序 Grp1（Burnett HF 堆叠≈199 GB，当前主机 ~128 GB RAM 不可行）。
-2. 等容量（匹配总模态/诱导点）global vs H-LSG；残差区连通性图。
-3. CRPS *s* 嵌套 CV 与跨站点迁移；解释 Chowilla 标定持平/coverage 恶化。
+1. 在内存允许或流式摄取就绪时补跑 Chowilla/Burnett 全时序 Grp1（Burnett HF 堆叠≈199 GB，当前主机 ~128 GB RAM 不可行）——检验负结果在全时序折上是否依旧。
+2. 把等容量对照扩展到 Carlisle，并做容量 × 分区 × 站点的完整析因（本轮已完成 Chowilla/Burnett Max 的等容量、诱导点与分区数扫描）。
+3. residual_kmeans 区划连通性图与非残差地理分区对照；Burnett/Carlisle 的 CRPS *s* 嵌套 CV。
 4. 许可到来后的 Brisbane 附录复现；FloodCastBench。
-5. 区数/残差模态更系统的扫描（wet_correlation 已有单折证据）。
+5. 发展“容量匹配后可预测局部化增益”的训练期判据（若存在）。
 """
 
     conclusion = f"""## 结论
 
-在三个公开多保真案例上，本项目复现并扩展了 LSG 栈：EXT+WSE 双场、残差层次分区、SGPR 诱导点稳健化、CRPS 方差标定与 O1–O4 神谕预算。**技能提升的主导因素是多保真 LSG 本身**；残差分区稳定地表现为截断间隙（O2−O1）的缩小（Chowilla/Burnett global A/B 均已齐）；概率标定在 Carlisle/Burnett 改善可靠性，在 Chowilla Max 上 CRPS 近乎持平——必须如实报告；点估计 CSI/RMSE 因均值不变而**按构造**保持不变；单元级 P(wet) 与 Chowilla `wet_correlation` 敏感性已补齐。Chowilla 提醒社区必须同时报告 all_cells 与 wet_train。评价单元是 hold-out 事件（Carlisle/Chowilla Max 为 N=1，Burnett 为 N=18），不是栅格单元。这些结论均锚定于本仓库 JSON/图件，可独立复核。
+在三个公开多保真案例上，本项目复现并扩展了 LSG 栈：EXT+WSE 双场、SGPR 诱导点稳健化、CRPS 方差标定与 O1–O4 神谕预算，并对残差层次分区做了**等容量对照**。关于局部化的 headline 结论是**负面**的：一旦对齐 GP 输入维度，残差分区在截断间隙 O2−O1 上的表观优势会被等容量全局模型复现或超越，且不转化为留出深度技能——Chowilla 上 matched-15 全局拿到最低 wet RMSE，Burnett 上额外残差容量通过退化的 LF→HF GP 映射（EXT 门控相同）恶化 RMSE；诱导点预算与分区数对 RMSE 的影响也不亚于分区本身。**可辩护的核心**依然成立：多保真 LSG 在弱 LF 情景提供主要技能；O1–O4 阶梯定位误差部件；CRPS 方差标定在 Carlisle/Burnett 改善可靠性而**按构造**不动 CSI/RMSE，在 Chowilla Max 上 CRPS 近乎持平（如实报告）；残差层次分区最宜用作**截断诊断**而非精度升级。Chowilla 提醒社区必须同时报告 all_cells 与 wet_train，并在采信局部 EOF 变体前先做等容量基线。评价单元是 hold-out 事件（Carlisle/Chowilla Max 为 N=1，Burnett 为 N=18），不是栅格单元。所有结论均锚定于本仓库 JSON/图件，可独立复核。
 """
 
     avail = """## 数据与代码可用性
@@ -1347,13 +1507,15 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml</pre>
 
     pending = f"""## 待补充清单
 
-1. Chowilla / Burnett **全时序** Grp1 折 — **未运行**（Burnett HF 堆叠≈199 GB ≫ ~128 GB RAM；Chowilla 双场+UQ 同样受限）。
-2. 等容量 global vs H-LSG、非残差地理分区对照（除已完成的 Chowilla `wet_correlation` 单折）、oracle 顺序置换 — 未运行。
+1. Chowilla / Burnett **全时序** Grp1 折 — **未运行**（Burnett HF 堆叠≈199 GB ≫ ~128 GB RAM；Chowilla 双场+UQ 同样受限）。等容量负结果目前建立在 Max 面折上。
+2. **Carlisle 等容量对照**、非残差地理分区对照（除已完成的 Chowilla `wet_correlation` 单折）、容量 × 分区 × 站点完整析因、oracle 顺序置换 — 未运行。
 3. Brisbane 许可立方体复现 — 未运行。
 4. FloodCastBench — 未运行/推迟。
 5. 训练硬件型号与完整墙钟时间表 — 仅有 JSON 秒数，机型待补充。
-6. 跨站点 `var_scale` 迁移 / 嵌套 CV — 开放问题（Chowilla 标定持平已提示不可盲目迁移）。
+6. **Burnett/Carlisle** 的 CRPS *s* 嵌套 CV 与跨站点 `var_scale` 迁移 — 待补充（Chowilla 已完成，标定持平提示不可盲目迁移）。
 7. residual_kmeans 区划连通性图 — 待补充。
+
+**本轮已清除（等容量对照）：** Chowilla 与 Burnett 等容量 global vs H-LSG（表 6–7）；Chowilla 诱导点与分区数扫描（表 8）；Burnett 神谕归因（表 7）；Chowilla CRPS *s* 嵌套 CV（等容量对照节）。
 """
 
     # Assemble MD
@@ -1375,6 +1537,7 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml</pre>
         exp,
         results,
         cross,
+        capacity,
         "\n".join(figs_md),
         discuss,
         innov,
@@ -1476,6 +1639,7 @@ th { background: var(--table-head); text-align: left; }
         f'<section id="{slug("实验设计与评价指标")}">{md_to_simple_html(exp)}</section>',
         f'<section id="{slug("分案例结果")}">{md_to_simple_html(results)}</section>',
         cross_html,
+        capacity_html,
         "\n".join(figs_html),
         f'<section id="{slug("讨论与因果分析")}">{md_to_simple_html(discuss)}</section>',
         innov_html,

@@ -44,6 +44,43 @@ def _zoning_method(cfg: dict[str, Any]) -> str:
     return zoning.normalize_zoning((cfg.get("lsg") or {}).get("zoning"))
 
 
+def capacity_snapshot(state: Any) -> dict[str, Any]:
+    """Report retained EC / GP input dimensionality for capacity-matched A/B.
+
+    For dual EXT+WSE states, residual zones attach to WSE only; EXT stays global.
+    """
+    # DualLSGState: prefer WSE branch (where H-LSG residual capacity lives).
+    wse = getattr(state, "wse", None)
+    ext = getattr(state, "ext", None)
+    if wse is not None:
+        snap_wse = capacity_snapshot(wse)
+        snap_ext = capacity_snapshot(ext) if ext is not None else {}
+        return {
+            "field": "wse_ext",
+            "wse": snap_wse,
+            "ext": snap_ext,
+            "gp_input_dim_wse": snap_wse.get("gp_input_dim"),
+            "gp_input_dim_ext": snap_ext.get("gp_input_dim"),
+            "n_modes_global_wse": snap_wse.get("n_modes_global"),
+            "n_residual_ec_wse": snap_wse.get("n_residual_ec"),
+        }
+    n_global = int(getattr(state, "n_modes", 0) or 0)
+    res_modes = list(getattr(state, "residual_eof_modes", None) or [])
+    n_per = [int(np.asarray(m).shape[0]) for m in res_modes]
+    n_res_ec = int(sum(n_per))
+    return {
+        "field": str(getattr(state, "field", "depth") or "depth"),
+        "zone_method": str(getattr(state, "zone_method", "none") or "none"),
+        "n_modes_global": n_global,
+        "n_zones": int(len(n_per)),
+        "residual_n_modes": n_per,
+        "n_residual_ec": n_res_ec,
+        "gp_input_dim": int(n_global + n_res_ec),
+        "force_n_modes": None,  # filled by caller from cfg when known
+    }
+
+
+
 def _hier_from_state(state: LSGState) -> zoning.HierarchicalEOF | None:
     return zoning.hier_from_state(state)
 
@@ -158,7 +195,7 @@ def prepare_training_matrix(
         weights=w,
         n_components=cfg["lsg"]["max_eof_modes"],
     )
-    n_modes = eof.select_n_modes(pca, hf_wet.shape[0])
+    n_modes = eof.resolve_n_modes(pca, hf_wet.shape[0], cfg)
     modes = pca.components_[:n_modes]
     modes_full = pca.components_
 

@@ -1156,4 +1156,4 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml
 
 ---
 
-**状态声明：** 工作区 `20260522-LSG-WRR` 仍无 `.git`；公开镜像通过 staging 副本 `I:\Projects\_publish_lsg-flood-surrogate-benchmark` 推送到 https://github.com/Coucou2016/lsg-flood-surrogate-benchmark （等容量负结果修订）。
+**状态声明：** 工作区 `20260522-LSG-WRR` 仍无 `.git`；公开镜像通过 staging 副本 `I:\Projects\_publish_lsg-flood-surrogate-benchmark` 推送到 https://github.com/Coucou2016/lsg-flood-surrogate-benchmark 。本轮已将论文侧过程泄漏清理到研究报告，并保留等容量负结果为主贡献。

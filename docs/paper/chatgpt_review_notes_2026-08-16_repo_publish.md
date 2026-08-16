@@ -39,11 +39,14 @@ Advisor only. Local executor verified claims against sources + `outputs/evaluati
 - **Purpose:** Claims vs code; overclaiming; novelty vs Tan/REOF/SFINCS/Markert/FIER
 - **Status:** see live log below / final report
 
-## Conversation 3 — Chinese report
+## Conversation 3 — Chinese report (completed)
 
-- **URL:** *(filled when completed)*
+- **URL:** https://chatgpt.com/c/6a819be9-19c4-83ea-9721-6809bf203f0f
 - **Purpose:** Teaching depth / glossary / causal narrative vs formal report standard
-- **Status:** see live log below / final report
+- **Web search:** YES (GitHub + raw report.md + figure SVGs/manifest)
+- **GitHub read:** YES — `docs/report/report.md`, figure SVGs, `figure_manifest.json` at commit `19ff7ad`
+- **Accepted locally (this turn):** glossary inducing-point symbol `Z_ind`; sanitize `figure_manifest.json` relative paths; keep `待补充`; soft O2−O1 wording in conclusion
+- **Deferred:** full report chapter rewrite / Fig5 merge / HTML+PDF full rebuild cycle (**PDF QA 未运行** this turn after md-only report tweaks)
 
 ## Independent literature re-check (this turn)
 

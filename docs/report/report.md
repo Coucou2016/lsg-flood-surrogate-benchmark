@@ -5,7 +5,7 @@
 | 项目 | 内容 |
 | --- | --- |
 | 报告类型 | 正式科学研究报告（方法/诊断导向，非短文） |
-| 项目仓库 | 本仓库根目录（公开镜像；本地工作区可另有副本） |
+| 项目仓库 | `I:\Projects\20260522-LSG-WRR` |
 | 主案例 | Carlisle；次案例 Chowilla；第三案例 Burnett |
 | 证据日期 | 2026-08-16（与 `docs/paper/00_progress_review.md` 对齐） |
 | 目标期刊语境 | WRR / JoH / EMS（methods） |
@@ -764,7 +764,7 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml
 
 ## 结论
 
-在三个公开多保真案例上，本项目复现并扩展了 LSG 栈：EXT+WSE 双场、残差层次分区、SGPR 诱导点稳健化、CRPS 方差标定与 O1–O4 神谕预算。**技能提升的主导因素是多保真 LSG 本身**；残差分区稳定地表现为截断间隙（O2−O1）的缩小（Chowilla/Burnett global A/B 均已齐）；概率标定在 Carlisle/Burnett 改善可靠性，在 Chowilla Max 上 CRPS 近乎持平——必须如实报告；点估计 CSI/RMSE 因均值不变而**按构造**保持不变；单元级 P(wet) 与 Chowilla `wet_correlation` 敏感性已补齐。Chowilla 提醒社区必须同时报告 all_cells 与 wet_train。评价单元是 hold-out 事件（Carlisle/Chowilla Max 为 N=1，Burnett 为 N=18），不是栅格单元。这些结论均锚定于本仓库 JSON/图件，可独立复核。
+在三个公开多保真案例上，本项目复现并扩展了 LSG 栈：EXT+WSE 双场、残差层次分区、SGPR 诱导点稳健化、CRPS 方差标定与 O1–O4 神谕预算。**技能提升的主导因素是多保真 LSG 本身**；残差分区稳定地表现为持出子空间可表达性间隙（O2−O1）的缩小（Chowilla/Burnett global A/B 均已齐）；概率标定在 Carlisle/Burnett 改善可靠性，在 Chowilla Max 上 CRPS 近乎持平——必须如实报告；点估计 CSI/RMSE 因均值不变而**按构造**保持不变；单元级 P(wet) 与 Chowilla `wet_correlation` 敏感性已补齐。Chowilla 提醒社区必须同时报告 all_cells 与 wet_train。评价单元是 hold-out 事件（Carlisle/Chowilla Max 为 N=1，Burnett 为 N=18），不是栅格单元。这些结论均锚定于本仓库 JSON/图件，可独立复核。
 
 
 ## 数据与代码可用性
@@ -804,7 +804,7 @@ python scripts/rescore_uq_calibrated.py --config config/carlisle.yaml
 | 淹没范围 / 水面高程 | Extent / Water-Surface Elevation | EXT / WSE | 湿干与水面 | 双场重构 | 降虚警、近发表 CSI |
 | 层次残差 LSG | Hierarchical residual LSG | H-LSG | 全局+残差分区 | WSE 残差 | 实现 zonal future work |
 | 稀疏高斯过程回归 | Sparse Gaussian Process Regression | SGPR | 诱导点近似 GP | 模态映射 | 可扩展回归 |
-| 诱导点 | Inducing points | Z / m | 稀疏近似支撑集 | SGPR | Max 路径数值稳健 |
+| 诱导点 | Inducing points | Z_ind / m | 稀疏近似支撑集（与地形高程 Z 区分） | SGPR | Max 路径数值稳健 |
 | 临界成功指数 | Critical Success Index | CSI | hits/(hits+misses+FA) | 点技能 | 淹没范围技巧 |
 | 均方根误差 | Root Mean Square Error | RMSE | 水深误差均方根 | 点技能 | 深度精度 |
 | 连续分级概率评分 | Continuous Ranked Probability Score | CRPS | 概率预报评分 | UQ 目标 | 方差标定 |

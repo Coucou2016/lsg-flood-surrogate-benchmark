@@ -27,6 +27,7 @@ from lsg.figstyle import (  # noqa: E402
     add_panel_label,
     apply_lsg_style,
     figsize_double,
+    figsize_single,
     save_pub,
 )
 
@@ -140,14 +141,14 @@ def fig_cross_case(out_dir: Path, skips: list[str]) -> list[Path]:
     for label, key in cases:
         summary = load_json(ARTIFACTS[key])
         if summary is None:
-            skips.append(f"fig01: {key} 未运行/缺数据")
+            skips.append(f"fig05: {key} 未运行/缺数据")
             continue
         case_labels.append(label)
         for v in variants:
             proto_key = "lf_only" if v == "lf_only" else v
             m = wet_train_metrics(summary, proto_key)
             if m is None:
-                skips.append(f"fig01: {label}/{proto_key} wet_train 缺数据")
+                skips.append(f"fig05: {label}/{proto_key} wet_train 缺数据")
                 csi[v].append(np.nan)
                 rmse[v].append(np.nan)
             else:
@@ -155,7 +156,7 @@ def fig_cross_case(out_dir: Path, skips: list[str]) -> list[Path]:
                 rmse[v].append(m["rmse"])
 
     if not case_labels:
-        skips.append("fig01: no case summaries available")
+        skips.append("fig05: no case summaries available")
         return []
 
     x = np.arange(len(case_labels), dtype=float)
@@ -190,13 +191,13 @@ def fig_cross_case(out_dir: Path, skips: list[str]) -> list[Path]:
     add_panel_label(axes[1], "(b)")
     fig.suptitle(f"Cross-case skill on {MASK_LABEL}", y=1.02)
     fig.tight_layout()
-    paths = save_pub(fig, out_dir / "fig01_cross_case_csi_rmse_wet_train")
+    paths = save_pub(fig, out_dir / "fig05_cross_case_csi_rmse_wet_train")
     plt.close(fig)
     return paths
 
 
 # ---------------------------------------------------------------------------
-# Figure 2 — O1–O4 error budget
+# Figure 6 — O1–O4 error budget
 # ---------------------------------------------------------------------------
 
 def fig_error_budget(out_dir: Path, skips: list[str]) -> list[Path]:
@@ -219,11 +220,11 @@ def fig_error_budget(out_dir: Path, skips: list[str]) -> list[Path]:
     for case, variant, path, key in sources:
         summary = load_json(path)
         if summary is None:
-            skips.append(f"fig02: {path.name} 未运行/缺数据")
+            skips.append(f"fig06: {path.name} 未运行/缺数据")
             continue
         rows = error_budget_rows(summary, key)
         if not rows:
-            skips.append(f"fig02: {case}/{variant} error_budget 缺数据")
+            skips.append(f"fig06: {case}/{variant} error_budget 缺数据")
             continue
         panels.append((case, variant, rows))
 
@@ -262,13 +263,13 @@ def fig_error_budget(out_dir: Path, skips: list[str]) -> list[Path]:
     axes[0].legend(loc="upper left", ncol=2, fontsize=7)
     fig.suptitle("O1–O4 error budget (clipped-depth RMSE on wet_idx)", y=1.03)
     fig.tight_layout()
-    paths = save_pub(fig, out_dir / "fig02_error_budget_o1o4")
+    paths = save_pub(fig, out_dir / "fig06_error_budget_o1o4")
     plt.close(fig)
     return paths
 
 
 # ---------------------------------------------------------------------------
-# Figure 3 — Global vs H-LSG A/B (+ SGPR fix on Carlisle)
+# Figure 7 — Global vs H-LSG A/B (+ SGPR fix on Carlisle)
 # ---------------------------------------------------------------------------
 
 def fig_global_vs_hlsg(out_dir: Path, skips: list[str]) -> list[Path]:
@@ -288,11 +289,11 @@ def fig_global_vs_hlsg(out_dir: Path, skips: list[str]) -> list[Path]:
     for case, label, path in rows:
         summary = load_json(path)
         if summary is None:
-            skips.append(f"fig03: {case}/{label} ({path.name}) 未运行/缺数据")
+            skips.append(f"fig07: {case}/{label} ({path.name}) 未运行/缺数据")
             continue
         m = wet_train_metrics(summary, "lsg_max")
         if m is None:
-            skips.append(f"fig03: {case}/{label} wet_train 缺数据")
+            skips.append(f"fig07: {case}/{label} wet_train 缺数据")
             continue
         records.append((case, label, m["csi"], m["rmse"]))
 
@@ -353,13 +354,13 @@ def fig_global_vs_hlsg(out_dir: Path, skips: list[str]) -> list[Path]:
         y=1.02,
     )
     fig.tight_layout()
-    paths = save_pub(fig, out_dir / "fig03_global_vs_hlsg_ab")
+    paths = save_pub(fig, out_dir / "fig07_global_vs_hlsg_ab")
     plt.close(fig)
     return paths
 
 
 # ---------------------------------------------------------------------------
-# Figure 4 — UQ calibration
+# Figure 8 — UQ calibration
 # ---------------------------------------------------------------------------
 
 def _uq_pair(summary: dict, variant: str) -> tuple[dict | None, dict | None]:
@@ -388,15 +389,15 @@ def fig_uq_calibration(out_dir: Path, skips: list[str]) -> list[Path]:
 
     summary = load_json(ARTIFACTS["carlisle_uq"])
     if summary is None:
-        skips.append("fig04: Carlisle UQ calibrated summary 未运行/缺数据")
+        skips.append("fig08: Carlisle UQ calibrated summary 未运行/缺数据")
         return []
 
     raw, cal = _uq_pair(summary, "lsg_max")
     if cal is None:
-        skips.append("fig04: lsg_max.uq 缺数据")
+        skips.append("fig08: lsg_max.uq 缺数据")
         return []
     if raw is None:
-        skips.append("fig04: lsg_max.uq_uncalibrated 缺数据 (before curve)")
+        skips.append("fig08: lsg_max.uq_uncalibrated 缺数据 (before curve)")
 
     fig, axes = plt.subplots(1, 3, figsize=figsize_double(2.9))
 
@@ -463,11 +464,11 @@ def fig_uq_calibration(out_dir: Path, skips: list[str]) -> list[Path]:
     def _append(case_label: str, path: Path, variant: str = "lsg_max"):
         s = load_json(path)
         if s is None:
-            skips.append(f"fig04: {case_label} 未运行/缺数据")
+            skips.append(f"fig08: {case_label} 未运行/缺数据")
             return
         r, c = _uq_pair(s, variant)
         if c is None or "crps" not in c:
-            skips.append(f"fig04: {case_label} CRPS 缺数据")
+            skips.append(f"fig08: {case_label} CRPS 缺数据")
             return
         names.append(case_label)
         before_c.append(float(r["crps"]) if r and "crps" in r else np.nan)
@@ -485,17 +486,17 @@ def fig_uq_calibration(out_dir: Path, skips: list[str]) -> list[Path]:
             fallback = ARTIFACTS["chowilla_hlsg" if label == "Chowilla" else "burnett_hlsg"]
             s = load_json(fallback)
             if s is None:
-                skips.append(f"fig04: {label} 未运行/缺数据")
+                skips.append(f"fig08: {label} 未运行/缺数据")
                 continue
             skips.append(
-                f"fig04: {label} UQ calibrated pair missing; using workflow summary"
+                f"fig08: {label} UQ calibrated pair missing; using workflow summary"
             )
         r, c = _uq_pair(s, "lsg_max")
         if c is None or "crps" not in c:
-            skips.append(f"fig04: {label} CRPS 缺数据")
+            skips.append(f"fig08: {label} CRPS 缺数据")
             continue
         if r is None:
-            skips.append(f"fig04: {label} UQ before (uncalibrated) 缺数据")
+            skips.append(f"fig08: {label} UQ before (uncalibrated) 缺数据")
         names.append(label)
         before_c.append(float(r["crps"]) if r and "crps" in r else np.nan)
         after_c.append(float(c["crps"]))
@@ -533,13 +534,13 @@ def fig_uq_calibration(out_dir: Path, skips: list[str]) -> list[Path]:
 
     fig.suptitle("UQ calibration via global CRPS variance scale", y=1.03)
     fig.tight_layout()
-    paths = save_pub(fig, out_dir / "fig04_uq_calibration_crps_scale")
+    paths = save_pub(fig, out_dir / "fig08_uq_calibration_crps_scale")
     plt.close(fig)
     return paths
 
 
 # ---------------------------------------------------------------------------
-# Figure 5 — spatial maps
+# Geometry / map helpers
 # ---------------------------------------------------------------------------
 
 def _load_xy(geom_path: Path, n_cells: int) -> np.ndarray | None:
@@ -580,139 +581,333 @@ def _scatter_field(ax, xy, values, *, cmap, vmin=None, vmax=None, s=0.4):
     return sc
 
 
-def fig_spatial_maps(out_dir: Path, skips: list[str]) -> list[Path]:
+def _extent_category(hf: np.ndarray, pred: np.ndarray, tau: float) -> np.ndarray:
+    """Encode Wang/Fraehr extent classes: 0 dry, 1 hit, 2 miss, 3 false alarm."""
+    hf_w = hf >= tau
+    pr_w = pred >= tau
+    cat = np.zeros(hf.shape, dtype=np.int8)
+    cat[hf_w & pr_w] = 1
+    cat[hf_w & ~pr_w] = 2
+    cat[~hf_w & pr_w] = 3
+    return cat
+
+
+def _scatter_categories(ax, xy, cat: np.ndarray, *, s: float):
+    """Plot hit/miss/FA/dry categorical map (Fraehr Fig. 9 / Wang Fig. 7 style)."""
+    from matplotlib.colors import ListedColormap
+
+    cmap = ListedColormap(
+        [PALETTE["dry"], PALETTE["hit"], PALETTE["miss"], PALETTE["false_alarm"]]
+    )
+    sc = ax.scatter(
+        xy[:, 0],
+        xy[:, 1],
+        c=cat,
+        s=s,
+        cmap=cmap,
+        vmin=-0.5,
+        vmax=3.5,
+        marker="s",
+        linewidths=0,
+        rasterized=True,
+    )
+    ax.set_aspect("equal", adjustable="box")
+    ax.set_xlabel("Easting (m)")
+    ax.set_ylabel("Northing (m)")
+    ax.tick_params(labelsize=7)
+    return sc
+
+
+def _case_event_bundle(case: str, pred_path: Path, geom_path: Path, skips: list[str], tag: str):
+    """Load first hold-out event + XY; return None on missing artifacts."""
+    if not pred_path.is_file():
+        skips.append(f"{tag}: {case} pred_examples.npz 未运行/缺数据")
+        return None
+    raw = np.load(pred_path, allow_pickle=True)
+    test_ids = [str(x) for x in np.asarray(raw["test_ids"]).tolist()]
+    idx = 0
+    eid = test_ids[idx] if test_ids else "?"
+    hf = np.asarray(raw["hf_max"][idx], dtype=float)
+    pred = np.asarray(raw["pred_lsg_max"][idx], dtype=float)
+    lf = (
+        np.asarray(raw["lf_upsampled_max"][idx], dtype=float)
+        if "lf_upsampled_max" in raw.files
+        else None
+    )
+    if lf is None:
+        skips.append(f"{tag}: {case} lf_upsampled_max 缺数据")
+    n = hf.size
+    xy = _load_xy(geom_path, n)
+    if xy is None:
+        skips.append(f"{tag}: {case} XY geometry mismatch/缺数据")
+        return None
+    pwet = None
+    if "inundation_prob_lsg_max" in raw.files:
+        pwet = np.asarray(raw["inundation_prob_lsg_max"][idx], dtype=float)
+    return {
+        "case": case,
+        "eid": eid,
+        "hf": hf,
+        "pred": pred,
+        "lf": lf,
+        "xy": xy,
+        "pwet": pwet,
+        "n": n,
+        "data_mode": str(np.asarray(raw["data_mode"]).item())
+        if "data_mode" in raw.files
+        else "?",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Figure 1 — study domains (cell-scatter; DEM raster often unavailable)
+# ---------------------------------------------------------------------------
+
+def fig_study_domains(out_dir: Path, skips: list[str]) -> list[Path]:
+    import matplotlib.pyplot as plt
+
+    specs = [
+        ("Carlisle", ARTIFACTS["pred_carlisle"], ARTIFACTS["geom_carlisle"]),
+        ("Chowilla", ARTIFACTS["pred_chowilla"], ARTIFACTS["geom_chowilla"]),
+        ("Burnett", ARTIFACTS["pred_burnett"], ARTIFACTS["geom_burnett"]),
+    ]
+    bundles = []
+    for case, pred, geom in specs:
+        b = _case_event_bundle(case, pred, geom, skips, "fig01_domains")
+        if b is not None:
+            bundles.append(b)
+    if not bundles:
+        return []
+
+    fig, axes = plt.subplots(1, len(bundles), figsize=figsize_double(2.8), squeeze=False)
+    axes = axes[0]
+    for ax, b, tag in zip(axes, bundles, [f"({chr(97 + i)})" for i in range(len(bundles))]):
+        xy = b["xy"]
+        # Subsample for readability on large meshes
+        step = max(1, b["n"] // 80_000)
+        ax.scatter(
+            xy[::step, 0],
+            xy[::step, 1],
+            s=0.15,
+            c=PALETTE["lsg_max"],
+            marker="s",
+            linewidths=0,
+            rasterized=True,
+            alpha=0.7,
+        )
+        ax.set_aspect("equal", adjustable="box")
+        ax.set_title(f"{b['case']} · n={b['n']:,}", fontsize=8)
+        ax.set_xlabel("Easting (m)")
+        ax.set_ylabel("Northing (m)")
+        add_panel_label(ax, tag, x=-0.05, y=1.06)
+        if ax is not axes[0]:
+            ax.set_ylabel("")
+    fig.suptitle(
+        "Study domains (HF cell centres; DEM raster unavailable — cell-scatter)",
+        y=1.03,
+    )
+    fig.tight_layout()
+    paths = save_pub(fig, out_dir / "fig01_study_domains")
+    plt.close(fig)
+    return paths
+
+
+# ---------------------------------------------------------------------------
+# Figure 2 — inundation extent hit / miss / false-alarm maps
+# ---------------------------------------------------------------------------
+
+def fig_extent_hit_miss(out_dir: Path, skips: list[str]) -> list[Path]:
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+
+    written: list[Path] = []
+    specs = [
+        ("Carlisle", ARTIFACTS["pred_carlisle"], ARTIFACTS["geom_carlisle"], "fig02_extent_hit_miss_carlisle"),
+        ("Chowilla", ARTIFACTS["pred_chowilla"], ARTIFACTS["geom_chowilla"], "fig02_extent_hit_miss_chowilla"),
+        ("Burnett", ARTIFACTS["pred_burnett"], ARTIFACTS["geom_burnett"], "fig02_extent_hit_miss_burnett"),
+    ]
+    legend_elements = [
+        Patch(facecolor=PALETTE["hit"], edgecolor="none", label="Hit (both wet)"),
+        Patch(facecolor=PALETTE["miss"], edgecolor="none", label="Miss (HF wet)"),
+        Patch(facecolor=PALETTE["false_alarm"], edgecolor="none", label="False alarm"),
+        Patch(facecolor=PALETTE["dry"], edgecolor="0.6", label="Both dry"),
+    ]
+    for case, pred_path, geom_path, stem in specs:
+        b = _case_event_bundle(case, pred_path, geom_path, skips, "fig02_extent")
+        if b is None:
+            continue
+        s = 0.25 if b["n"] > 400_000 else 0.55
+        fig, axes = plt.subplots(1, 2, figsize=figsize_double(3.0), constrained_layout=True)
+        panels = [
+            ("LF vs HF", b["lf"] if b["lf"] is not None else np.full_like(b["hf"], np.nan)),
+            ("LSG-Max vs HF", b["pred"]),
+        ]
+        for ax, (title, field), tag in zip(axes, panels, ["(a)", "(b)"]):
+            if not np.isfinite(field).any():
+                ax.set_title(f"{title} · 缺数据")
+                add_panel_label(ax, tag, x=-0.05, y=1.06)
+                continue
+            cat = _extent_category(b["hf"], field, DEPTH_TAU_M)
+            _scatter_categories(ax, b["xy"], cat, s=s)
+            ax.set_title(title, fontsize=8)
+            add_panel_label(ax, tag, x=-0.05, y=1.06)
+            if ax is not axes[0]:
+                ax.set_ylabel("")
+                ax.tick_params(labelleft=False)
+        axes[0].legend(handles=legend_elements, loc="upper right", fontsize=6, frameon=True)
+        fig.suptitle(
+            f"{case} · event {b['eid']} · extent H/M/FA (τ={DEPTH_TAU_M:g} m)",
+            y=1.02,
+        )
+        out = f"{stem}_{b['eid']}" if case == "Burnett" else f"{stem}_{b['eid']}"
+        written.extend(save_pub(fig, out_dir / out))
+        plt.close(fig)
+    return written
+
+
+# ---------------------------------------------------------------------------
+# Figure 3 — peak-depth error maps (LSG−HF and LF−HF)
+# ---------------------------------------------------------------------------
+
+def fig_peak_depth_error(out_dir: Path, skips: list[str]) -> list[Path]:
     import matplotlib.pyplot as plt
 
     written: list[Path] = []
     specs = [
-        (
-            "Carlisle",
-            ARTIFACTS["pred_carlisle"],
-            ARTIFACTS["geom_carlisle"],
-            "fig05_spatial_maps_carlisle_E1",
-        ),
-        (
-            "Chowilla",
-            ARTIFACTS["pred_chowilla"],
-            ARTIFACTS["geom_chowilla"],
-            "fig05_spatial_maps_chowilla_E1",
-        ),
-        (
-            "Burnett",
-            ARTIFACTS["pred_burnett"],
-            ARTIFACTS["geom_burnett"],
-            "fig05_spatial_maps_burnett",
-        ),
+        ("Carlisle", ARTIFACTS["pred_carlisle"], ARTIFACTS["geom_carlisle"], "fig03_peak_depth_error_carlisle"),
+        ("Chowilla", ARTIFACTS["pred_chowilla"], ARTIFACTS["geom_chowilla"], "fig03_peak_depth_error_chowilla"),
+        ("Burnett", ARTIFACTS["pred_burnett"], ARTIFACTS["geom_burnett"], "fig03_peak_depth_error_burnett"),
     ]
-
     for case, pred_path, geom_path, stem in specs:
-        if not pred_path.is_file():
-            skips.append(f"fig05: {case} pred_examples.npz 未运行/缺数据")
+        b = _case_event_bundle(case, pred_path, geom_path, skips, "fig03_error")
+        if b is None:
             continue
-        raw = np.load(pred_path, allow_pickle=True)
-        test_ids = [str(x) for x in np.asarray(raw["test_ids"]).tolist()]
-        idx = 0
-        eid = test_ids[idx] if test_ids else "?"
-        hf = np.asarray(raw["hf_max"][idx], dtype=float)
-        pred = np.asarray(raw["pred_lsg_max"][idx], dtype=float)
-        lf = (
-            np.asarray(raw["lf_upsampled_max"][idx], dtype=float)
-            if "lf_upsampled_max" in raw.files
-            else None
-        )
-        n = hf.size
-        xy = _load_xy(geom_path, n)
-        if xy is None:
-            skips.append(f"fig05: {case} XY geometry mismatch/缺数据")
-            continue
-
-        err = pred - hf
-        wet_bin = (pred >= DEPTH_TAU_M).astype(float)
-
-        if "inundation_prob_lsg_max" in raw.files:
-            inund_vals = np.asarray(raw["inundation_prob_lsg_max"][idx], dtype=float)
-            inund_title = "P(wet)"
-            inund_cbar = "P(wet) (−)"
-        else:
-            skips.append(
-                f"fig05: {case} cell-wise inundation probability field 缺数据 "
-                f"(showing binary depth≥{DEPTH_TAU_M:g} m instead)"
+        err_lsg = b["pred"] - b["hf"]
+        err_lf = (b["lf"] - b["hf"]) if b["lf"] is not None else None
+        stack = [np.abs(err_lsg[np.isfinite(err_lsg)])]
+        if err_lf is not None:
+            stack.append(np.abs(err_lf[np.isfinite(err_lf)]))
+        lim = float(np.nanpercentile(np.concatenate(stack), 99)) or 1.0
+        s = 0.25 if b["n"] > 400_000 else 0.55
+        fig, axes = plt.subplots(1, 2, figsize=figsize_double(3.0), constrained_layout=True)
+        for ax, title, err, tag in (
+            (axes[0], "LF − HF", err_lf, "(a)"),
+            (axes[1], "LSG-Max − HF", err_lsg, "(b)"),
+        ):
+            if err is None:
+                ax.set_title(f"{title} · 缺数据")
+                add_panel_label(ax, tag, x=-0.05, y=1.06)
+                continue
+            sc = _scatter_field(
+                ax, b["xy"], err, cmap=PALETTE["error"], vmin=-lim, vmax=lim, s=s
             )
-            inund_vals = wet_bin
-            inund_title = f"Inundation (τ={DEPTH_TAU_M:g} m)"
-            inund_cbar = "wet (−)"
+            cbar = fig.colorbar(sc, ax=ax, fraction=0.035, pad=0.02, shrink=0.85)
+            cbar.ax.tick_params(labelsize=6)
+            cbar.set_label("m", fontsize=7)
+            ax.set_title(title, fontsize=8)
+            add_panel_label(ax, tag, x=-0.05, y=1.06)
+            if ax is not axes[0]:
+                ax.set_ylabel("")
+                ax.tick_params(labelleft=False)
+        fig.suptitle(
+            f"{case} · event {b['eid']} · peak-depth error (red +, blue −)",
+            y=1.02,
+        )
+        written.extend(save_pub(fig, out_dir / f"{stem}_{b['eid']}"))
+        plt.close(fig)
+    return written
 
-        panels = [
-            ("HF reference", hf, PALETTE["depth"], 0.0, None),
-            ("LF upsampled", lf if lf is not None else np.full_like(hf, np.nan), PALETTE["depth"], 0.0, None),
-            ("LSG-Max", pred, PALETTE["depth"], 0.0, None),
-            ("Error (LSG−HF)", err, PALETTE["error"], None, None),
-            (inund_title, inund_vals, PALETTE["inundation"], 0.0, 1.0),
-        ]
-        if lf is None:
-            skips.append(f"fig05: {case} lf_upsampled_max 缺数据")
 
+# ---------------------------------------------------------------------------
+# Figure 4 — P(wet) probabilistic maps (after deterministic maps)
+# ---------------------------------------------------------------------------
+
+def fig_pwet_maps(out_dir: Path, skips: list[str]) -> list[Path]:
+    import matplotlib.pyplot as plt
+
+    written: list[Path] = []
+    specs = [
+        ("Carlisle", ARTIFACTS["pred_carlisle"], ARTIFACTS["geom_carlisle"], "fig04_pwet_carlisle"),
+        ("Chowilla", ARTIFACTS["pred_chowilla"], ARTIFACTS["geom_chowilla"], "fig04_pwet_chowilla"),
+        ("Burnett", ARTIFACTS["pred_burnett"], ARTIFACTS["geom_burnett"], "fig04_pwet_burnett"),
+    ]
+    for case, pred_path, geom_path, stem in specs:
+        b = _case_event_bundle(case, pred_path, geom_path, skips, "fig04_pwet")
+        if b is None:
+            continue
+        if b["pwet"] is None:
+            skips.append(f"fig04_pwet: {case} inundation_prob_lsg_max 缺数据")
+            continue
+        s = 0.25 if b["n"] > 400_000 else 0.55
+        fig, ax = plt.subplots(figsize=figsize_single(3.0), constrained_layout=True)
+        sc = _scatter_field(
+            ax, b["xy"], b["pwet"], cmap=PALETTE["inundation"], vmin=0.0, vmax=1.0, s=s
+        )
+        cbar = fig.colorbar(sc, ax=ax, fraction=0.046, pad=0.04)
+        cbar.set_label(f"P(h ≥ {DEPTH_TAU_M:g} m)", fontsize=8)
+        ax.set_title(f"{case} · event {b['eid']} · LSG-Max P(wet)", fontsize=9)
+        add_panel_label(ax, "(a)", x=-0.08, y=1.04)
+        written.extend(save_pub(fig, out_dir / f"{stem}_{b['eid']}"))
+        plt.close(fig)
+    return written
+
+
+# ---------------------------------------------------------------------------
+# Legacy combined spatial strip (kept for backward HTML embeds if referenced)
+# ---------------------------------------------------------------------------
+
+def fig_spatial_maps(out_dir: Path, skips: list[str]) -> list[Path]:
+    """Deprecated strip: prefer fig02/03/04. Kept as optional combined depth strip."""
+    import matplotlib.pyplot as plt
+
+    written: list[Path] = []
+    specs = [
+        ("Carlisle", ARTIFACTS["pred_carlisle"], ARTIFACTS["geom_carlisle"], "fig05_legacy_depth_strip_carlisle"),
+        ("Chowilla", ARTIFACTS["pred_chowilla"], ARTIFACTS["geom_chowilla"], "fig05_legacy_depth_strip_chowilla"),
+        ("Burnett", ARTIFACTS["pred_burnett"], ARTIFACTS["geom_burnett"], "fig05_legacy_depth_strip_burnett"),
+    ]
+    for case, pred_path, geom_path, stem in specs:
+        b = _case_event_bundle(case, pred_path, geom_path, skips, "fig_legacy_spatial")
+        if b is None:
+            continue
         depth_vmax = float(
             np.nanpercentile(
                 np.concatenate(
-                    [hf[np.isfinite(hf)], pred[np.isfinite(pred)]]
-                    + ([lf[np.isfinite(lf)]] if lf is not None else [])
+                    [b["hf"][np.isfinite(b["hf"])], b["pred"][np.isfinite(b["pred"])]]
+                    + ([b["lf"][np.isfinite(b["lf"])]] if b["lf"] is not None else [])
                 ),
                 99,
             )
         )
         if not np.isfinite(depth_vmax) or depth_vmax <= 0:
             depth_vmax = 1.0
-        err_lim = float(np.nanpercentile(np.abs(err[np.isfinite(err)]), 99)) or 1.0
-
-        fig, axes = plt.subplots(
-            1, 5, figsize=figsize_double(3.1), constrained_layout=True
-        )
-        for ax, (title, vals, cmap, vmin, vmax), tag in zip(
-            axes,
-            panels,
-            ["(a)", "(b)", "(c)", "(d)", "(e)"],
-        ):
-            if title.startswith("HF") or title.startswith("LF") or title.startswith("LSG"):
-                vmin_i, vmax_i = 0.0, depth_vmax
-            elif title.startswith("Error"):
-                vmin_i, vmax_i = -err_lim, err_lim
-            else:
-                vmin_i, vmax_i = vmin, vmax
+        s = 0.25 if b["n"] > 400_000 else 0.6
+        panels = [
+            ("HF reference", b["hf"]),
+            ("LF upsampled", b["lf"] if b["lf"] is not None else np.full_like(b["hf"], np.nan)),
+            ("LSG-Max", b["pred"]),
+        ]
+        fig, axes = plt.subplots(1, 3, figsize=figsize_double(2.9), constrained_layout=True)
+        for ax, (title, vals), tag in zip(axes, panels, ["(a)", "(b)", "(c)"]):
             sc = _scatter_field(
-                ax,
-                xy,
-                vals,
-                cmap=cmap,
-                vmin=vmin_i,
-                vmax=vmax_i,
-                s=0.25 if n > 400_000 else 0.6,
+                ax, b["xy"], vals, cmap=PALETTE["depth"], vmin=0.0, vmax=depth_vmax, s=s
             )
             cbar = fig.colorbar(sc, ax=ax, fraction=0.035, pad=0.02, shrink=0.85)
             cbar.ax.tick_params(labelsize=6)
-            if title.startswith("Error"):
-                cbar.set_label("m", fontsize=7)
-            elif title.startswith("P(wet)") or title.startswith("Inundation"):
-                cbar.set_label(inund_cbar, fontsize=7)
-            else:
-                cbar.set_label("depth (m)", fontsize=7)
+            cbar.set_label("depth (m)", fontsize=7)
             ax.set_title(title, fontsize=8)
             add_panel_label(ax, tag, x=-0.05, y=1.06)
             if ax is not axes[0]:
                 ax.set_ylabel("")
                 ax.tick_params(labelleft=False)
-
-        fig.suptitle(f"{case} · event {eid} · max-depth fields", y=1.02)
-        # constrained_layout already applied; avoid tight_layout collision
-        out_stem = stem if case != "Burnett" else f"{stem}_{eid}"
-        written.extend(save_pub(fig, out_dir / out_stem))
+        fig.suptitle(f"{case} · event {b['eid']} · max-depth fields", y=1.02)
+        written.extend(save_pub(fig, out_dir / f"{stem}_{b['eid']}"))
         plt.close(fig)
-
     return written
 
 
 # ---------------------------------------------------------------------------
-# Figure 6 — zoning-method sensitivity (residual_kmeans vs wet_correlation)
+# Metric figures (after maps): cross-case, budget, A/B, UQ, zoning
 # ---------------------------------------------------------------------------
 
 def fig_zoning_sensitivity(out_dir: Path, skips: list[str]) -> list[Path]:
@@ -730,11 +925,11 @@ def fig_zoning_sensitivity(out_dir: Path, skips: list[str]) -> list[Path]:
     for lab, path, color in rows:
         summary = load_json(path)
         if summary is None:
-            skips.append(f"fig06: Chowilla {lab} 未运行/缺数据")
+            skips.append(f"fig09: Chowilla {lab} 未运行/缺数据")
             continue
         m = wet_train_metrics(summary, "lsg_max")
         if m is None:
-            skips.append(f"fig06: Chowilla {lab} wet_train 缺数据")
+            skips.append(f"fig09: Chowilla {lab} wet_train 缺数据")
             continue
         labels.append(lab)
         csi_vals.append(m["csi"])
@@ -742,8 +937,8 @@ def fig_zoning_sensitivity(out_dir: Path, skips: list[str]) -> list[Path]:
         colors.append(color)
 
     if len(labels) < 2:
-        if not any("fig06" in s for s in skips):
-            skips.append("fig06: wet_correlation zoning A/B 未运行/缺数据")
+        if not any("fig09" in s for s in skips):
+            skips.append("fig09: wet_correlation zoning A/B 未运行/缺数据")
         return []
 
     fig, axes = plt.subplots(1, 2, figsize=figsize_double(2.6))
@@ -765,7 +960,7 @@ def fig_zoning_sensitivity(out_dir: Path, skips: list[str]) -> list[Path]:
 
     fig.suptitle(f"Zoning-method sensitivity · {MASK_LABEL}", y=1.03)
     fig.tight_layout()
-    paths = save_pub(fig, out_dir / "fig06_zoning_wet_correlation_ab")
+    paths = save_pub(fig, out_dir / "fig09_zoning_wet_correlation_ab")
     plt.close(fig)
     return paths
 
@@ -779,12 +974,21 @@ def make_all(out_dir: Path) -> dict[str, Any]:
     out_dir.mkdir(parents=True, exist_ok=True)
     skips: list[str] = []
     written: list[Path] = []
+    # Visual-first (Fraehr/Wang order), then metrics
+    written += fig_study_domains(out_dir, skips)
+    written += fig_extent_hit_miss(out_dir, skips)
+    written += fig_peak_depth_error(out_dir, skips)
+    written += fig_pwet_maps(out_dir, skips)
     written += fig_cross_case(out_dir, skips)
     written += fig_error_budget(out_dir, skips)
     written += fig_global_vs_hlsg(out_dir, skips)
     written += fig_uq_calibration(out_dir, skips)
-    written += fig_spatial_maps(out_dir, skips)
     written += fig_zoning_sensitivity(out_dir, skips)
+    # Optional legacy depth strip (not primary manuscript numbering)
+    written += fig_spatial_maps(out_dir, skips)
+    skips.append(
+        "hydrograph panels: pred_examples.npz is max-only (no per-timestep series) → 缺数据; skipped"
+    )
 
     # Deduplicate skip notes while preserving order
     seen: set[str] = set()

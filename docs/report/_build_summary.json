@@ -1,17 +1,26 @@
 {
-  "html_bytes": 1682465,
-  "md_bytes": 55064,
+  "html_bytes": 2928326,
+  "md_bytes": 55727,
   "figures_inlined": [
     "fig01",
-    "fig02",
-    "fig03",
-    "fig04",
-    "fig05a",
-    "fig05b",
-    "fig05c",
-    "fig06"
+    "fig02a",
+    "fig02b",
+    "fig02c",
+    "fig03a",
+    "fig03b",
+    "fig03c",
+    "fig04a",
+    "fig04b",
+    "fig04c",
+    "fig05",
+    "fig06",
+    "fig07",
+    "fig08",
+    "fig09"
   ],
-  "skips": [],
+  "skips": [
+    "hydrograph panels: pred_examples.npz is max-only (no per-timestep series) → 缺数据; skipped"
+  ],
   "metrics_spotcheck": {
     "car_max_csi": 0.9756919710408083,
     "chow_all_csi": 0.39023876404494384,

@@ -35,6 +35,11 @@ PALETTE = {
     "depth": "Blues",
     "error": "RdBu_r",
     "inundation": "viridis",
+    # Fraehr/Wang categorical extent map (hit / miss / false alarm / dry)
+    "hit": "#2C7BB6",
+    "miss": "#D7191C",
+    "false_alarm": "#FDAE61",
+    "dry": "#E8E8E8",
 }
 
 _FONT_CANDIDATES: Sequence[str] = (

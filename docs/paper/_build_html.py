@@ -14,51 +14,81 @@ FIG_DIR = ROOT / "outputs" / "figures"
 FIGURES = [
     (
         "fig1",
-        "fig01_cross_case_csi_rmse_wet_train.svg",
-        "Figure 1. Cross-case wet_train CSI and RMSE for LF-only and LSG-Max (H-LSG) on Grp1 folds. "
-        "Burnett shows the clearest multi-fidelity CSI/RMSE lift; Carlisle LF is already strong on extent; "
-        "Chowilla wet_train depth RMSE collapses under LSG while CSI rises relative to LF.",
+        "fig01_study_domains.svg",
+        "Figure 1. Study domains as HF cell-centre scatters (DEM raster unavailable). "
+        "Equal-aspect easting/northing panels for Carlisle, Chowilla, and Burnett.",
     ),
     (
-        "fig2",
-        "fig02_error_budget_o1o4.svg",
-        "Figure 2. O1–O4 dual-path depth RMSE ladders (test split) for Carlisle TS/Max, Chowilla Max, and Burnett Max. "
-        "O2−O1 isolates truncation; large O3 on Chowilla/Burnett indicates LF expressibility limits; O4 is total surrogate error.",
+        "fig2a",
+        "fig02_extent_hit_miss_carlisle_E1.svg",
+        "Figure 2a. Carlisle E1 inundation extent hit/miss/false-alarm maps (τ=0.03 m): "
+        "(a) LF vs HF, (b) LSG-Max vs HF. Blue=hit, red=miss, gold=false alarm.",
     ),
     (
-        "fig3",
-        "fig03_global_vs_hlsg_ab.svg",
-        "Figure 3. Global versus residual H-LSG on Chowilla and Burnett Max Grp1. Wet_train CSI is nearly flat on both cases; "
-        "the diagnostic gain is the reduced O2−O1 truncation gap under H-LSG (Chowilla 0.057→0.013; Burnett 0.049→0.009).",
+        "fig2b",
+        "fig02_extent_hit_miss_chowilla_E1.svg",
+        "Figure 2b. Chowilla E1 extent H/M/FA maps. Supports the wet_train vs all_cells protocol anti-case.",
     ),
     (
-        "fig4",
-        "fig04_uq_calibration_crps_scale.svg",
-        "Figure 4. CRPS-scale variance calibration before/after. Carlisle Max: CRPS 0.039→0.028 at s=0.417. "
-        "Burnett: CRPS 0.133→0.127 at s=0.604. Chowilla: CRPS essentially flat (2.155→2.155) with coverage moving away from nominal—report honestly.",
+        "fig2c",
+        "fig02_extent_hit_miss_burnett_E1.svg",
+        "Figure 2c. Burnett E1 extent H/M/FA maps. Clearest visual LF→LSG extent correction among the three cases.",
     ),
     (
-        "fig5a",
-        "fig05_spatial_maps_carlisle_E1.svg",
-        "Figure 5a. Carlisle event E1 maps including cell-wise P(wet)=P(h≥0.03 m). "
-        "Differences are relatively subtle given strong LF extent skill.",
+        "fig3a",
+        "fig03_peak_depth_error_carlisle_E1.svg",
+        "Figure 3a. Carlisle E1 peak-depth error maps: LF−HF and LSG-Max−HF (red +, blue −).",
     ),
     (
-        "fig5b",
-        "fig05_spatial_maps_chowilla_E1.svg",
-        "Figure 5b. Chowilla event E1 maps with P(wet) panel. Illustrates the strong-LF / wet-mask tension underlying "
-        "the all-cells versus wet_train anti-case.",
+        "fig3b",
+        "fig03_peak_depth_error_chowilla_E1.svg",
+        "Figure 3b. Chowilla E1 peak-depth error maps (LF−HF, LSG−HF).",
     ),
     (
-        "fig5c",
-        "fig05_spatial_maps_burnett_E1.svg",
-        "Figure 5c. Burnett event E1 maps with P(wet) panel. Visual LF→LSG correction aligns with the large CSI/RMSE lift in Table 2.",
+        "fig3c",
+        "fig03_peak_depth_error_burnett_E1.svg",
+        "Figure 3c. Burnett E1 peak-depth error maps; large LF errors shrink under LSG-Max.",
+    ),
+    (
+        "fig4a",
+        "fig04_pwet_carlisle_E1.svg",
+        "Figure 4a. Carlisle E1 LSG-Max P(wet)=P(h≥0.03 m) after deterministic maps.",
+    ),
+    (
+        "fig4b",
+        "fig04_pwet_chowilla_E1.svg",
+        "Figure 4b. Chowilla E1 P(wet) map.",
+    ),
+    (
+        "fig4c",
+        "fig04_pwet_burnett_E1.svg",
+        "Figure 4c. Burnett E1 P(wet) map.",
+    ),
+    (
+        "fig5",
+        "fig05_cross_case_csi_rmse_wet_train.svg",
+        "Figure 5. Cross-case wet_train CSI and RMSE for LF-only and LSG-Max (H-LSG) on Grp1 folds.",
     ),
     (
         "fig6",
-        "fig06_zoning_wet_correlation_ab.svg",
-        "Figure 6. Chowilla Max Grp1 zoning sensitivity: global, residual_kmeans, and wet_correlation (CSI / RMSE). "
-        "wet_correlation CSI 0.978 is only slightly above H-LSG 0.976; O2−O1 remains the clearer diagnostic.",
+        "fig06_error_budget_o1o4.svg",
+        "Figure 6. O1–O4 dual-path depth RMSE ladders (test split).",
+    ),
+    (
+        "fig7",
+        "fig07_global_vs_hlsg_ab.svg",
+        "Figure 7. Global versus residual H-LSG on Chowilla and Burnett Max Grp1 (native capacity).",
+    ),
+    (
+        "fig8",
+        "fig08_uq_calibration_crps_scale.svg",
+        "Figure 8. CRPS-scale variance calibration before/after. "
+        "Chowilla CRPS flat with adverse coverage—report honestly.",
+    ),
+    (
+        "fig9",
+        "fig09_zoning_wet_correlation_ab.svg",
+        "Figure 9. Chowilla Max Grp1 zoning sensitivity: global, residual_kmeans, wet_correlation.",
     ),
 ]
 
@@ -166,17 +196,27 @@ def md_to_body(md: str, fig_html: dict[str, str]) -> str:
             if title.startswith("6.1"):
                 out.append(fig_html["fig1"])
             elif title.startswith("6.2"):
-                out.append(fig_html["fig2"])
+                out.append(fig_html["fig2a"])
+                out.append(fig_html["fig2b"])
+                out.append(fig_html["fig2c"])
             elif title.startswith("6.3"):
-                out.append(fig_html["fig3"])
+                out.append(fig_html["fig3a"])
+                out.append(fig_html["fig3b"])
+                out.append(fig_html["fig3c"])
+            elif title.startswith("6.4"):
+                out.append(fig_html["fig4a"])
+                out.append(fig_html["fig4b"])
+                out.append(fig_html["fig4c"])
             elif title.startswith("6.5"):
-                out.append(fig_html["fig4"])
+                out.append(fig_html["fig5"])
             elif title.startswith("6.6"):
-                out.append(fig_html["fig5a"])
-                out.append(fig_html["fig5b"])
-                out.append(fig_html["fig5c"])
-            elif title.startswith("6.7"):
                 out.append(fig_html["fig6"])
+            elif title.startswith("6.8"):
+                out.append(fig_html["fig7"])
+            elif title.startswith("6.9"):
+                out.append(fig_html["fig8"])
+            elif title.startswith("6.10"):
+                out.append(fig_html["fig9"])
         elif line.startswith("---"):
             out.append("<hr/>")
         elif line.strip().startswith(">"):

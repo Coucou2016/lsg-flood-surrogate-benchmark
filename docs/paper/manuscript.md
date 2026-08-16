@@ -77,7 +77,7 @@ with depths below τ set to dry. This is **not** an LF-extent post-gate on a dep
 
 > **h** = Φ<sub>global</sub> **c**<sub>global</sub> + Σ<sub>*z*</sub> **1**<sub>*z*</sub> Φ<sub>*z*</sub><sup>res</sup> **c**<sub>*z*</sub>.
 
-Zone labels use `residual_kmeans` on per-cell residual magnitude (optional XY). Residual ECs stack into the same LF→HF GP as global ECs. Under `wse_ext`, residual zones attach to the **WSE** branch only; binary EXT remains global so zone labels do not fragment the extent field. Because each zone contributes `residual_eof_modes` additional ECs, H-LSG raises the total WSE GP input dimension from *k*<sub>global</sub> to *k*<sub>global</sub> + *n*<sub>zones</sub> × `residual_eof_modes` (for example, 3 → 15 on Chowilla, 6 → 18 on Burnett). Any comparison of H-LSG to a global baseline therefore confounds *localisation* with *capacity*; Section 5 introduces matched-capacity controls that hold this input dimension fixed, and Section 6.8 reports the result.
+Zone labels use `residual_kmeans` on per-cell residual magnitude (optional XY). Residual ECs stack into the same LF→HF GP as global ECs. Under `wse_ext`, residual zones attach to the **WSE** branch only; binary EXT remains global so zone labels do not fragment the extent field. Because each zone contributes `residual_eof_modes` additional ECs, H-LSG raises the total WSE GP input dimension from *k*<sub>global</sub> to *k*<sub>global</sub> + *n*<sub>zones</sub> × `residual_eof_modes` (for example, 3 → 15 on Chowilla, 6 → 18 on Burnett). Any comparison of H-LSG to a global baseline therefore confounds *localisation* with *capacity*; Section 5 introduces matched-capacity controls that hold this input dimension fixed, and Section 6.11 reports the result.
 
 ### 3.4 Sparse GP regression and inducing-point floor
 
@@ -97,7 +97,7 @@ Uncalibrated intervals can be over-dispersed (Carlisle Max `coverage_90` ≈ 0.9
 
 > Var<sub>cal</sub> = *s* · Var<sub>raw</sub>,
 
-with latent mean unchanged. Unchanged CSI/RMSE after calibration is therefore **by construction** (mean maps are untouched), not an independent empirical finding that calibration “preserves accuracy.” The scientific claim is improved probabilistic scores (CRPS, coverage) on held-out scoring of variance-rescaled maps, with *s* fit on **training** events only. We also report `coverage_*_active` on cells where observation or predictive mean ≥ τ, because all-cell coverage is inflated by EXT-dry zeros with near-zero σ. Under `wse_ext`, EXT remains a learned binary/extent field that gates continuous WSE; scalar *s* primarily recalibrates continuous depth variance on that gated path rather than a fully free inundation-probability model. Nested leave-one-train-event CV for *s* is reported for Chowilla and Carlisle Max (Section 6.8); Burnett nested CV is outside the present scope.
+with latent mean unchanged. Unchanged CSI/RMSE after calibration is therefore **by construction** (mean maps are untouched), not an independent empirical finding that calibration “preserves accuracy.” The scientific claim is improved probabilistic scores (CRPS, coverage) on held-out scoring of variance-rescaled maps, with *s* fit on **training** events only. We also report `coverage_*_active` on cells where observation or predictive mean ≥ τ, because all-cell coverage is inflated by EXT-dry zeros with near-zero σ. Under `wse_ext`, EXT remains a learned binary/extent field that gates continuous WSE; scalar *s* primarily recalibrates continuous depth variance on that gated path rather than a fully free inundation-probability model. Nested leave-one-train-event CV for *s* is reported for Chowilla and Carlisle Max (Section 6.11); Burnett nested CV is outside the present scope.
 
 Closed-form Gaussian CRPS follows Gneiting and Raftery (2007):
 
@@ -171,7 +171,25 @@ Primary JSON sources:
 
 ## 6. Results
 
-### 6.1 Point skill across cases (wet_train and all_cells)
+Results follow the Fraehr/Wang visual-first convention: study domains and inundation maps precede aggregate metric tables. Hydrograph/time-series panels are **not** shown: `pred_examples.npz` stores Max-path peak fields only (Carlisle/Chowilla/Burnett), so gauge hydrographs are 缺数据 rather than invented.
+
+### 6.1 Study domains
+
+**Figure 1** (`fig01_study_domains`) shows HF cell centres for Carlisle, Chowilla, and Burnett side by side. No DEM/bathymetry raster is available in the public geometry packages used here, so the panels are honest cell-scatter domain maps (equal aspect; easting/northing). They orient the subsequent extent and error maps.
+
+### 6.2 Inundation extent maps (hit / miss / false alarm)
+
+**Figure 2** (`fig02_extent_hit_miss_*`) compares LF and LSG-Max against HF at τ = 0.03 m using Fraehr/Wang categorical colours: blue = hit (both wet), red = miss (HF wet only), gold = false alarm (pred wet only), light gray = both dry. Burnett shows the clearest LF→LSG cleaning of misses/false alarms, consistent with the large CSI lift in Table 2. Carlisle differences are subtler (already-strong LF extent). Chowilla’s wet-mask / all-cells tension (Section 6.7) is visible as extent disagreements outside the Fraehr Categories wet index.
+
+### 6.3 Peak-depth error maps
+
+**Figure 3** (`fig03_peak_depth_error_*`) maps LF−HF and LSG-Max−HF peak depths with a diverging red/blue scale (red = overestimate). These panels make the multi-fidelity depth correction spatially legible before any bar chart: Burnett and Chowilla exhibit large LF errors that LSG shrinks; Carlisle residuals are smaller.
+
+### 6.4 Probabilistic P(wet) maps
+
+**Figure 4** (`fig04_pwet_*`) shows cell-wise inundation probability *P*(wet) = *P*(*h* ≥ 0.03 m) from the LSG-Max GP posterior (exported as `inundation_prob_lsg_max`). Placed **after** deterministic extent/error maps as a novel UQ addition (mean ≈ 0.364 Carlisle; ≈ 0.310 Chowilla; ≈ 0.554 Burnett over stored events).
+
+### 6.5 Point skill across cases (wet_train and all_cells)
 
 **Table 2. Headline CSI and RMSE on Grp1 folds (threshold 0.03 m).** Values rounded from workflow JSON; wet_train is the Fraehr-style protocol mask.
 
@@ -187,11 +205,11 @@ Primary JSON sources:
 | Burnett | LSG-Max H-LSG | 0.975 | 0.975 | 0.384 | 0.387 |
 | Burnett | LSG-Max global | 0.975 | 0.975 | 0.179 | 0.179 |
 
-**Figure 1** (`fig01_cross_case_csi_rmse_wet_train`) summarises wet_train CSI and RMSE across cases. Burnett shows a clear multi-fidelity lift (CSI 0.853→0.975; RMSE 0.989→0.387 m). Carlisle already has strong LF extent (CSI 0.966 wet_train); LSG-Max still improves CSI to 0.976 and cuts wet_train RMSE from 0.101 m to 0.094 m. Chowilla wet_train LSG-Max CSI (0.976) exceeds LF (0.925) and collapses depth RMSE from 0.690 m to 0.093 m, even though all-cell CSI collapses (Section 6.4).
+**Figure 5** (`fig05_cross_case_csi_rmse_wet_train`) summarises wet_train CSI and RMSE across cases. Burnett shows a clear multi-fidelity lift (CSI 0.853→0.975; RMSE 0.989→0.387 m). Carlisle already has strong LF extent (CSI 0.966 wet_train); LSG-Max still improves CSI to 0.976 and cuts wet_train RMSE from 0.101 m to 0.094 m. Chowilla wet_train LSG-Max CSI (0.976) exceeds LF (0.925) and collapses depth RMSE from 0.690 m to 0.093 m, even though all-cell CSI collapses (Section 6.7).
 
 For Carlisle LSG-TS, **time-series** scores on the held-out event are CSI 0.959 and RMSE 0.065 m (`ts_*`), while the **max surface** derived from the TS model matches Table 2 (CSI 0.970; RMSE 0.099 m all_cells). These quantities must not be conflated.
 
-### 6.2 O1–O4 error budgets
+### 6.6 O1–O4 error budgets
 
 **Table 3. Test-split dual-path O1–O4 depth RMSE (m) on protocol wet index.**
 
@@ -204,17 +222,17 @@ For Carlisle LSG-TS, **time-series** scores on the held-out event are CSI 0.959 
 | Burnett | LSG-Max H-LSG | 0.074 | 0.083 | 0.668 | 0.387 | 0.009 |
 | Burnett | LSG-Max global | 0.074 | 0.123 | 0.708 | 0.179 | 0.049 |
 
-**Figure 2** (`fig02_error_budget_o1o4`) shows the ladder structure. On Carlisle Max, O3 and O4 remain close (0.068 vs 0.094 m), indicating that after truncation the GP mapping is not the dominant failure. On Chowilla and Burnett Max, O3 is large (≈0.67–0.70 m) relative to O2, so LF expressibility in the HF subspace dominates before GP mapping; O4 then recovers substantially on Chowilla wet_train (0.093 m) via learned EXT+WSE mapping, while Burnett H-LSG O4 remains 0.387 m—still far below LF-only RMSE (0.989 m wet_train) but leaving residual depth error. Burnett global O4 is lower (0.179 m) with a larger truncation gap (Section 6.3).
+**Figure 6** (`fig06_error_budget_o1o4`) shows the ladder structure. On Carlisle Max, O3 and O4 remain close (0.068 vs 0.094 m), indicating that after truncation the GP mapping is not the dominant failure. On Chowilla and Burnett Max, O3 is large (≈0.67–0.70 m) relative to O2, so LF expressibility in the HF subspace dominates before GP mapping; O4 then recovers substantially on Chowilla wet_train (0.093 m) via learned EXT+WSE mapping, while Burnett H-LSG O4 remains 0.387 m—still far below LF-only RMSE (0.989 m wet_train) but leaving residual depth error. Burnett global O4 is lower (0.179 m) with a larger truncation gap (Section 6.8).
 
-### 6.3 Global versus residual H-LSG
+### 6.7 Chowilla strong-LF anti-case (protocol sensitivity)
 
-**Figure 3** (`fig03_global_vs_hlsg_ab`) contrasts global (`zoning: none`) versus residual H-LSG on Chowilla and Burnett Max Grp1 at their **native** capacities (WSE GP input dimension 3 vs 15 on Chowilla, 6 vs 18 on Burnett). On Chowilla, wet_train CSI is essentially flat (0.974 global vs 0.976 H-LSG); wet_train RMSE is already slightly lower for global (0.088 m) than H-LSG (0.093 m). The truncation gap O2−O1 appears smaller for H-LSG: **0.057** (global) versus **0.013** (H-LSG). On Burnett, wet_train CSI is likewise flat (0.975 both), O2−O1 shrinks from **0.049** (global) to **0.009** (H-LSG), yet Burnett global wet_train RMSE (0.179 m) is far lower than H-LSG (0.387 m). Read on their own, these native-capacity contrasts might be taken to credit localisation with the O2−O1 reduction. Section 6.8 shows this reading does not survive once the global baseline is granted the same EC budget as H-LSG: the O2−O1 reduction is a capacity artefact, and it buys no held-out depth skill.
+Under all_cells, Chowilla LSG-Max CSI is 0.390 with RMSE 3.789 m for both H-LSG and global, because many HF-wet cells outside the train wet mask are scored as misses when EXT training focuses on Fraehr wet categories. Under wet_train, CSI is 0.976 (H-LSG) with RMSE 0.093 m. LF only remains high on all_cells CSI (0.930) because the coarse LF already floods a large footprint. This anti-case is a **result about scoring protocol**, not evidence that LSG “fails” Chowilla under Fraehr wet_train reporting. **Figure 2** (Chowilla panels) visualises the spatial pattern for event E1.
 
-### 6.4 Chowilla strong-LF anti-case (protocol sensitivity)
+### 6.8 Global versus residual H-LSG
 
-Under all_cells, Chowilla LSG-Max CSI is 0.390 with RMSE 3.789 m for both H-LSG and global, because many HF-wet cells outside the train wet mask are scored as misses when EXT training focuses on Fraehr wet categories. Under wet_train, CSI is 0.976 (H-LSG) with RMSE 0.093 m. LF only remains high on all_cells CSI (0.930) because the coarse LF already floods a large footprint. This anti-case is a **result about scoring protocol**, not evidence that LSG “fails” Chowilla under Fraehr wet_train reporting. **Figure 5** (middle row) visualises the spatial pattern for event E1.
+**Figure 7** (`fig07_global_vs_hlsg_ab`) contrasts global (`zoning: none`) versus residual H-LSG on Chowilla and Burnett Max Grp1 at their **native** capacities (WSE GP input dimension 3 vs 15 on Chowilla, 6 vs 18 on Burnett). On Chowilla, wet_train CSI is essentially flat (0.974 global vs 0.976 H-LSG); wet_train RMSE is already slightly lower for global (0.088 m) than H-LSG (0.093 m). The truncation gap O2−O1 appears smaller for H-LSG: **0.057** (global) versus **0.013** (H-LSG). On Burnett, wet_train CSI is likewise flat (0.975 both), O2−O1 shrinks from **0.049** (global) to **0.009** (H-LSG), yet Burnett global wet_train RMSE (0.179 m) is far lower than H-LSG (0.387 m). Read on their own, these native-capacity contrasts might be taken to credit localisation with the O2−O1 reduction. Section 6.11 shows this reading does not survive once the global baseline is granted the same EC budget as H-LSG: the O2−O1 reduction is a capacity artefact, and it buys no held-out depth skill.
 
-### 6.5 CRPS-scale uncertainty calibration
+### 6.9 CRPS-scale uncertainty calibration
 
 **Table 4. Variance calibration (`crps_scale`) and selected probabilistic scores.** Carlisle values from the workflow `*_uq_calibrated.json`. Chowilla/Burnett before→after pairs from independent rescores of saved H-LSG states (`..._hlsg_max_uq_calibrated.json`); workflow-fit `var_scale` on the original Max summaries was 0.309 (Chowilla) and 0.606 (Burnett).
 
@@ -225,15 +243,11 @@ Under all_cells, Chowilla LSG-Max CSI is 0.390 with RMSE 3.789 m for both H-LSG 
 | Chowilla H-LSG Max (rescore) | 0.419 | 2.155 → 2.155 | 0.334 → 0.287 | Unchanged by construction (CSI 0.976; RMSE 0.093 m wet_train) |
 | Burnett H-LSG Max (rescore) | 0.604 | 0.133 → 0.127 | 0.943 → 0.890 | Unchanged (CSI 0.975; RMSE 0.387 m wet_train) |
 
-On Carlisle Max, active 90% coverage moves closer to nominal after shrinking over-wide intervals. **Figure 4** (`fig04_uq_calibration_crps_scale`) now includes Chowilla/Burnett before/after CRPS. On Burnett, CRPS falls and active coverage moves toward 0.90. On Chowilla Grp1 Max the same `crps_scale` protocol yields essentially **flat CRPS** (2.155 → 2.155) while coverage moves **away** from nominal—report this as a negative/null calibration outcome on that fold, not as a silent success. Prefer `coverage_*_active` over all-cell coverage when EXT-dry zeros dominate.
+On Carlisle Max, active 90% coverage moves closer to nominal after shrinking over-wide intervals. **Figure 8** (`fig08_uq_calibration_crps_scale`) now includes Chowilla/Burnett before/after CRPS. On Burnett, CRPS falls and active coverage moves toward 0.90. On Chowilla Grp1 Max the same `crps_scale` protocol yields essentially **flat CRPS** (2.155 → 2.155) while coverage moves **away** from nominal—report this as a negative/null calibration outcome on that fold, not as a silent success. Prefer `coverage_*_active` over all-cell coverage when EXT-dry zeros dominate.
 
-### 6.6 Spatial map panels and P(wet)
+### 6.10 Chowilla `wet_correlation` zoning sensitivity
 
-**Figure 5** shows HF reference, LF, LSG-Max H-LSG maximum-depth fields, and cell-wise inundation probability *P*(wet) = *P*(*h* ≥ 0.03 m) for event E1 on each case (`fig05_spatial_maps_*_E1`; panel e). Probabilities are exported to `pred_examples.npz` as `inundation_prob_lsg_max` (Carlisle mean ≈ 0.364; Chowilla ≈ 0.310; Burnett ≈ 0.554 over the stored events). Qualitatively, Burnett exhibits the clearest visual LF→LSG correction; Carlisle differences are subtler given strong LF; Chowilla highlights the extent/mask tension discussed in Section 6.4.
-
-### 6.7 Chowilla `wet_correlation` zoning sensitivity
-
-**Figure 6** (`fig06_zoning_wet_correlation_ab`) and **Table 5** compare Chowilla Max Grp1 under global, `residual_kmeans`, and `wet_correlation` zoning. Wet_train CSI rises slightly under `wet_correlation` (0.978) versus H-LSG (0.976) and global (0.974), with O2−O1 = 0.010—still a small CSI delta relative to the LF→LSG lift. This is a single-fold sensitivity, not a claim that correlation zoning dominates residual k-means.
+**Figure 9** (`fig09_zoning_wet_correlation_ab`) and **Table 5** compare Chowilla Max Grp1 under global, `residual_kmeans`, and `wet_correlation` zoning. Wet_train CSI rises slightly under `wet_correlation` (0.978) versus H-LSG (0.976) and global (0.974), with O2−O1 = 0.010—still a small CSI delta relative to the LF→LSG lift. This is a single-fold sensitivity, not a claim that correlation zoning dominates residual k-means.
 
 **Table 5. Chowilla Max Grp1 wet_train zoning sensitivity (LSG-Max).**
 
@@ -243,11 +257,11 @@ On Carlisle Max, active 90% coverage moves closer to nominal after shrinking ove
 | `residual_kmeans` | 0.976 | 0.093 | 0.013 |
 | `wet_correlation` | 0.978 | 0.094 | 0.010 |
 
-### 6.8 Capacity-matched controls: the localisation claim does not survive (RQ1)
+### 6.11 Capacity-matched controls: the localisation claim does not survive (RQ1)
 
-The native-capacity contrasts of Section 6.3 confound localisation with capacity, because H-LSG feeds more ECs into the WSE GP than the global baseline. We remove that confound by holding the GP input dimension fixed.
+The native-capacity contrasts of Section 6.8 confound localisation with capacity, because H-LSG feeds more ECs into the WSE GP than the global baseline. We remove that confound by holding the GP input dimension fixed.
 
-**Chowilla equal-capacity.** Table 6 matches the global EOF baseline to the H-LSG input dimension (15) with `force_n_modes`, and conversely disables the H-LSG residual modes. Given the same 15 ECs, the **global** model attains the **lowest** wet RMSE (0.085 m, versus 0.093 m for H-LSG and 0.088 m for the native 3-mode global) and the **smallest** truncation gap O2−O1 (0.002 m, versus 0.013 m for H-LSG and 0.057 m for the native global). Disabling residual modes (`residual_eof_modes: 0`) collapses H-LSG exactly onto the native global baseline (RMSE 0.088 m; O2−O1 0.057 m). The apparent O2−O1 shrinkage credited to zoning in Section 6.3 is therefore reproduced—and exceeded—by simply retaining more global modes, and once capacity is matched, zoning yields **no** wet-RMSE advantage.
+**Chowilla equal-capacity.** Table 6 matches the global EOF baseline to the H-LSG input dimension (15) with `force_n_modes`, and conversely disables the H-LSG residual modes. Given the same 15 ECs, the **global** model attains the **lowest** wet RMSE (0.085 m, versus 0.093 m for H-LSG and 0.088 m for the native 3-mode global) and the **smallest** truncation gap O2−O1 (0.002 m, versus 0.013 m for H-LSG and 0.057 m for the native global). Disabling residual modes (`residual_eof_modes: 0`) collapses H-LSG exactly onto the native global baseline (RMSE 0.088 m; O2−O1 0.057 m). The apparent O2−O1 shrinkage credited to zoning in Section 6.8 is therefore reproduced—and exceeded—by simply retaining more global modes, and once capacity is matched, zoning yields **no** wet-RMSE advantage.
 
 **Table 6. Chowilla equal-capacity control (Grp1 Max, wet_train).** WSE `gp_input_dim` is the total EC count entering the WSE GP.
 
@@ -282,7 +296,7 @@ The native-capacity contrasts of Section 6.3 confound localisation with capacity
 | | 4 (default) | 15 | 0.976 | 0.093 | 0.013 |
 | | 6 | 21 | 0.975 | 0.103 | 0.012 |
 
-**CRPS scale is fold-stable (methodology check).** A residual concern for the UQ result is whether the CRPS variance scale *s*, fit on training events, is a fragile single-draw artefact when the official test fold has one event. On Chowilla Max H-LSG, 8-fold leave-one-train-event-out CV gives *s* = 0.310 ± 0.007 (range 0.298–0.324) around the full-train value 0.309. On Carlisle Max H-LSG the same protocol gives *s* = 0.418 ± 0.031 around the full-train value 0.417. Fold stability does not claim calibration is useful everywhere—Section 6.5 reports flat CRPS and adverse coverage on Chowilla—only that those null/adverse outcomes are not caused by an unstable *s* estimator. Burnett nested CV is not required for the localisation claim and is left outside the present scope.
+**CRPS scale is fold-stable (methodology check).** A residual concern for the UQ result is whether the CRPS variance scale *s*, fit on training events, is a fragile single-draw artefact when the official test fold has one event. On Chowilla Max H-LSG, 8-fold leave-one-train-event-out CV gives *s* = 0.310 ± 0.007 (range 0.298–0.324) around the full-train value 0.309. On Carlisle Max H-LSG the same protocol gives *s* = 0.418 ± 0.031 around the full-train value 0.417. Fold stability does not claim calibration is useful everywhere—Section 6.9 reports flat CRPS and adverse coverage on Chowilla—only that those null/adverse outcomes are not caused by an unstable *s* estimator. Burnett nested CV is not required for the localisation claim and is left outside the present scope.
 
 **Carlisle equal-capacity (third-site control).** Table 9 repeats the matched-capacity protocol on Carlisle Max. H-LSG uses WSE dim 13 (1 global + 4×3 residual), but with only eight Max training events a global-only EOF cannot realise 13 modes: `force_n_modes: 13` is capped at realised dim **8** (full train rank). Maxing global capacity clears O2−O1 (0.000 m) yet **worsens** wet RMSE (0.202 m) relative to native global (0.112 m) and H-LSG (0.094 m). Disabling residual modes again collapses H-LSG onto the native global baseline. Carlisle therefore does **not** reproduce the Chowilla “matched global beats H-LSG” pattern: residual EC stacking improves depth RMSE here while pure global capacity does not. We report this as site heterogeneity under a hard Max-rank constraint, not as a general rescue of residual localisation—Chowilla and Burnett remain the capacity-matched anti-cases where extra residual capacity fails to improve (and can degrade) held-out depth skill.
 
@@ -307,7 +321,7 @@ Burnett and Chowilla wet_train depth RMSE show large LF→LSG lifts. Carlisle’
 
 ### 7.3 Why residual zoning is capacity-confounded on Chowilla/Burnett (and qualified on Carlisle)
 
-At native capacity, H-LSG shows a smaller truncation gap O2−O1 than the global baseline (Section 6.3), which an earlier reading of our runs treated as evidence of localisation. The matched-capacity controls (Section 6.8) show that on Chowilla and Burnett this is a **capacity artefact**: giving the global model the same EC count reproduces (Burnett) or beats (Chowilla) the O2−O1 reduction, and on Chowilla the matched global also attains the best wet RMSE. Two mechanisms explain the decoupling. First, O2−O1 is an HF-oracle truncation contrast that shrinks whenever more variance is retained—by extra zonal residual ECs or by extra global modes alike—so it rewards capacity, not spatial partitioning per se. Second, the extra residual ECs must still be predicted from LF inputs through the SGPR map; on Burnett this map degrades (O4−O2 0.304 m versus 0.056 m; train O4 already 0.360 m versus 0.115 m) while the shared extent gate is unchanged, so localisation buys expressibility that the LF→HF regression cannot honour. Inducing-point budget and zone count move RMSE by more than zoning does (Section 6.8), reinforcing that the observable movements are capacity/approximation effects. Carlisle Max qualifies the generality: exact dim-13 global matching is infeasible under eight training events, and max-rank global capacity worsens RMSE while H-LSG residual stacking improves it (Table 9). We therefore communicate residual hierarchy as a **diagnostic device** whose apparent truncation benefit must be capacity-controlled and site-qualified, not as a blanket accuracy upgrade. Residual `kmeans` labels are residual-response classes optionally augmented by XY; they do not impose geographic contiguity. On Carlisle Max an 8-nearest-neighbour same-zone fraction ≈ 0.95 indicates local spatial coherence when XY is included, but the algorithm remains a response-feature clusterer rather than a watershed or adjacency-constrained partition. Chowilla `wet_correlation` yields a marginally higher wet_train CSI (0.978) with O2−O1 ≈ 0.010, but this too is a small, capacity-consistent delta rather than a localisation win.
+At native capacity, H-LSG shows a smaller truncation gap O2−O1 than the global baseline (Section 6.8), which an earlier reading of our runs treated as evidence of localisation. The matched-capacity controls (Section 6.11) show that on Chowilla and Burnett this is a **capacity artefact**: giving the global model the same EC count reproduces (Burnett) or beats (Chowilla) the O2−O1 reduction, and on Chowilla the matched global also attains the best wet RMSE. Two mechanisms explain the decoupling. First, O2−O1 is an HF-oracle truncation contrast that shrinks whenever more variance is retained—by extra zonal residual ECs or by extra global modes alike—so it rewards capacity, not spatial partitioning per se. Second, the extra residual ECs must still be predicted from LF inputs through the SGPR map; on Burnett this map degrades (O4−O2 0.304 m versus 0.056 m; train O4 already 0.360 m versus 0.115 m) while the shared extent gate is unchanged, so localisation buys expressibility that the LF→HF regression cannot honour. Inducing-point budget and zone count move RMSE by more than zoning does (Section 6.11), reinforcing that the observable movements are capacity/approximation effects. Carlisle Max qualifies the generality: exact dim-13 global matching is infeasible under eight training events, and max-rank global capacity worsens RMSE while H-LSG residual stacking improves it (Table 9). We therefore communicate residual hierarchy as a **diagnostic device** whose apparent truncation benefit must be capacity-controlled and site-qualified, not as a blanket accuracy upgrade. Residual `kmeans` labels are residual-response classes optionally augmented by XY; they do not impose geographic contiguity. On Carlisle Max an 8-nearest-neighbour same-zone fraction ≈ 0.95 indicates local spatial coherence when XY is included, but the algorithm remains a response-feature clusterer rather than a watershed or adjacency-constrained partition. Chowilla `wet_correlation` yields a marginally higher wet_train CSI (0.978) with O2−O1 ≈ 0.010, but this too is a small, capacity-consistent delta rather than a localisation win.
 
 ### 7.4 Relation to prior art
 
@@ -427,12 +441,16 @@ LSG; LSG-TS; LSG-Max; LF; HF; EOF; EC; EXT; WSE; H-LSG; residual_kmeans; SGPR; C
 
 | ID | File / content | Role |
 |----|----------------|------|
-| Fig. 1 | `fig01_cross_case_csi_rmse_wet_train` | Wet_train CSI/RMSE cross-case |
-| Fig. 2 | `fig02_error_budget_o1o4` | O1–O4 ladders |
-| Fig. 3 | `fig03_global_vs_hlsg_ab` | Global vs H-LSG (Chowilla + Burnett) |
-| Fig. 4 | `fig04_uq_calibration_crps_scale` | CRPS-scale UQ before/after |
-| Fig. 5 | `fig05_spatial_maps_{carlisle,chowilla,burnett}_E1` | Spatial maps + P(wet) |
-| Fig. 6 | `fig06_zoning_wet_correlation_ab` | Chowilla zoning sensitivity |
+| Fig. 1 | `fig01_study_domains` | Three-case domain cell-scatter |
+| Fig. 2 | `fig02_extent_hit_miss_*` | Extent H/M/FA maps (LF & LSG vs HF) |
+| Fig. 3 | `fig03_peak_depth_error_*` | Peak-depth error maps (LF−HF, LSG−HF) |
+| Fig. 4 | `fig04_pwet_*` | P(wet) probabilistic maps |
+| Fig. 5 | `fig05_cross_case_csi_rmse_wet_train` | Wet_train CSI/RMSE cross-case |
+| Fig. 6 | `fig06_error_budget_o1o4` | O1–O4 ladders |
+| Fig. 7 | `fig07_global_vs_hlsg_ab` | Global vs H-LSG (Chowilla + Burnett) |
+| Fig. 8 | `fig08_uq_calibration_crps_scale` | CRPS-scale UQ before/after |
+| Fig. 9 | `fig09_zoning_wet_correlation_ab` | Chowilla zoning sensitivity |
+| — | Hydrographs | 缺数据 (max-only pred_examples) |
 | Table 1 | Case inventory | Data |
 | Table 2 | CSI/RMSE | Point skill |
 | Table 3 | O1–O4 | Attribution |

@@ -39,10 +39,10 @@
 - 不确定性量化与标定
 - O1–O4 误差预算
 - 实验设计与评价指标
+- 详细图件解读
 - 分案例结果
 - 跨案例比较
 - 等容量对照实验（局部化不成立）
-- 详细图件解读
 - 讨论与因果分析
 - 创新点
 - 可复现性与质量保证
@@ -337,6 +337,538 @@ Max CRPS 0.039→0.028；CSI/RMSE 不变。Chowilla/Burnett 已用保存状态�
 同一阈值、同一折（Grp E1 / Grp1）、同一湿掩膜；不把 LF 门控后处理当作模型本身。
 
 
+## 详细图件解读
+
+**figure_manifest.json：** 跳过项：
+
+- hydrograph panels: pred_examples.npz is max-only (no per-timestep series) → 缺数据; skipped
+
+### 图1 三案例研究域（单元散点）
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+先建立空间直觉：Carlisle / Chowilla / Burnett 的 HF 网格范围。角色：Fraehr/Wang 式研究区图优先。
+
+![图1 三案例研究域（单元散点）](../../outputs/figures/fig01_study_domains.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+三面板并排；Easting/Northing；等比例；HF 单元中心散点。无 DEM 栅格时不伪造晕渲。
+
+**逐面板/子图说明**
+
+(a) Carlisle；(b) Chowilla；(c) Burnett。
+
+**可见模式**
+
+单元数约 58万 / 11万 / 78万。
+
+**模式可能原因（因果与时序）**
+
+Geometry_data 提供 XY。
+
+**可结论 / 不可结论**
+
+可以：定位坐标系。不可以：把散点当成高精度 DEM。
+
+**非专业类比**
+
+像先看三张地图轮廓，再谈哪里淹了。
+
+### 图2a Carlisle E1 淹没范围 Hit/Miss/虚警
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+范围对不对：LF 与 LSG 相对 HF 的命中/漏检/虚警（τ=0.03 m）。
+
+![图2a Carlisle E1 淹没范围 Hit/Miss/虚警](../../outputs/figures/fig02_extent_hit_miss_carlisle_E1.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+蓝=Hit；红=Miss；金=False alarm；灰=双方干。左 LF、右 LSG-Max。
+
+**逐面板/子图说明**
+
+Carlisle LF 已较强；看 LSG 是否收紧虚警。
+
+**可见模式**
+
+与湿 CSI≈0.97 量级一致。
+
+**模式可能原因（因果与时序）**
+
+EXT+WSE；Fraehr wet 协议。
+
+**可结论 / 不可结论**
+
+可以：定性支持范围技能。不可以：单事件外推全部折次。
+
+**非专业类比**
+
+像对照金标准淹水足迹。
+
+### 图2b Chowilla E1 淹没范围 Hit/Miss/虚警
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+协议反例可视化：all-cells CSI 低而 wet_train 高。
+
+![图2b Chowilla E1 淹没范围 Hit/Miss/虚警](../../outputs/figures/fig02_extent_hit_miss_chowilla_E1.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+读法同 2a。
+
+**逐面板/子图说明**
+
+湿掩膜内蓝区主导；掩膜外漏检解释 all-cells。
+
+**可见模式**
+
+湿 CSI≈0.9756，all-cells≈0.3902。
+
+**模式可能原因（因果与时序）**
+
+EXT 学习域=训练湿类别。
+
+**可结论 / 不可结论**
+
+可以：协议教学。不可以：只用 all-cells 否定湿掩膜深度订正。
+
+**非专业类比**
+
+像常考章节与超纲题。
+
+### 图2c Burnett E1 淹没范围 Hit/Miss/虚警
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+弱 LF 上多保真范围订正最直观。
+
+![图2c Burnett E1 淹没范围 Hit/Miss/虚警](../../outputs/figures/fig02_extent_hit_miss_burnett_E1.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+读法同 2a；对比左右红/金面积。
+
+**逐面板/子图说明**
+
+LF 更多漏检/虚警；LSG 蓝区扩大。
+
+**可见模式**
+
+CSI 0.8533→0.9752。
+
+**模式可能原因（因果与时序）**
+
+LF 几何粗 → 映射可学订正。
+
+**可结论 / 不可结论**
+
+可以：支持 LSG 主技能源。不可以：E1 外推 18 事件。
+
+**非专业类比**
+
+像快测仪校正后足迹贴近金标准。
+
+### 图3a Carlisle E1 峰值水深误差图
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+范围之后看深度：LF−HF 与 LSG−HF 红蓝发散。
+
+![图3a Carlisle E1 峰值水深误差图](../../outputs/figures/fig03_peak_depth_error_carlisle_E1.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+红=高估，蓝=低估。
+
+**逐面板/子图说明**
+
+误差幅度通常小于 Burnett。
+
+**可见模式**
+
+与湿 RMSE≈0.09–0.10 m 量级一致。
+
+**模式可能原因（因果与时序）**
+
+最大淹没面深度差。
+
+**可结论 / 不可结论**
+
+可以：空间化深度技能。不可以：色条极值当全域均匀误差。
+
+**非专业类比**
+
+像温度偏差图。
+
+### 图3b Chowilla E1 峰值水深误差图
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+强 LF 范围下深度仍可大幅订正。
+
+![图3b Chowilla E1 峰值水深误差图](../../outputs/figures/fig03_peak_depth_error_chowilla_E1.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+读法同 3a。
+
+**逐面板/子图说明**
+
+LF 大幅红/蓝；LSG 变浅。
+
+**可见模式**
+
+湿 RMSE LSG≈0.093 m。
+
+**模式可能原因（因果与时序）**
+
+WSE+EXT。
+
+**可结论 / 不可结论**
+
+可以：深度订正叙事。不可以：与 all-cells CSI 混谈。
+
+**非专业类比**
+
+像范围对了仍需校正深浅。
+
+### 图3c Burnett E1 峰值水深误差图
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+弱 LF 深度误差最大、LSG 订正最醒目。
+
+![图3c Burnett E1 峰值水深误差图](../../outputs/figures/fig03_peak_depth_error_burnett_E1.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+读法同 3a。
+
+**逐面板/子图说明**
+
+左深红；右近白。
+
+**可见模式**
+
+RMSE 0.989→0.387 m。
+
+**模式可能原因（因果与时序）**
+
+多保真映射。
+
+**可结论 / 不可结论**
+
+可以：支持大 RMSE 降幅。不可以：忽略容量对照。
+
+**非专业类比**
+
+像偏差快测水深被校正。
+
+### 图4a Carlisle E1 P(wet)
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+确定性地图之后的概率层。
+
+![图4a Carlisle E1 P(wet)](../../outputs/figures/fig04_pwet_carlisle_E1.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+viridis 0–1。
+
+**逐面板/子图说明**
+
+对照图2边缘过渡。
+
+**可见模式**
+
+均值约 0.36。
+
+**模式可能原因（因果与时序）**
+
+GP 后验。
+
+**可结论 / 不可结论**
+
+可以：UQ 地图。不可以：未看 CRPS 当决策概率。
+
+**非专业类比**
+
+像概率图层叠在足迹之后。
+
+### 图4b Chowilla E1 P(wet)
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+同 4a；均值约 0.31。
+
+![图4b Chowilla E1 P(wet)](../../outputs/figures/fig04_pwet_chowilla_E1.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+读法同 4a。
+
+**逐面板/子图说明**
+
+结合图2b。
+
+**可见模式**
+
+均值约 0.31。
+
+**模式可能原因（因果与时序）**
+
+同 4a。
+
+**可结论 / 不可结论**
+
+联系图8 Chowilla 标定持平。
+
+**非专业类比**
+
+概率不能掩盖协议差异。
+
+### 图4c Burnett E1 P(wet)
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+同 4a；均值约 0.55。
+
+![图4c Burnett E1 P(wet)](../../outputs/figures/fig04_pwet_burnett_E1.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+读法同 4a。
+
+**逐面板/子图说明**
+
+与图2c/3c 对照。
+
+**可见模式**
+
+均值约 0.55。
+
+**模式可能原因（因果与时序）**
+
+同 4a。
+
+**可结论 / 不可结论**
+
+可以对照阅读。不可以单事件外推。
+
+**非专业类比**
+
+概率与确定性订正应同向。
+
+### 图5 跨案例 CSI 与湿训练 RMSE
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+地图之后的统计总览。
+
+![图5 跨案例 CSI 与湿训练 RMSE](../../outputs/figures/fig05_cross_case_csi_rmse_wet_train.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+横轴案例，纵轴 CSI/RMSE。
+
+**逐面板/子图说明**
+
+Burnett 抬升最大。
+
+**可见模式**
+
+Burnett CSI 0.8533→0.9752。
+
+**模式可能原因（因果与时序）**
+
+弱 LF → 映射可学。
+
+**可结论 / 不可结论**
+
+可以：点技能格局。不可以：据此称分区是 CSI 主因。
+
+**非专业类比**
+
+像先看天气图再看统计表。
+
+### 图6 O1–O4 误差预算
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+RQ2：误差部件。
+
+![图6 O1–O4 误差预算](../../outputs/figures/fig06_error_budget_o1o4.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+O1–O4 RMSE。
+
+**逐面板/子图说明**
+
+按案例分面。
+
+**可见模式**
+
+Carlisle Max O2−O1≈0.005。
+
+**模式可能原因（因果与时序）**
+
+神谕阶梯。
+
+**可结论 / 不可结论**
+
+可以：定位误差。不可以：O4=无能。
+
+**非专业类比**
+
+像体检分项。
+
+### 图7 Global vs H-LSG
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+分区帮在哪里（原生容量）。
+
+![图7 Global vs H-LSG](../../outputs/figures/fig07_global_vs_hlsg_ab.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+CSI/RMSE 并排。
+
+**逐面板/子图说明**
+
+湿 CSI 接近；O2−O1 更小。
+
+**可见模式**
+
+Chowilla H-LSG 0.9756 vs global 0.9744。
+
+**模式可能原因（因果与时序）**
+
+残差基压缩截断。
+
+**可结论 / 不可结论**
+
+可以：截断间隙。不可以：CSI 冠军（需等容量）。
+
+**非专业类比**
+
+像大趋势上叠局部修正。
+
+### 图8 CRPS 方差标定
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+RQ3：概率可校准？
+
+![图8 CRPS 方差标定](../../outputs/figures/fig08_uq_calibration_crps_scale.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+前后 CRPS/coverage/s。
+
+**逐面板/子图说明**
+
+Carlisle/Burnett 改善；Chowilla 持平。
+
+**可见模式**
+
+Carlisle CRPS 0.039→0.028。
+
+**模式可能原因（因果与时序）**
+
+标量 s。
+
+**可结论 / 不可结论**
+
+不可以：声称三案例均成功。
+
+**非专业类比**
+
+像把±10°C 改口±4°C。
+
+### 图9 Chowilla wet_correlation 敏感性
+
+**为何制作 / 回答什么问题 / 在报告中的角色**
+
+分区超参敏感性。
+
+![图9 Chowilla wet_correlation 敏感性](../../outputs/figures/fig09_zoning_wet_correlation_ab.svg)
+
+<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
+
+
+**如何读图（坐标、图例、颜色、指标）**
+
+CSI/RMSE 柱。
+
+**逐面板/子图说明**
+
+边际差很小。
+
+**可见模式**
+
+wet CSI：global 0.9744；H-LSG 0.9756；wet_correlation 0.9778。
+
+**模式可能原因（因果与时序）**
+
+相关分区改变残差聚合。
+
+**可结论 / 不可结论**
+
+可以：单折敏感性。不可以：宣称全面更优。
+
+**非专业类比**
+
+像换行政区划重画修正层。
+
+
 ## 分案例结果
 
 ### Carlisle（主）
@@ -452,291 +984,6 @@ Max CRPS 0.039→0.028；CSI/RMSE 不变。Chowilla/Burnett 已用保存状态�
 1. **不要**在未陈述上述等容量负对照的情况下，声称 H-LSG“因局部化”而在深度 RMSE 上胜过全局 EOF。
 2. H-LSG 最诚实的定位是**带等容量对照的截断间隙（O2−O1）诊断工具**，而非 CSI/RMSE 升级。
 3. 在 **Burnett** 上要明说：H-LSG 通过 **GP/LF 映射（O4−O2）** 恶化 wet RMSE，而非 EXT 门控；matched-18 全局在纯容量下复现同一失败模式。
-
-
-## 详细图件解读
-
-**figure_manifest.json：** 跳过项为空（[]）。
-
-### 图1 跨案例 CSI 与湿训练 RMSE（wet_train）
-
-**为何制作 / 回答什么问题 / 在报告中的角色**
-
-回答 RQ1：在统一湿训练掩膜下，LF-only 与 LSG 变体的点技能如何跨 Carlisle/Chowilla/Burnett 排列。角色：执行摘要级总览，先于分区消融与 UQ。
-
-![图1 跨案例 CSI 与湿训练 RMSE（wet_train）](../../outputs/figures/fig01_cross_case_csi_rmse_wet_train.svg)
-
-<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
-
-
-**如何读图（坐标、图例、颜色、指标）**
-
-横轴多为案例或方法分组，纵轴为 CSI（无量纲，0–1，越高越好）或 RMSE（米，越低越好）。颜色区分 LF / LSG-Max / 必要时 TS。误差条若存在则来自折内单元汇总（以实际图面为准）。请同时看成对的 CSI 与 RMSE，避免只宣扬单一指标。
-
-**逐面板/子图说明**
-
-左类面板（CSI）：比较各案例 LF 与 LSG 的命中—虚警综合技巧。右类面板（RMSE）：强调深度误差，尤其 Chowilla 在湿掩膜上 RMSE 大幅下降。若某案例缺柱，对照 manifest skips，不得手绘填补。
-
-**可见模式**
-
-Burnett：LSG 相对 LF 的 CSI 由约 0.8533 升至约 0.9752。Carlisle：高位改进更细（LF≈0.9660 → Max≈0.9757）。Chowilla：湿 CSI 高，但需结合图5/表理解 all-cells 反例。
-
-**模式可能原因（因果与时序）**
-
-因果链：弱 LF 几何误差大 → 伪 EC+GP 映射可学到系统订正 → CSI/RMSE 改善显著；强 LF 范围已准 → CSI 抬升空间小，但深度仍可订正。
-
-**可结论 / 不可结论**
-
-可以：断言多保真 LSG 在公开协议上可复现的点技能格局。不可以：仅凭此图声称残差分区是 CSI 主因（需图3/O 表）。
-
-**非专业类比**
-
-像用粗分辨率天气预报当地气温：如果粗预报已经“会不会下雨”很准，你对“是否下雨”的提升有限，但仍可能把雨强（水深）校正得更好。
-
-### 图2 O1–O4 误差预算条形图
-
-**为何制作 / 回答什么问题 / 在报告中的角色**
-
-回答 RQ2：误差落在截断、LF 表达还是 GP 映射。角色：诊断核心，支撑“分区压缩 O2−O1”而非“分区碾压 CSI”。
-
-![图2 O1–O4 误差预算条形图](../../outputs/figures/fig02_error_budget_o1o4.svg)
-
-<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
-
-
-**如何读图（坐标、图例、颜色、指标）**
-
-每组柱对应 O1–O4 的深度 RMSE（米）。阅读时先看 O1 地板，再看 O2 相对 O1 的抬升（截断），再看 O3（LF），最后 O4（全系统）。
-
-**逐面板/子图说明**
-
-按案例/变体分面：Carlisle TS/Max、Chowilla、Burnett。Max 上 O2−O1 很小（约 0.005）说明残差分区后截断间隙被压薄；TS 上 O3 很高说明时间序列路径更受 LF 伪 EC 限制。
-
-**可见模式**
-
-Carlisle Max O2−O1≈0.005；Chowilla H-LSG≈0.013 vs global≈0.057；Burnett≈0.009。
-
-**模式可能原因（因果与时序）**
-
-时序：先有全局截断过大 → 引入残差分区 → O2 下降 → 但若 SGPR 诱导点错误，O4 会单独爆炸（见图 eth 叙事/表）→ 修复诱导点后 O4 回落。
-
-**可结论 / 不可结论**
-
-可以：用 O 阶梯定位误差部件。不可以：把 O4 自动等于“模型无能”（需排除近似数值病态）。
-
-**非专业类比**
-
-像体检分项：O1 是仪器噪声底，O2 是“只做主要检查项目”的信息损失，O3 是“用低精度仪器硬测”的损失，O4 是走完整流程后的总偏差。
-
-### 图3 Global vs H-LSG 消融（含 O2−O1）
-
-**为何制作 / 回答什么问题 / 在报告中的角色**
-
-回答“分区到底帮在哪里”。角色：把创新点从 CSI 冠军叙事纠正为截断 refinement。
-
-![图3 Global vs H-LSG 消融（含 O2−O1）](../../outputs/figures/fig03_global_vs_hlsg_ab.svg)
-
-<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
-
-
-**如何读图（坐标、图例、颜色、指标）**
-
-对比 global（zoning:none）与 H-LSG（residual_kmeans）在 CSI、RMSE、O2−O1 等指标上的并排柱。现含 Chowilla 与 Burnett。
-
-**逐面板/子图说明**
-
-Carlisle（若有）/Chowilla/Burnett 面板：湿 CSI 接近；O2−O1 上 H-LSG 更小。Burnett 全局 RMSE 可低于 H-LSG，故不可把分区写成万能 RMSE 赢家。
-
-**可见模式**
-
-Chowilla 湿 CSI：H-LSG 0.9756 vs global 0.9744；O2−O1：0.013 vs 0.057。 Burnett：H-LSG 0.9752 vs global 0.9751；O2−O1：0.009 vs 0.049。
-
-**模式可能原因（因果与时序）**
-
-原因：残差局部基吃掉全局模态无法表示的空间剩余；它不自动修复 LF 伪 EC 的大尺度偏差，故 CSI 可持平。
-
-**可结论 / 不可结论**
-
-可以：跨案例报告分区对截断间隙的作用。不可以：用 Burnett 全局更低 RMSE 反过来说 H-LSG 无用（看 O2−O1 与 CSI 持平）。
-
-**非专业类比**
-
-像给全国地图先画大趋势，再在各省画“剩余误差”的小修正层——总轮廓未必大变，但局部起伏更贴真值。
-
-### 图4 UQ 的 CRPS 方差标定
-
-**为何制作 / 回答什么问题 / 在报告中的角色**
-
-回答 RQ3：概率层是否可校准。角色：证明“均值不动、方差可缩”，并诚实记录失败/持平案例。
-
-![图4 UQ 的 CRPS 方差标定](../../outputs/figures/fig04_uq_calibration_crps_scale.svg)
-
-<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
-
-
-**如何读图（坐标、图例、颜色、指标）**
-
-比较标定前后 CRPS、coverage（优先 active）、以及 s。三案例均有 before/after。
-
-**逐面板/子图说明**
-
-Carlisle Max：CRPS 明显下降。Burnett：CRPS 下降、active coverage 靠近 0.90。Chowilla：CRPS 近乎持平，coverage 远离名义——必须原样写出。
-
-**可见模式**
-
-Carlisle Max：CRPS 0.039→0.028，s=0.417。 Burnett：0.133→0.127，s=0.604。 Chowilla：2.155→2.155，s=0.419。
-
-**模式可能原因（因果与时序）**
-
-未标定截断 MSE 常使区间过宽 → CRPS 惩罚过散分布 → 学到 s<1 收缩方差；若分布形态/EXT 门控主导，标量 s 可能无效甚至有害。
-
-**可结论 / 不可结论**
-
-可以：Carlisle/Burnett 上断言标定可改善概率评分且不改点估计。不可以：声称三案例标定均成功。
-
-**非专业类比**
-
-像预报温度时平均值对了，但总把“±10°C”说成不确定度；标定相当于学会改口说“±4°C”，中心温度不变——有时改口后评分并不更好。
-
-### 图5a Carlisle E1 空间图
-
-**为何制作 / 回答什么问题 / 在报告中的角色**
-
-把表格技能翻译成可检查的空间结构：LF、LSG、HF 的淹没/水深差异与单元级 P(wet)。
-
-![图5a Carlisle E1 空间图](../../outputs/figures/fig05_spatial_maps_carlisle_E1.svg)
-
-<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
-
-
-**如何读图（坐标、图例、颜色、指标）**
-
-多面板：HF / LF / LSG 水深、误差，以及 panel (e) 单元级淹没概率 P(h≥0.03 m)。色标区分水深（m）与概率（0–1）。
-
-**逐面板/子图说明**
-
-逐面板检查河道主槽、漫滩边缘；对照 P(wet) 是否与湿边界一致，而不是把概率面板误读成二值掩膜。
-
-**可见模式**
-
-与 CSI≈0.97 量级一致时，空间上应看到边缘更干净；P(wet) 均值约 0.36（Carlisle pred_examples）。
-
-**模式可能原因（因果与时序）**
-
-EXT+WSE 分离范围与水深 → 降低干燥区浅水伪影；GP 后验经 Tobit 得到 P(wet)。
-
-**可结论 / 不可结论**
-
-可以：定性支持点技能，并引用真实概率场。不可以：把 P(wet) 当成未经标定的决策概率产品而不看 CRPS/coverage。
-
-**非专业类比**
-
-像把模糊的卫星淹水照片（LF）对照高清航拍（HF），再看算法修复版与“会不会淹”的概率图层。
-
-### 图5b Chowilla E1 空间图
-
-**为何制作 / 回答什么问题 / 在报告中的角色**
-
-可视化协议反例：为何 all-cells CSI 低而 wet_train 高；并展示真实 P(wet)。
-
-![图5b Chowilla E1 空间图](../../outputs/figures/fig05_spatial_maps_chowilla_E1.svg)
-
-<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
-
-
-**如何读图（坐标、图例、颜色、指标）**
-
-水深/误差面板 + P(wet)。关注训练湿掩膜内外的差异。
-
-**逐面板/子图说明**
-
-在湿掩膜内，LSG 水深应接近 HF；掩膜外可能出现系统漏检，拖累 all-cells；P(wet) 均值约 0.31。
-
-**可见模式**
-
-与表一致：湿 CSI≈0.9756，all-cells≈0.3902。
-
-**模式可能原因（因果与时序）**
-
-EXT 学习域=训练湿类别；强 LF 已覆盖大部分范围时，掩膜外评分暴露归纳偏置。
-
-**可结论 / 不可结论**
-
-可以：作为协议教学案例。不可以：单独用 all-cells CSI 否定湿掩膜上的深度订正成功。
-
-**非专业类比**
-
-像考试只复习了“常考章节”（湿掩膜），超纲题（掩膜外单元）答不好，但不能说常考题也没学会。
-
-### 图5c Burnett E1 空间图
-
-**为何制作 / 回答什么问题 / 在报告中的角色**
-
-展示弱 LF 上 LSG 的空间订正幅度与 P(wet)。
-
-![图5c Burnett E1 空间图](../../outputs/figures/fig05_spatial_maps_burnett_E1.svg)
-
-<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
-
-
-**如何读图（坐标、图例、颜色、指标）**
-
-读法同 5a；panel (e) 为真实 P(wet)（Burnett 均值约 0.55）。
-
-**逐面板/子图说明**
-
-LF 边缘与深度误差应显著大于 Carlisle；LSG 应更接近 HF。
-
-**可见模式**
-
-与 CSI 0.8533→0.9752、RMSE 0.989→0.387 m 的表格叙事一致。
-
-**模式可能原因（因果与时序）**
-
-LF 水动力简化误差大 → 多保真映射可学空间偏差场。
-
-**可结论 / 不可结论**
-
-可以：支持“LSG 主技能源”，并与图3 Burnett global A/B 对照阅读。不可以：把单事件 E1 图外推为全组 18 事件的唯一形态。
-
-**非专业类比**
-
-像用一台偏差很大的快测仪（LF）配少量金标准（HF）做校正曲线，再快速出接近金标准的图与概率图层。
-
-### 图6 Chowilla wet_correlation 分区敏感性
-
-**为何制作 / 回答什么问题 / 在报告中的角色**
-
-回答分区超参是否改变 headline：对比 global / residual_kmeans / wet_correlation。
-
-![图6 Chowilla wet_correlation 分区敏感性](../../outputs/figures/fig06_zoning_wet_correlation_ab.svg)
-
-<p class="md-note"><em>说明：Markdown 使用相对路径引用插图；自包含离线要求仅强制适用于 report.html（图为内联 SVG / Base64）。</em></p>
-
-
-**如何读图（坐标、图例、颜色、指标）**
-
-柱状图为湿训练 CSI 与 RMSE（及图面所示的对照量）。三柱并排，勿只读最高 CSI。
-
-**逐面板/子图说明**
-
-看 CSI 是否仅有微小抬升，同时回忆表中 O2−O1（wet_correlation≈0.010 vs H-LSG 0.013 vs global 0.057）。
-
-**可见模式**
-
-湿 CSI：global 0.9744；residual_kmeans 0.9756；wet_correlation 0.9778。 RMSE：0.088 / 0.093 / 0.094 m。
-
-**模式可能原因（因果与时序）**
-
-相关分区改变残差能量的空间聚合方式；对 CSI 的边际影响通常小于 LF→LSG 主效应。
-
-**可结论 / 不可结论**
-
-可以：报告单折敏感性。不可以：宣称 wet_correlation 全面优于 residual_kmeans 或已完成超参穷尽。
-
-**非专业类比**
-
-像换一种行政区划重画“剩余误差修正层”——边界换了，全国总分未必大变。
 
 
 ## 讨论与因果分析

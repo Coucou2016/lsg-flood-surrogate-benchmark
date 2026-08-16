@@ -36,7 +36,7 @@ REQUIRED_SECTION_HINTS = [
     "数据与代码可用性",
     "参考文献",
     "附录",
-    "待补充清单",
+    "范围边界",
 ]
 
 
@@ -78,7 +78,7 @@ def main() -> int:
         errors.append("report.md missing")
     else:
         md = MD.read_text(encoding="utf-8")
-        for hint in ("详细图件解读", "待补充清单", "O1–O4", "fig01_cross_case"):
+        for hint in ("详细图件解读", "范围边界", "O1–O4", "fig01_study_domains"):
             if hint not in md:
                 errors.append(f"md missing: {hint}")
 

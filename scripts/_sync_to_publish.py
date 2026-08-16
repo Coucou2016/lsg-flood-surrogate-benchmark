@@ -23,6 +23,7 @@ FILES = [
     "docs/paper/chatgpt_briefs/02_current_claims_and_evidence.md",
     "docs/paper/chatgpt_briefs/03_style_exemplars_summary.md",
     "docs/paper/chatgpt_briefs/04_questions.md",
+    "docs/paper/chatgpt_briefs/05_chatgpt_reply_2026-08-17.md",
     "docs/paper/_build_html.py",
     "docs/report/report.md",
     "docs/report/report.html",

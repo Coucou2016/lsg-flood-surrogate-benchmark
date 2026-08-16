@@ -27,7 +27,7 @@ FIGURES = [
     (
         "fig2b",
         "fig02_extent_hit_miss_chowilla_E1.svg",
-        "Figure 2b. Chowilla E1 extent H/M/FA maps. Supports the wet_train vs all_cells protocol anti-case.",
+        "Figure 2b. Chowilla E1 extent H/M/FA maps. Supports the wet_train vs all_cells scoring-domain contrast.",
     ),
     (
         "fig2c",

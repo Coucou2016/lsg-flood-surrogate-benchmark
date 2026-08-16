@@ -118,8 +118,9 @@ def run_variant(
     shape_lf,
     test_ids: list[str],
     mesh: dict[str, Any] | None = None,
-) -> tuple[dict, np.ndarray]:
+) -> tuple[dict, np.ndarray, dict[str, np.ndarray]]:
     mesh = mesh or {}
+    extras: dict[str, np.ndarray] = {}
     t0 = time.perf_counter()
     model.fit(hf_train, lf_train, terrain, shape_hf, shape_lf, **mesh)
     train_s = time.perf_counter() - t0
@@ -247,6 +248,8 @@ def run_variant(
             xy_lf=xy_l,
             terrain_lf=mesh.get("terrain_lf"),
         )
+        # Keep full-mesh P(wet) for spatial figures (matches pred cell axis).
+        extras["inundation_prob"] = np.asarray(fmap["inundation_prob"], dtype=np.float64)
         obs = hf_test if time_series else _max_surface(hf_test)
         obs, mean, var, prob = _drop_padded_rows(
             obs,
@@ -310,7 +313,7 @@ def run_variant(
                 f"O2={row['o2_rmse']:.4g} O3={row['o3_rmse']:.4g} "
                 f"O4={o4s} (k={row['n_modes']}/{row['n_modes_full']})"
             )
-    return metrics, pred
+    return metrics, pred, extras
 
 
 def _synthetic_lf_factors(cfg: dict) -> dict[str, int]:
@@ -599,6 +602,22 @@ def main() -> None:
         default=None,
         help="Which configured LF directory to use for the main run",
     )
+    parser.add_argument(
+        "--variants",
+        default="lsg_max,lsg_ts",
+        help="Comma-separated variants to train: lsg_max,lsg_ts",
+    )
+    parser.add_argument(
+        "--summary-out",
+        type=Path,
+        default=None,
+        help="Optional distinct summary JSON path (default: evaluation/workflow_summary.json)",
+    )
+    parser.add_argument(
+        "--no-pred-examples",
+        action="store_true",
+        help="Do not overwrite evaluation/pred_examples.npz (A/B runs that share the case eval dir)",
+    )
     args = parser.parse_args()
     cfg = load_config(args.config)
     root = Path(cfg["_project_root"])
@@ -658,10 +677,16 @@ def main() -> None:
 
     mesh = _mesh_args(data)
     preds: dict[str, np.ndarray] = {}
+    uq_maps: dict[str, np.ndarray] = {}
     test_ids_by_variant: dict[str, list[str]] = {}
     test_idx_by_variant: dict[str, np.ndarray] = {}
+    wanted = {v.strip() for v in str(args.variants).split(",") if v.strip()}
+    if not wanted:
+        raise SystemExit("--variants must list at least one of: lsg_max, lsg_ts")
 
     for label, cls in [("lsg_max", LSGMaxModel), ("lsg_ts", LSGTSModel)]:
+        if label not in wanted:
+            continue
         train_idx, test_idx, split_name = resolve_train_test_indices(
             event_ids, cfg, label
         )
@@ -675,7 +700,7 @@ def main() -> None:
             f"train={train_ids} test={test_ids}"
         )
         model = cls(cfg)
-        metrics, pred = run_variant(
+        metrics, pred, extras = run_variant(
             label,
             model,
             hf[train_idx],
@@ -707,6 +732,11 @@ def main() -> None:
         metrics["model_reload_ok"] = bool(reload_ok)
         summary[label] = metrics
         preds[label] = pred
+        if "inundation_prob" in extras:
+            uq_maps[label] = extras["inundation_prob"]
+
+    if "lsg_max" not in preds:
+        raise SystemExit("lsg_max is required (include it in --variants)")
 
     summary["resolution_comparison"] = lf_resolution_comparison(
         cfg, hf, terrain, shape_hf, event_ids, real_status
@@ -752,33 +782,79 @@ def main() -> None:
         if key not in preds:
             continue
         pred_max = preds[key] if label == "lsg_max" else _max_surface(preds[key])
-        summary["score_protocol"][label] = evaluation.dual_score_max_surface(
-            pred_max, hf_max, wet_idx, thresh, extent_gate=lf_up
-        )
+        # Align HF/LF max cubes to this variant's test events when they differ.
+        if label == "lsg_max":
+            summary["score_protocol"][label] = evaluation.dual_score_max_surface(
+                pred_max, hf_max, wet_idx, thresh, extent_gate=lf_up
+            )
+        else:
+            ts_idx = test_idx_by_variant[key]
+            hf_ts = np.nanmax(hf[ts_idx], axis=1)
+            lf_ts_up = interpolate_lf_to_hf(
+                np.nanmax(lf[ts_idx], axis=1),
+                shape_lf,
+                shape_hf,
+                terrain,
+                xy_hf=mesh.get("xy_hf"),
+                xy_lf=mesh.get("xy_lf"),
+                dry_threshold_m=thresh,
+                terrain_lf=mesh.get("terrain_lf"),
+            )
+            summary["score_protocol"][label] = evaluation.dual_score_max_surface(
+                pred_max, hf_ts, wet_idx, thresh, extent_gate=lf_ts_up
+            )
 
     # Predictions for maps: use LSG-Max hold-out events; LSG-TS if same test IDs.
-    ts_test_idx = test_idx_by_variant["lsg_ts"]
     example_path = out_dir / "pred_examples.npz"
-    payload = {
-        "terrain_hf": terrain,
-        "shape_hf": np.array(shape_hf),
-        "shape_lf": np.array(shape_lf),
-        "test_ids": np.array(test_ids_by_variant["lsg_max"]),
-        "hf_max": hf_max,
-        "pred_lsg_max": preds["lsg_max"],
-        "lf_upsampled_max": lf_up,
-        "data_mode": np.array(summary["data_mode"]),
-    }
-    if wet_idx is not None:
-        payload["wet_idx"] = wet_idx
-    if np.array_equal(max_test_idx, ts_test_idx):
-        payload["pred_lsg_ts_max"] = _max_surface(preds["lsg_ts"])
-    np.savez_compressed(example_path, **payload)
-    summary["pred_examples"] = str(example_path)
+    if not args.no_pred_examples:
+        payload = {
+            "terrain_hf": terrain,
+            "shape_hf": np.array(shape_hf),
+            "shape_lf": np.array(shape_lf),
+            "test_ids": np.array(test_ids_by_variant["lsg_max"]),
+            "hf_max": hf_max,
+            "pred_lsg_max": preds["lsg_max"],
+            "lf_upsampled_max": lf_up,
+            "data_mode": np.array(summary["data_mode"]),
+        }
+        if wet_idx is not None:
+            payload["wet_idx"] = wet_idx
+        if "lsg_max" in uq_maps:
+            ip = np.asarray(uq_maps["lsg_max"], dtype=np.float64)
+            # Max-surface UQ is (n_ev, C); TS UQ may be (n_ev, n_t, C) — take temporal max P.
+            if ip.ndim == 3:
+                ip = np.nanmax(ip, axis=1)
+            payload["inundation_prob_lsg_max"] = ip
+        if "lsg_ts" in preds and np.array_equal(
+            max_test_idx, test_idx_by_variant["lsg_ts"]
+        ):
+            payload["pred_lsg_ts_max"] = _max_surface(preds["lsg_ts"])
+            if "lsg_ts" in uq_maps:
+                ip_ts = np.asarray(uq_maps["lsg_ts"], dtype=np.float64)
+                if ip_ts.ndim == 3:
+                    ip_ts = np.nanmax(ip_ts, axis=1)
+                payload["inundation_prob_lsg_ts_max"] = ip_ts
+        np.savez_compressed(example_path, **payload)
+        summary["pred_examples"] = str(example_path)
+    elif example_path.is_file():
+        summary["pred_examples"] = str(example_path)
+        summary["pred_examples_note"] = "left unchanged (--no-pred-examples)"
 
-    out_file = out_dir / "workflow_summary.json"
+    out_file = (
+        Path(args.summary_out)
+        if args.summary_out is not None
+        else out_dir / "workflow_summary.json"
+    )
+    if not out_file.is_absolute():
+        out_file = root / out_file
+    out_file.parent.mkdir(parents=True, exist_ok=True)
     with out_file.open("w", encoding="utf-8") as f:
         json.dump(_to_jsonable(summary), f, indent=2)
+    # Keep a stable default name when writing a distinct summary-out.
+    if args.summary_out is not None:
+        default_file = out_dir / "workflow_summary.json"
+        with default_file.open("w", encoding="utf-8") as f:
+            json.dump(_to_jsonable(summary), f, indent=2)
     print(json.dumps(_to_jsonable(summary), indent=2))
     print(f"Results written to {out_file}")
 

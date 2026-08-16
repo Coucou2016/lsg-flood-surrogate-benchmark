@@ -97,7 +97,7 @@ Uncalibrated intervals can be over-dispersed (Carlisle Max `coverage_90` ≈ 0.9
 
 > Var<sub>cal</sub> = *s* · Var<sub>raw</sub>,
 
-with latent mean unchanged, so CSI and RMSE are invariant. We also report `coverage_*_active` on cells where observation or predictive mean ≥ τ, because all-cell coverage is inflated by EXT-dry zeros with near-zero σ.
+with latent mean unchanged. Unchanged CSI/RMSE after calibration is therefore **by construction** (mean maps are untouched), not an independent empirical finding that calibration “preserves accuracy.” The scientific claim is improved probabilistic scores (CRPS, coverage) on held-out scoring of variance-rescaled maps, with *s* fit on **training** events only. We also report `coverage_*_active` on cells where observation or predictive mean ≥ τ, because all-cell coverage is inflated by EXT-dry zeros with near-zero σ. Under `wse_ext`, EXT remains a learned binary/extent field that gates continuous WSE; scalar *s* primarily recalibrates continuous depth variance on that gated path rather than a fully free inundation-probability model. Nested event-level CV for *s* is **未运行 / 待补充**.
 
 Closed-form Gaussian CRPS follows Gneiting and Raftery (2007):
 
@@ -105,7 +105,7 @@ Closed-form Gaussian CRPS follows Gneiting and Raftery (2007):
 
 ### 3.6 O1–O4 oracle error ladder
 
-On the dual EXT+WSE path, matched oracles are combined with production gating into clipped depth RMSE on the protocol wet index:
+On the dual EXT+WSE path, matched oracles are combined with production gating into clipped depth RMSE on the protocol wet index. Because EXT gating, WSE reconstruction, clipping, and GP mapping are nonlinear, these stages are a **counterfactual attribution ladder**, not an additive variance decomposition with unique shares of total error. Differences such as O2−O1 should be read as path-ordered contrasts under the fixed production combination rule.
 
 | Stage | Inputs | Interpretation |
 |-------|--------|----------------|
@@ -114,7 +114,7 @@ On the dual EXT+WSE path, matched oracles are combined with production gating in
 | **O3** | LF pseudo-ECs, no GP | LF expressibility in the HF subspace |
 | **O4** | Full LSG (GP + \(k\) modes) | Total surrogate error (mirrors `predict_dual_depth`) |
 
-The gap O2−O1 isolates truncation (or held-out out-of-subspace energy). O3−O2 isolates LF projection limits. O4−O3 isolates GP mapping. Train and test budgets are reported separately: for LSG-Max with full-rank training (Wang et al., 2026 retained 47 ECs for 47 events), in-sample O2−O1 can be near zero while test O2−O1 remains informative.
+The gap O2−O1 isolates truncation (or held-out out-of-subspace energy). O3−O2 isolates LF projection limits. O4−O3 isolates GP mapping. Train and test budgets are reported separately: for LSG-Max with full-rank training (Wang et al., 2026 retained 47 ECs for 47 events), in-sample O2−O1 can be near zero while test O2−O1 remains informative. Oracle-order factorial swaps are **未运行 / 待补充**.
 
 ### 3.7 Metrics and scoring masks
 
@@ -122,7 +122,11 @@ Binary inundation metrics use τ = 0.03 m: Probability of Detection (POD), Rate 
 
 ### 3.8 Statistical reporting note
 
-This study evaluates deterministic and probabilistic scores on fixed published event splits (Grp1), not biological replicates. The independent evaluation unit is the hold-out event set under each case’s Fraehr/Wang-style split protocol. We report effect sizes (CSI, RMSE, CRPS, O1–O4 RMSE) without inventing \(p\)-values. Cell counts enter contingency tables but are not treated as independent experimental replicates for inferential tests. Software: Python stack in the project virtual environment; GPflow/TensorFlow optional for SGPR (待补充: exact package versions in a reproducibility table).
+This study evaluates deterministic and probabilistic scores on fixed published event splits (Grp1), not biological replicates. The independent evaluation unit is the **hold-out event** (or event set) under each case’s Fraehr/Wang-style split protocol—not the raster cell. We report effect sizes (CSI, RMSE, CRPS, O1–O4 RMSE) without inventing \(p\)-values. Cell counts enter contingency tables but are not treated as independent experimental replicates for inferential tests.
+
+**Hold-out sizes for headline Max summaries (from workflow JSON `error_budget` test `n_samples`):** Carlisle Grp1 Max test *N*<sub>event</sub> = 1 (E1); Chowilla Grp1 Max test *N*<sub>event</sub> = 1 (E1); Burnett Grp1 Max test *N*<sub>event</sub> = 18. Carlisle LSG-TS reports many timesteps on the held-out event, but Max-surface skill for Carlisle/Chowilla remains a single-event contrast under Grp1 and must not be over-generalised. Software: Python stack in the project virtual environment; GPflow/TensorFlow optional for SGPR (待补充: exact package versions in a reproducibility table).
+
+**Emulation target.** Metrics compare surrogate maps to **HF hydrodynamic fields** (perfect-prognosis style), not to independent remote-sensing flood observations.
 
 ---
 
@@ -145,18 +149,20 @@ Chowilla and Burnett full time-series Grp1 folds are memory-limited and marked *
 ## 5. Experimental design
 
 1. **Field mode:** `lsg.field: wse_ext` for all headline runs.  
-2. **Zoning:** H-LSG `residual_kmeans` (default); Chowilla global A/B with `zoning: none`. Burnett global A/B Grp1 summary: **待补充 / 未运行** as a headline contrast.  
+2. **Zoning:** H-LSG `residual_kmeans` (default); global A/B with `zoning: none` on Chowilla and Burnett (`config/chowilla.yaml` twin / `config/burnett_global.yaml`); Chowilla `wet_correlation` sensitivity (`config/chowilla_wet_correlation.yaml`).  
 3. **Folds:** Fraehr ValidateOnGrp_1 / Wang-style `splits.yaml` protocol as recorded in workflow summaries (`split_protocol`).  
 4. **Baselines:** LF only (WSE→DEM clip on HF mesh); global LSG where available; H-LSG after SGPR inducing floor.  
-5. **Diagnostics:** `evaluation.error_budget` (O1–O4); `evaluation.uq` with `uq_calibration: crps_scale`.  
-6. **Artifacts:** metrics from `outputs/evaluation/{carlisle,chowilla,burnett}/*.json`; figures from `outputs/figures/` (SciencePlots; Times New Roman).
+5. **Diagnostics:** `evaluation.error_budget` (O1–O4); `evaluation.uq` with `uq_calibration: crps_scale` (Carlisle workflow + Chowilla/Burnett rescore from saved states).  
+6. **Artifacts:** metrics from `outputs/evaluation/{carlisle,chowilla,burnett}/*.json`; figures from `outputs/figures/` (SciencePlots; Times New Roman; `figure_manifest.json` skips empty).
 
 Primary JSON sources:
 
 - Carlisle: `workflow_summary_full_Grp1_wse_ext_hlsg_sgpr_fix.json` and `..._uq_calibrated.json`  
-- Chowilla H-LSG: `workflow_summary_grp1_wse_ext_hlsg_max.json`  
+- Chowilla H-LSG: `workflow_summary_grp1_wse_ext_hlsg_max.json` (+ `..._uq_calibrated.json`)  
 - Chowilla global: `workflow_summary_grp1_wse_ext_global_max.json`  
-- Burnett: `workflow_summary_grp1_wse_ext_hlsg_max.json`
+- Chowilla `wet_correlation`: `workflow_summary_grp1_wse_ext_wet_correlation_max.json`  
+- Burnett H-LSG: `workflow_summary_grp1_wse_ext_hlsg_max.json` (+ `..._uq_calibrated.json`)  
+- Burnett global: `workflow_summary_grp1_wse_ext_global_max.json`
 
 ---
 
@@ -176,6 +182,7 @@ Primary JSON sources:
 | Chowilla | LSG-Max global | 0.390 | 0.974 | 3.789 | 0.088 |
 | Burnett | LF only | 0.853 | 0.853 | 0.983 | 0.989 |
 | Burnett | LSG-Max H-LSG | 0.975 | 0.975 | 0.384 | 0.387 |
+| Burnett | LSG-Max global | 0.975 | 0.975 | 0.179 | 0.179 |
 
 **Figure 1** (`fig01_cross_case_csi_rmse_wet_train`) summarises wet_train CSI and RMSE across cases. Burnett shows a clear multi-fidelity lift (CSI 0.853→0.975; RMSE 0.989→0.387 m). Carlisle already has strong LF extent (CSI 0.966 wet_train); LSG-Max still improves CSI to 0.976 and cuts wet_train RMSE from 0.101 m to 0.094 m. Chowilla wet_train LSG-Max CSI (0.976) exceeds LF (0.925) and collapses depth RMSE from 0.690 m to 0.093 m, even though all-cell CSI collapses (Section 6.4).
 
@@ -192,12 +199,13 @@ For Carlisle LSG-TS, **time-series** scores on the held-out event are CSI 0.959 
 | Chowilla | LSG-Max H-LSG | 0.020 | 0.034 | 0.701 | 0.093 | 0.013 |
 | Chowilla | LSG-Max global | 0.020 | 0.078 | 0.666 | 0.088 | 0.057 |
 | Burnett | LSG-Max H-LSG | 0.074 | 0.083 | 0.668 | 0.387 | 0.009 |
+| Burnett | LSG-Max global | 0.074 | 0.123 | 0.708 | 0.179 | 0.049 |
 
-**Figure 2** (`fig02_error_budget_o1o4`) shows the ladder structure. On Carlisle Max, O3 and O4 remain close (0.068 vs 0.094 m), indicating that after truncation the GP mapping is not the dominant failure. On Chowilla and Burnett Max, O3 is large (≈0.67–0.70 m) relative to O2, so LF expressibility in the HF subspace dominates before GP mapping; O4 then recovers substantially on Chowilla wet_train (0.093 m) via learned EXT+WSE mapping, while Burnett O4 remains 0.387 m—still far below LF-only RMSE (0.989 m wet_train) but leaving residual depth error.
+**Figure 2** (`fig02_error_budget_o1o4`) shows the ladder structure. On Carlisle Max, O3 and O4 remain close (0.068 vs 0.094 m), indicating that after truncation the GP mapping is not the dominant failure. On Chowilla and Burnett Max, O3 is large (≈0.67–0.70 m) relative to O2, so LF expressibility in the HF subspace dominates before GP mapping; O4 then recovers substantially on Chowilla wet_train (0.093 m) via learned EXT+WSE mapping, while Burnett H-LSG O4 remains 0.387 m—still far below LF-only RMSE (0.989 m wet_train) but leaving residual depth error. Burnett global O4 is lower (0.179 m) with a larger truncation gap (Section 6.3).
 
 ### 6.3 Global versus residual H-LSG
 
-**Figure 3** (`fig03_global_vs_hlsg_ab`) contrasts Chowilla global versus H-LSG. Wet_train CSI is essentially flat (0.974 global vs 0.976 H-LSG). Wet_train RMSE is slightly lower for global (0.088 m) than H-LSG (0.093 m) on this fold. The diagnostic contrast is O2−O1: **0.057** (global) versus **0.013** (H-LSG). Residual zoning therefore earns its place as a truncation/refinement tool, not as a CSI headline. Burnett global A/B for the same Grp1 protocol is **待补充**.
+**Figure 3** (`fig03_global_vs_hlsg_ab`) contrasts global (`zoning: none`) versus residual H-LSG on Chowilla and Burnett Max Grp1. On Chowilla, wet_train CSI is essentially flat (0.974 global vs 0.976 H-LSG); wet_train RMSE is slightly lower for global (0.088 m) than H-LSG (0.093 m). The diagnostic contrast is O2−O1: **0.057** (global) versus **0.013** (H-LSG). On Burnett, wet_train CSI is likewise flat (0.975 global vs 0.975 H-LSG), while O2−O1 shrinks from **0.049** (global) to **0.009** (H-LSG). Burnett global wet_train RMSE (0.179 m) is lower than H-LSG (0.387 m) on this fold, so residual zoning is not a universal RMSE win either—its reproducible role remains truncation/refinement, not a CSI headline.
 
 ### 6.4 Chowilla strong-LF anti-case (protocol sensitivity)
 
@@ -205,21 +213,32 @@ Under all_cells, Chowilla LSG-Max CSI is 0.390 with RMSE 3.789 m for both H-LSG 
 
 ### 6.5 CRPS-scale uncertainty calibration
 
-**Table 4. Variance calibration (`crps_scale`) and selected probabilistic scores.**
+**Table 4. Variance calibration (`crps_scale`) and selected probabilistic scores.** Carlisle values from the workflow `*_uq_calibrated.json`. Chowilla/Burnett before→after pairs from independent rescores of saved H-LSG states (`..._hlsg_max_uq_calibrated.json`); workflow-fit `var_scale` on the original Max summaries was 0.309 (Chowilla) and 0.606 (Burnett).
 
-| Case / surface | *s* (`var_scale`) | CRPS (notes) | Point CSI/RMSE |
-|----------------|--------------------:|--------------|----------------|
-| Carlisle Max | 0.417 | 0.039 → 0.028 (uncal. → cal.) | Unchanged (CSI 0.976; RMSE 0.061 m all_cells) |
-| Carlisle TS | 0.900 | ≈0.0165 (near-calibrated) | Unchanged |
-| Chowilla H-LSG Max | 0.309 | CRPS 2.155 (all-cell; prefer active coverage) | Point metrics unchanged by construction |
-| Chowilla global Max | 0.419 | CRPS 2.155 | Same caveat |
-| Burnett H-LSG Max | 0.606 | CRPS 0.127 | Point metrics from Table 2 |
+| Case / surface | *s* (`var_scale`) | CRPS (uncal. → cal.) | cov90_active (uncal. → cal.) | Point CSI/RMSE |
+|----------------|--------------------:|----------------------|------------------------------|----------------|
+| Carlisle Max | 0.417 | 0.039 → 0.028 | 0.990 → 0.966 | Unchanged (CSI 0.976; RMSE 0.061 m all_cells) |
+| Carlisle TS | 0.900 | ≈0.0165 (near-calibrated) | — | Unchanged |
+| Chowilla H-LSG Max (rescore) | 0.419 | 2.155 → 2.155 | 0.334 → 0.287 | Unchanged by construction (CSI 0.976; RMSE 0.093 m wet_train) |
+| Burnett H-LSG Max (rescore) | 0.604 | 0.133 → 0.127 | 0.943 → 0.890 | Unchanged (CSI 0.975; RMSE 0.387 m wet_train) |
 
-On Carlisle Max, active 90% coverage moves from 0.990 (uncalibrated) to 0.966 (calibrated), closer to nominal after shrinking over-wide intervals. **Figure 4** (`fig04_uq_calibration_crps_scale`) summarises calibration behaviour. Uncalibrated before/after panels for Chowilla and Burnett are **待补充** in the figure manifest (`skips`); calibrated `var_scale` values above are taken from the Grp1 Max summaries.
+On Carlisle Max, active 90% coverage moves closer to nominal after shrinking over-wide intervals. **Figure 4** (`fig04_uq_calibration_crps_scale`) now includes Chowilla/Burnett before/after CRPS. On Burnett, CRPS falls and active coverage moves toward 0.90. On Chowilla Grp1 Max the same `crps_scale` protocol yields essentially **flat CRPS** (2.155 → 2.155) while coverage moves **away** from nominal—report this as a negative/null calibration outcome on that fold, not as a silent success. Prefer `coverage_*_active` over all-cell coverage when EXT-dry zeros dominate.
 
-### 6.6 Spatial map panels
+### 6.6 Spatial map panels and P(wet)
 
-**Figure 5** shows HF reference, LF, and LSG-Max H-LSG maximum-depth fields for event E1 on each case (`fig05_spatial_maps_*_E1`). Cell-wise inundation probability fields are **待补充** in the current figure build (manifest skip: binary depth ≥ 0.03 m shown instead). Qualitatively, Burnett exhibits the clearest visual LF→LSG correction; Carlisle differences are subtler given strong LF; Chowilla highlights the extent/mask tension discussed in Section 6.4.
+**Figure 5** shows HF reference, LF, LSG-Max H-LSG maximum-depth fields, and cell-wise inundation probability *P*(wet) = *P*(*h* ≥ 0.03 m) for event E1 on each case (`fig05_spatial_maps_*_E1`; panel e). Probabilities are exported to `pred_examples.npz` as `inundation_prob_lsg_max` (Carlisle mean ≈ 0.364; Chowilla ≈ 0.310; Burnett ≈ 0.554 over the stored events). Qualitatively, Burnett exhibits the clearest visual LF→LSG correction; Carlisle differences are subtler given strong LF; Chowilla highlights the extent/mask tension discussed in Section 6.4.
+
+### 6.7 Chowilla `wet_correlation` zoning sensitivity
+
+**Figure 6** (`fig06_zoning_wet_correlation_ab`) and **Table 5** compare Chowilla Max Grp1 under global, `residual_kmeans`, and `wet_correlation` zoning. Wet_train CSI rises slightly under `wet_correlation` (0.978) versus H-LSG (0.976) and global (0.974), with O2−O1 = 0.010—still a small CSI delta relative to the LF→LSG lift. This is a single-fold sensitivity, not a claim that correlation zoning dominates residual k-means.
+
+**Table 5. Chowilla Max Grp1 wet_train zoning sensitivity (LSG-Max).**
+
+| Zoning | CSI wet_train | RMSE wet_train (m) | test O2−O1 (m) |
+|--------|--------------:|-------------------:|---------------:|
+| global (`none`) | 0.974 | 0.088 | 0.057 |
+| `residual_kmeans` | 0.976 | 0.093 | 0.013 |
+| `wet_correlation` | 0.978 | 0.094 | 0.010 |
 
 ---
 
@@ -235,7 +254,7 @@ Burnett and Chowilla wet_train depth RMSE show large LF→LSG lifts. Carlisle’
 
 ### 7.3 Where residual zoning helps
 
-Zoning consistently shrinks O2−O1 on Max-style paths in the Chowilla A/B and contributes small truncation gaps on Carlisle/Burnett H-LSG Max (0.005–0.009 m). That benefit is real and condition-dependent. It should be communicated as refinement of subspace expressibility, not as a substitute for multi-fidelity mapping.
+Zoning consistently shrinks O2−O1 on Max-style paths in the Chowilla and Burnett global A/Bs and contributes small truncation gaps on Carlisle/Burnett H-LSG Max (0.005–0.009 m). That benefit is real on these public folds, but “condition-dependent” here means **observed across heterogeneous cases and scoring protocols**, not yet a training-only decision rule that predicts Δskill before seeing HF test truth (such a predictor remains **待补充**). Communicate zoning as refinement of subspace expressibility, not as a substitute for multi-fidelity mapping. Residual `kmeans` labels are residual-response classes; geographic contiguity is not enforced (**待补充**: zone maps / contiguity diagnostics). Matched total EOF/inducing budgets between global and H-LSG are **未运行 / 待补充**, so capacity-matched localization claims must stay bounded. Chowilla `wet_correlation` yields a slightly higher wet_train CSI (0.978) with O2−O1 ≈ 0.010 on Grp1 Max—still a small CSI delta, consistent with the same diagnostic framing.
 
 ### 7.4 Relation to prior art
 
@@ -247,25 +266,25 @@ Modest CSI differences between global and H-LSG could reflect fold noise, GP hyp
 
 ### 7.6 Open questions
 
-Does CRPS-scale *s* transfer across events and sites without retuning? Do full-TS Chowilla/Burnett folds change the zoning story (**待补充**)? How does residual H-LSG compare with Tan-style single-focus retraining on the same public splits?
+Does CRPS-scale *s* transfer across events and sites without retuning? Chowilla’s flat CRPS under the same protocol already warns against universal transfer. Do full-TS Chowilla/Burnett folds change the zoning story (**未运行 / 待补充**; Burnett full HF stack ≈199 GB vs ~128 GB host RAM)? How does residual H-LSG compare with Tan-style single-focus retraining on the same public splits?
 
 ---
 
 ## 8. Limitations
 
-1. Chowilla/Burnett headline results are Max-surface Grp1; full-TS Grp1 is **未运行 / 待补充**.  
-2. Burnett global A/B and `wet_correlation` zoning sweeps are **未运行 / 待补充**.  
+1. Chowilla/Burnett headline results are Max-surface Grp1; full-TS Grp1 is **未运行 / 待补充** (Burnett in-memory HF cube ≈199 GB ≫ ~128 GB RAM; Chowilla dual EXT+WSE+UQ similarly constrained).  
+2. Equal-capacity (matched total modes / inducing points) global vs H-LSG and non-residual geographic zoning controls beyond the Chowilla `wet_correlation` sensitivity are **未运行 / 待补充**.  
 3. Brisbane licensed appendix is **未运行**.  
-4. Figure 5 omits cell-wise inundation probability fields (**待补充**).  
-5. Chowilla/Burnett uncalibrated UQ “before” curves are incomplete in Fig. 4 (**待补充**).  
-6. Evaluation uses published single Grp1 (or protocol) folds; we do not claim multi-fold statistical significance tests.  
-7. Author metadata, funding, and exact environment pins: **待补充**.
+4. Carlisle/Chowilla Max Grp1 use a single hold-out event; Burnett uses 18. We do not claim multi-fold statistical significance tests.  
+5. Nested CV for CRPS scale *s* and oracle-order factorial swaps are **未运行 / 待补充**.  
+6. Author metadata, funding, and exact environment pins: **待补充**.  
+7. CRPS-scale can be null or adverse on some folds (Chowilla Max rescore: flat CRPS; coverage moves away from nominal)—do not generalise Carlisle’s calibration win.
 
 ---
 
 ## 9. Conclusions
 
-We present a reproducible EXT+WSE LSG methods stack with residual hierarchical zoning, O1–O4 oracle attribution, and CRPS-calibrated GP uncertainty on three public multi-fidelity flood cases. Multi-fidelity LSG provides the primary skill gains where LF is weak. Residual zoning mainly reduces truncation gaps and should not be marketed as a universal CSI upgrade. Strong-LF settings require explicit wet_train versus all_cells reporting. Calibrated variance scaling improves probabilistic scores on over-dispersed Max-path posteriors without changing operational point maps. These results support Water Resources Research–style methods reuse: diagnose error sources, publish uncertainty, and bound localization claims to conditions where they help.
+We present a reproducible EXT+WSE LSG methods stack with residual hierarchical zoning, O1–O4 oracle attribution, and CRPS-calibrated GP uncertainty on three public multi-fidelity flood cases. Multi-fidelity LSG provides the primary skill gains where LF is weak. Residual zoning mainly reduces truncation gaps and should not be marketed as a universal CSI upgrade. Strong-LF settings require explicit wet_train versus all_cells reporting. Calibrated variance scaling improves probabilistic scores on over-dispersed Max-path posteriors while leaving mean maps—and therefore CSI/RMSE—unchanged by construction. These results support methods reuse at WRR / JoH / EMS: diagnose error sources, publish uncertainty, and bound localization claims to verified case conditions rather than a universal zoning CSI story.
 
 ---
 
@@ -356,22 +375,23 @@ LSG; LSG-TS; LSG-Max; LF; HF; EOF; EC; EXT; WSE; H-LSG; residual_kmeans; SGPR; C
 |----|----------------|------|
 | Fig. 1 | `fig01_cross_case_csi_rmse_wet_train` | Wet_train CSI/RMSE cross-case |
 | Fig. 2 | `fig02_error_budget_o1o4` | O1–O4 ladders |
-| Fig. 3 | `fig03_global_vs_hlsg_ab` | Global vs H-LSG (Chowilla) |
-| Fig. 4 | `fig04_uq_calibration_crps_scale` | CRPS-scale UQ |
-| Fig. 5 | `fig05_spatial_maps_{carlisle,chowilla,burnett}_E1` | Spatial maps |
+| Fig. 3 | `fig03_global_vs_hlsg_ab` | Global vs H-LSG (Chowilla + Burnett) |
+| Fig. 4 | `fig04_uq_calibration_crps_scale` | CRPS-scale UQ before/after |
+| Fig. 5 | `fig05_spatial_maps_{carlisle,chowilla,burnett}_E1` | Spatial maps + P(wet) |
+| Fig. 6 | `fig06_zoning_wet_correlation_ab` | Chowilla zoning sensitivity |
 | Table 1 | Case inventory | Data |
 | Table 2 | CSI/RMSE | Point skill |
 | Table 3 | O1–O4 | Attribution |
 | Table 4 | `var_scale` / CRPS | UQ |
+| Table 5 | Chowilla zoning CSI/RMSE/O2−O1 | Zoning sensitivity |
 
 ## Appendix C. Items marked 待补充 / 未运行
 
 - Author names, affiliations, corresponding author, acknowledgements, competing interests, CRediT contributions  
 - Exact pinned software versions table  
-- Chowilla / Burnett full-TS Grp1 folds  
-- Burnett global A/B Grp1 headline contrast  
-- `wet_correlation` zoning sweep  
+- Chowilla / Burnett full-TS Grp1 folds (memory; Burnett HF stack ≈199 GB)  
 - Brisbane licensed appendix results  
 - FloodCastBench  
-- Fig. 4 Chowilla/Burnett uncalibrated “before” curves  
-- Fig. 5 cell-wise inundation probability fields  
+- Equal-capacity global vs H-LSG; residual zone contiguity maps  
+- Nested CV for CRPS *s*; oracle-order factorial swaps  
+- Training-only predictor of when zoning helps

@@ -1,20 +1,22 @@
-pdf_pages=14
-pdf_bytes=1044714
-html_bytes=2094531
+pdf_pages=16
+pdf_bytes=1120939
+html_bytes=2204887
 page_01_chars=3328
 page_02_chars=3891
 page_03_chars=2604
-page_04_chars=2685
-page_05_chars=2555
-page_06_chars=1381
-page_07_chars=1960
-page_08_chars=2425
-page_09_chars=1621
-page_10_chars=2348
-page_11_chars=2511
-page_12_chars=1698
-page_13_chars=2904
-page_14_chars=1354
+page_04_chars=2893
+page_05_chars=2819
+page_06_chars=2078
+page_07_chars=1945
+page_08_chars=1787
+page_09_chars=1890
+page_10_chars=2093
+page_11_chars=2309
+page_12_chars=1910
+page_13_chars=3173
+page_14_chars=1824
+page_15_chars=2969
+page_16_chars=1300
 near_blank_pages=[]
 contains_dai_buchong=True
 contains_wei_yunxing=True
@@ -35,21 +37,40 @@ resolution. Multi-fidelity Low-fidelity–Spatial analysis–Gaussian Process Le
 Gaussian Process Regression (SGPR), yet operational use still lacks (i) simultaneous residual hierarchical
 localization, (ii) 
 --- page_mid_sample ---
-Case Variant O1 O2 O3 O4 O2−O1
-Carlisle LSG-TS H-LSG 0.018 0.033 0.240 0.102 0.015
-Carlisle LSG-Max H-LSG 0.048 0.052 0.068 0.094 0.005
-Chowilla LSG-Max H-LSG 0.020 0.034 0.701 0.093 0.013
-Chowilla LSG-Max global 0.020 0.078 0.666 0.088 0.057
-Burnett LSG-Max H-LSG 0.074 0.083 0.668 0.387 0.009
-Figure 2 (fig02_error_budget_o1o4) shows the ladder structure. On Carlisle Max, O3 and O4 remain close
-(0.068 vs 0.094 m), indicating that after truncation the GP mapping is not the dominant failure. On Chowilla and
-Burnett Max, O3 is large (≈0.67–0.70 m) relative to O2, so LF expressibility in the HF subspace dominates
-before GP mapping; O4 then recovers substantially on Chowilla wet_train (0.093 m) via learned EXT+WSE
-mapping, while Burnett O4 remains 0.387 m—still far below LF-only RMSE (0.989 m w
+6.3 Global versus residual H-LSG
+Carlisle Chowilla Burnett
+Case
+0 . 9 0
+0 . 9 2
+0 . 9 4
+0 . 9 6
+0 . 9 8
+1 . 0 0
+CSI (−)
+(a)
+Global
+H-LSG
+H-LSG+SGPR
+Carlisle Chowilla Burnett
+Case
+0 . 0 0
+0 . 0 5
+0 . 1 0
+0 . 1 5
+0 . 2 0
+0 . 2 5
+0 . 3 0
+0 . 3 5
+0 . 4 0
+RMSE (m)
+(b)
+Global vs H-LSG (residual_kmeans) LSG-Max · Fraehr wet_train (Categories wet_idx)
+Figure 3. Global versus residual H-LSG on Chowilla and Burnett Max Grp1. Wet_train CSI is nearly flat on both cases;
+the diagnostic gain is the reduced O2−O1 truncation gap under H-LSG (Chowilla 0.057→0.013; Burnett 0.049→0.009).
+Figure 3 (fig03_global_vs_hlsg_ab) contrasts global (zoning: none) versus residual H-LSG on Chowilla
+and Burnett Max Grp1. On Chowilla, wet_train CSI is essentially flat (0.974 global vs 0.976 H-LSG); wet_train
+RMSE is sligh
 --- page_last_sample ---
-Zanchetta, A. D. L., & Coulibaly, P. (2022). Probabilistic inundation maps via surrogates. Geosciences, 12(11),
-426. https://doi.org/10.3390/geosciences12110426
-Zenodo SFINCS–LSG scripts/data: https://doi.org/10.5281/zenodo.20352880
 Appendix A. Terminology ledger (canonical forms)
 LSG; LSG-TS; LSG-Max; LF; HF; EOF; EC; EXT; WSE; H-LSG; residual_kmeans; SGPR; CRPS; CSI; POD;
 RFA; O1–O4; wet_train; all_cells; var_scale; AF; TF; τ = 0.03 m.
@@ -57,6 +78,12 @@ Appendix B. Figure and table inventory
 ID File / content Role
 Fig. 1 fig01_cross_case_csi_rmse_wet_train Wet_train CSI/RMSE cross-case
 Fig. 2 fig02_error_budget_o1o4 O1–O4 ladders
-Fig. 3 fig03_global_vs_hlsg_ab Global vs H-LSG (Chowilla)
-Fig. 4 fig04_uq_calibration_crps_scale CRPS-scale UQ
-Fig. 5 fig05_spatial_maps_{carlisle,chowilla,burnett}_E1 Spatial ma
+Fig. 3 fig03_global_vs_hlsg_ab Global vs H-LSG (Chowilla + Burnett)
+Fig. 4 fig04_uq_calibration_crps_scale CRPS-scale UQ before/after
+Fig. 5 fig05_spatial_maps_{carlisle,chowilla,burnett}_E1 Spatial maps + P(wet)
+Fig. 6 fig06_zoning_wet_correlation_ab Chowilla zoning sensitivity
+Table 1 Case inventory Data
+Table 2 CSI/RMSE Point skill
+Table 3 O1–O4 Attribution
+Table 4 var_scale / CRPS UQ
+Table 5 Chowilla zon

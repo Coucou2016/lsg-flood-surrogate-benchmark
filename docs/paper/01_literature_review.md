@@ -1,8 +1,9 @@
 # Literature review — verified references and novelty gaps
 
-**Date:** 2026-08-16  
+**Date:** 2026-08-16 (re-checked same day after ChatGPT peer-review advisor pass)  
 **Workflows:** nature-academic-search `multi-source-search` + `citation-verification` (WebSearch/WebFetch; ChatGPT used as advisor only).  
-**Advisor chat (literature):** https://chatgpt.com/c/6a8129c4-e368-83ea-b448-236b427f9ae0 (web search ON; “已搜索” citations present).
+**Advisor chats:** literature https://chatgpt.com/c/6a8129c4-e368-83ea-b448-236b427f9ae0 ; peer review https://chatgpt.com/c/6a815ce3-60c4-83ea-99ad-0149a2ac3c4c (web search ON; DOIs cited).  
+**GitHub for ChatGPT:** not available this turn (`gh` missing on host); advisor reviewed pasted CONTEXT only.
 
 ## Verified core LSG lineage
 
@@ -23,14 +24,15 @@
 | EGU 2025 abstract (early SFINCS–LSG) | [10.5194/egusphere-egu25-5209](https://doi.org/10.5194/egusphere-egu25-5209) | verified |
 | EGU 2026 abstract | [10.5194/egusphere-egu26-11062](https://doi.org/10.5194/egusphere-egu26-11062) | verified (**both** years exist) |
 | Zenodo scripts/data | [10.5281/zenodo.20352880](https://doi.org/10.5281/zenodo.20352880) | verified |
+| SSRN preprint (compound SFINCS–LSG) | [10.2139/ssrn.6727349](https://doi.org/10.2139/ssrn.6727349) | verified metadata 2026-08-16; **not** a peer-reviewed journal article — cite as preprint if used |
 
-**Correction vs ChatGPT first pass:** do not cite only EGU 2025; EGU26-11062 is real.
+**Correction vs ChatGPT first pass:** do not cite only EGU 2025; EGU26-11062 is real. Re-check 2026-08-16: Tan/Rukai Wang/Markert/SFINCS DOIs still resolve; exact residual hierarchical LSG + CRPS-map posterior + O1–O4 ladder still **NOT FOUND**.
 
 ## Closest prior art that constrains novelty
 
 | Paper | DOI | What it is | Implication for us |
 |---|---|---|---|
-| Tan et al. 2025 — hybrid LSG downscaling; regionalized training; ER_DR vs ER_LSG | [10.5194/hess-29-3833-2025](https://doi.org/10.5194/hess-29-3833-2025) | LSG + regional focus subdomain + **two-part** error split | Blocks “first LSG localization” and “first LSG error decomposition”; still ≠ simultaneous residual multi-zone hierarchy or O1–O4 ladder |
+| Zeli Tan et al. 2025 — hybrid LSG downscaling; regionalized training; dimensionality-reduction vs LSG/mapping error | [10.5194/hess-29-3833-2025](https://doi.org/10.5194/hess-29-3833-2025) | LSG + regional focus subdomain + **two-part** error split (Houston depth+velocity) | Blocks “first LSG localization” and “first LSG error decomposition”; still ≠ simultaneous residual multi-zone hierarchy or O1–O4 ladder |
 | Rukai Wang et al. 2025 — REOF + Sparse GP LF→HF | [10.1007/s13753-025-00642-5](https://doi.org/10.1007/s13753-025-00642-5) | Hydrodynamic LF/HF + **rotated EOF** + SGP | Blocks broad “first localized EOF multi-fidelity flood surrogate” |
 | Wan et al. 2025 — REOF flood extent ML | [10.1016/j.envsoft.2025.106562](https://doi.org/10.1016/j.envsoft.2025.106562) | Satellite FIER/REOF lineage | Terminology risk only; not LSG |
 | Markert et al. 2026 — scalable FIER by watershed mosaicking | [10.5194/hess-30-459-2026](https://doi.org/10.5194/hess-30-459-2026) | Spatially partitioned REOF forecasts | Blocks “first zonal EOF flood forecasting”; not LF→HF LSG |

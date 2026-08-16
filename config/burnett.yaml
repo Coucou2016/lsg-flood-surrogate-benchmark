@@ -3,9 +3,9 @@
 # Fraehr (2024) Figshare 10.26188/24312658, file BurnettRV.zip (~32 GB, CC BY 4.0).
 # HF = TUFLOW (~10 m), LF = HEC-RAS (Model B). Do not re-run solvers.
 #
-# Local data: junctions under data/external/burnett/ → sibling Fraehr unzip at
-# I:\Projects\202606-JOH-zonal-LSG\data\external\fraehr2024\BurnettRV.
-# Event ids follow LF plan numbers (p12 → E12) via BurnettRV_event_summary.csv.
+# Local data: junctions or unzip under data/external/burnett/
+# (Fraehr BurnettRV.zip). Event ids follow LF plan numbers (p12 → E12)
+# via BurnettRV_event_summary.csv.
 
 study_area:
   id: burnett

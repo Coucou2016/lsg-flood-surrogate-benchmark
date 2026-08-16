@@ -1,4 +1,4 @@
-.venv/
+﻿.venv/
 __pycache__/
 *.pyc
 .pytest_cache/
@@ -17,6 +17,7 @@ __pycache__/
 data/external/
 data/raw/
 data/synthetic/*.npz
+data/processed/
 
 # Heavy outputs except curated JSON/SVG/PDF
 outputs/models/

@@ -49,8 +49,16 @@ ARTIFACTS = {
     / "outputs/evaluation/chowilla/workflow_summary_grp1_wse_ext_hlsg_max.json",
     "chowilla_global": _ROOT
     / "outputs/evaluation/chowilla/workflow_summary_grp1_wse_ext_global_max.json",
+    "chowilla_uq": _ROOT
+    / "outputs/evaluation/chowilla/workflow_summary_grp1_wse_ext_hlsg_max_uq_calibrated.json",
     "burnett_hlsg": _ROOT
     / "outputs/evaluation/burnett/workflow_summary_grp1_wse_ext_hlsg_max.json",
+    "burnett_global": _ROOT
+    / "outputs/evaluation/burnett/workflow_summary_grp1_wse_ext_global_max.json",
+    "burnett_uq": _ROOT
+    / "outputs/evaluation/burnett/workflow_summary_grp1_wse_ext_hlsg_max_uq_calibrated.json",
+    "chowilla_wet_corr": _ROOT
+    / "outputs/evaluation/chowilla/workflow_summary_grp1_wse_ext_wet_correlation_max.json",
     "pred_carlisle": _ROOT / "outputs/evaluation/carlisle/pred_examples.npz",
     "pred_chowilla": _ROOT / "outputs/evaluation/chowilla/pred_examples.npz",
     "pred_burnett": _ROOT / "outputs/evaluation/burnett/pred_examples.npz",
@@ -272,19 +280,15 @@ def fig_global_vs_hlsg(out_dir: Path, skips: list[str]) -> list[Path]:
         ("Carlisle", "H-LSG+SGPR", ARTIFACTS["carlisle_sgpr"]),
         ("Chowilla", "Global", ARTIFACTS["chowilla_global"]),
         ("Chowilla", "H-LSG", ARTIFACTS["chowilla_hlsg"]),
+        ("Burnett", "Global", ARTIFACTS["burnett_global"]),
         ("Burnett", "H-LSG", ARTIFACTS["burnett_hlsg"]),
     ]
-    # Burnett global intentionally absent → report
-    if not ARTIFACTS.get("burnett_global") or not Path(
-        ARTIFACTS.get("burnett_global", "")
-    ).is_file():
-        skips.append("fig03: Burnett Global A/B 未运行/缺数据")
 
     records: list[tuple[str, str, float, float]] = []
     for case, label, path in rows:
         summary = load_json(path)
         if summary is None:
-            skips.append(f"fig03: {path.name} 未运行/缺数据")
+            skips.append(f"fig03: {case}/{label} ({path.name}) 未运行/缺数据")
             continue
         m = wet_train_metrics(summary, "lsg_max")
         if m is None:
@@ -470,12 +474,22 @@ def fig_uq_calibration(out_dir: Path, skips: list[str]) -> list[Path]:
         after_c.append(float(c["crps"]))
 
     _append("Carlisle", ARTIFACTS["carlisle_uq"])
-    # Chowilla / Burnett: calibrated only
-    for label, key in (("Chowilla", "chowilla_hlsg"), ("Burnett", "burnett_hlsg")):
-        s = load_json(ARTIFACTS[key])
+    for label, key in (
+        ("Chowilla", "chowilla_uq"),
+        ("Burnett", "burnett_uq"),
+    ):
+        path = ARTIFACTS[key]
+        s = load_json(path)
         if s is None:
-            skips.append(f"fig04: {label} 未运行/缺数据")
-            continue
+            # Fall back to H-LSG workflow summary (may lack before curve)
+            fallback = ARTIFACTS["chowilla_hlsg" if label == "Chowilla" else "burnett_hlsg"]
+            s = load_json(fallback)
+            if s is None:
+                skips.append(f"fig04: {label} 未运行/缺数据")
+                continue
+            skips.append(
+                f"fig04: {label} UQ calibrated pair missing; using workflow summary"
+            )
         r, c = _uq_pair(s, "lsg_max")
         if c is None or "crps" not in c:
             skips.append(f"fig04: {label} CRPS 缺数据")
@@ -615,18 +629,25 @@ def fig_spatial_maps(out_dir: Path, skips: list[str]) -> list[Path]:
         err = pred - hf
         wet_bin = (pred >= DEPTH_TAU_M).astype(float)
 
-        # Probabilistic cell-wise P(wet) not stored in pred_examples.
-        skips.append(
-            f"fig05: {case} cell-wise inundation probability field 缺数据 "
-            f"(showing binary depth≥{DEPTH_TAU_M:g} m instead)"
-        )
+        if "inundation_prob_lsg_max" in raw.files:
+            inund_vals = np.asarray(raw["inundation_prob_lsg_max"][idx], dtype=float)
+            inund_title = "P(wet)"
+            inund_cbar = "P(wet) (−)"
+        else:
+            skips.append(
+                f"fig05: {case} cell-wise inundation probability field 缺数据 "
+                f"(showing binary depth≥{DEPTH_TAU_M:g} m instead)"
+            )
+            inund_vals = wet_bin
+            inund_title = f"Inundation (τ={DEPTH_TAU_M:g} m)"
+            inund_cbar = "wet (−)"
 
         panels = [
             ("HF reference", hf, PALETTE["depth"], 0.0, None),
             ("LF upsampled", lf if lf is not None else np.full_like(hf, np.nan), PALETTE["depth"], 0.0, None),
             ("LSG-Max", pred, PALETTE["depth"], 0.0, None),
             ("Error (LSG−HF)", err, PALETTE["error"], None, None),
-            (f"Inundation (τ={DEPTH_TAU_M:g} m)", wet_bin, PALETTE["inundation"], 0.0, 1.0),
+            (inund_title, inund_vals, PALETTE["inundation"], 0.0, 1.0),
         ]
         if lf is None:
             skips.append(f"fig05: {case} lf_upsampled_max 缺数据")
@@ -671,8 +692,8 @@ def fig_spatial_maps(out_dir: Path, skips: list[str]) -> list[Path]:
             cbar.ax.tick_params(labelsize=6)
             if title.startswith("Error"):
                 cbar.set_label("m", fontsize=7)
-            elif title.startswith("Inundation"):
-                cbar.set_label("wet (−)", fontsize=7)
+            elif title.startswith("P(wet)") or title.startswith("Inundation"):
+                cbar.set_label(inund_cbar, fontsize=7)
             else:
                 cbar.set_label("depth (m)", fontsize=7)
             ax.set_title(title, fontsize=8)
@@ -691,6 +712,65 @@ def fig_spatial_maps(out_dir: Path, skips: list[str]) -> list[Path]:
 
 
 # ---------------------------------------------------------------------------
+# Figure 6 — zoning-method sensitivity (residual_kmeans vs wet_correlation)
+# ---------------------------------------------------------------------------
+
+def fig_zoning_sensitivity(out_dir: Path, skips: list[str]) -> list[Path]:
+    import matplotlib.pyplot as plt
+
+    rows = [
+        ("residual_kmeans", ARTIFACTS["chowilla_hlsg"], PALETTE["hlsg"]),
+        ("wet_correlation", ARTIFACTS["chowilla_wet_corr"], PALETTE["sgpr"]),
+        ("global (none)", ARTIFACTS["chowilla_global"], PALETTE["global"]),
+    ]
+    labels: list[str] = []
+    csi_vals: list[float] = []
+    rmse_vals: list[float] = []
+    colors: list[str] = []
+    for lab, path, color in rows:
+        summary = load_json(path)
+        if summary is None:
+            skips.append(f"fig06: Chowilla {lab} 未运行/缺数据")
+            continue
+        m = wet_train_metrics(summary, "lsg_max")
+        if m is None:
+            skips.append(f"fig06: Chowilla {lab} wet_train 缺数据")
+            continue
+        labels.append(lab)
+        csi_vals.append(m["csi"])
+        rmse_vals.append(m["rmse"])
+        colors.append(color)
+
+    if len(labels) < 2:
+        if not any("fig06" in s for s in skips):
+            skips.append("fig06: wet_correlation zoning A/B 未运行/缺数据")
+        return []
+
+    fig, axes = plt.subplots(1, 2, figsize=figsize_double(2.6))
+    x = np.arange(len(labels), dtype=float)
+    for xi, c, v in zip(x, colors, csi_vals):
+        axes[0].bar(xi, v, width=0.55, color=c)
+    axes[0].set_xticks(x, labels, rotation=15)
+    axes[0].set_ylabel("CSI (−)")
+    axes[0].set_ylim(0.9, 1.01)
+    axes[0].set_title("Chowilla LSG-Max CSI")
+    add_panel_label(axes[0], "(a)")
+
+    for xi, c, v in zip(x, colors, rmse_vals):
+        axes[1].bar(xi, v, width=0.55, color=c)
+    axes[1].set_xticks(x, labels, rotation=15)
+    axes[1].set_ylabel("RMSE (m)")
+    axes[1].set_title("Chowilla LSG-Max RMSE")
+    add_panel_label(axes[1], "(b)")
+
+    fig.suptitle(f"Zoning-method sensitivity · {MASK_LABEL}", y=1.03)
+    fig.tight_layout()
+    paths = save_pub(fig, out_dir / "fig06_zoning_wet_correlation_ab")
+    plt.close(fig)
+    return paths
+
+
+# ---------------------------------------------------------------------------
 # Entry
 # ---------------------------------------------------------------------------
 
@@ -704,6 +784,7 @@ def make_all(out_dir: Path) -> dict[str, Any]:
     written += fig_global_vs_hlsg(out_dir, skips)
     written += fig_uq_calibration(out_dir, skips)
     written += fig_spatial_maps(out_dir, skips)
+    written += fig_zoning_sensitivity(out_dir, skips)
 
     # Deduplicate skip notes while preserving order
     seen: set[str] = set()

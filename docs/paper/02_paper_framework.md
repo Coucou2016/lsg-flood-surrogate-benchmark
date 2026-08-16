@@ -63,22 +63,19 @@ We implement and evaluate a residual hierarchical LSG variant (global modes + re
 7. **Conclusions** — Bounded contribution; reproducibility.  
 8. **Data/code availability** — Figshare DOIs; this repo’s configs/scripts (no secrets).
 
-## Figure / table list (intended names; figures regenerating elsewhere)
+## Figure / table list (intended names; figures regenerated 2026-08-16)
 
-Do **not** claim figure files verified here.
+Verified via `outputs/figures/figure_manifest.json` (`skips=[]`).
 
 | ID | Content | Artifact source |
 |---|---|---|
-| Fig. 1 | Method schematic: LF→EOF/GP→depth; residual zones on WSE | conceptual |
-| Fig. 2 | Carlisle Grp1 maps: LF / LSG-TS / LSG-Max / HF | `outputs/evaluation/carlisle/*sgpr_fix*` |
-| Fig. 3 | O1–O4 ladder bars (Carlisle Max/TS; Chowilla; Burnett) | `error_budget` JSON |
-| Fig. 4 | Global vs H-LSG O2−O1 (Chowilla) | hlsg vs global summaries |
-| Fig. 5 | UQ: CRPS / coverage_active before–after calibration | `*_uq_calibrated.json` |
-| Fig. 6 | Chowilla all-cells vs wet_train CSI contrast | Chowilla score_protocol |
-| Table 1 | Case/data inventory | `data/DATA_INVENTORY.md` |
-| Table 2 | Headline CSI/RMSE three cases | progress review metrics |
-| Table 3 | Novelty triage | `01_literature_review.md` |
-| Table 4 | UQ `var_scale` summary | calibrated JSON |
+| Fig. 1 | Cross-case wet_train CSI/RMSE | workflow summaries |
+| Fig. 2 | O1–O4 ladders | `error_budget` JSON |
+| Fig. 3 | Global vs H-LSG (Chowilla **+ Burnett**) | hlsg + global summaries |
+| Fig. 4 | UQ CRPS before–after (three cases) | `*_uq_calibrated.json` |
+| Fig. 5 | Spatial maps + **P(wet)** | `pred_examples.npz` |
+| Fig. 6 | Chowilla wet_correlation zoning A/B | wet_correlation summary |
+| Table 1–5 | Inventory / CSI / O1–O4 / UQ / zoning | manuscript |
 
 ## Framing modest method gains (explicit guidance)
 

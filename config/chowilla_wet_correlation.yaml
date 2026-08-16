@@ -6,8 +6,9 @@
 # Local data: junctions or unzip under data/external/chowilla/
 # (Fraehr Chowilla.zip). Same Fraehr layout as Carlisle.
 
+# wet_correlation zoning A/B twin of config/chowilla.yaml
 study_area:
-  id: chowilla_global
+  id: chowilla_wet_correlation
   name: Chowilla floodplain, Australia
   notes: >
     Published multi-fidelity benchmark (fine/coarse HEC-RAS). Paper anti-case
@@ -28,7 +29,7 @@ paths:
   hf_results: data/external/chowilla
   lf_results: data/external/chowilla
   processed: data/processed/chowilla
-  models: outputs/models/chowilla
+  models: outputs/models/chowilla_wet_correlation
   evaluation: outputs/evaluation/chowilla
   metadata: data/external/chowilla
 
@@ -51,7 +52,7 @@ lsg:
   random_seed: 20260814
   # Prefer residual_kmeans (Carlisle). If residual EOF / zone fit is unstable
   # on this floodplain, switch to none and document in README / cases.yaml.
-  zoning: none
+  zoning: wet_correlation
   n_zones: 4
   residual_eof_modes: 3
 

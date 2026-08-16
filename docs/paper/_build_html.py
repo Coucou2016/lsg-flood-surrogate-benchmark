@@ -28,32 +28,37 @@ FIGURES = [
     (
         "fig3",
         "fig03_global_vs_hlsg_ab.svg",
-        "Figure 3. Global versus residual H-LSG on Chowilla Max Grp1. Wet_train CSI is nearly flat; "
-        "the diagnostic gain is the reduced O2−O1 truncation gap under H-LSG.",
+        "Figure 3. Global versus residual H-LSG on Chowilla and Burnett Max Grp1. Wet_train CSI is nearly flat on both cases; "
+        "the diagnostic gain is the reduced O2−O1 truncation gap under H-LSG (Chowilla 0.057→0.013; Burnett 0.049→0.009).",
     ),
     (
         "fig4",
         "fig04_uq_calibration_crps_scale.svg",
-        "Figure 4. CRPS-scale variance calibration. Carlisle Max shows clear CRPS reduction at s=0.417 with unchanged "
-        "point CSI/RMSE. Chowilla/Burnett uncalibrated before curves are incomplete (待补充); calibrated var_scale "
-        "values are reported in Table 4.",
+        "Figure 4. CRPS-scale variance calibration before/after. Carlisle Max: CRPS 0.039→0.028 at s=0.417. "
+        "Burnett: CRPS 0.133→0.127 at s=0.604. Chowilla: CRPS essentially flat (2.155→2.155) with coverage moving away from nominal—report honestly.",
     ),
     (
         "fig5a",
         "fig05_spatial_maps_carlisle_E1.svg",
-        "Figure 5a. Carlisle event E1 maximum-depth spatial maps (HF, LF, LSG-Max H-LSG). "
+        "Figure 5a. Carlisle event E1 maps including cell-wise P(wet)=P(h≥0.03 m). "
         "Differences are relatively subtle given strong LF extent skill.",
     ),
     (
         "fig5b",
         "fig05_spatial_maps_chowilla_E1.svg",
-        "Figure 5b. Chowilla event E1 maps. Illustrates the strong-LF / wet-mask tension underlying "
+        "Figure 5b. Chowilla event E1 maps with P(wet) panel. Illustrates the strong-LF / wet-mask tension underlying "
         "the all-cells versus wet_train anti-case.",
     ),
     (
         "fig5c",
         "fig05_spatial_maps_burnett_E1.svg",
-        "Figure 5c. Burnett event E1 maps. Visual LF→LSG correction aligns with the large CSI/RMSE lift in Table 2.",
+        "Figure 5c. Burnett event E1 maps with P(wet) panel. Visual LF→LSG correction aligns with the large CSI/RMSE lift in Table 2.",
+    ),
+    (
+        "fig6",
+        "fig06_zoning_wet_correlation_ab.svg",
+        "Figure 6. Chowilla Max Grp1 zoning sensitivity: global, residual_kmeans, and wet_correlation (CSI / RMSE). "
+        "wet_correlation CSI 0.978 is only slightly above H-LSG 0.976; O2−O1 remains the clearer diagnostic.",
     ),
 ]
 
@@ -162,6 +167,8 @@ def md_to_body(md: str, fig_html: dict[str, str]) -> str:
                 out.append(fig_html["fig5a"])
                 out.append(fig_html["fig5b"])
                 out.append(fig_html["fig5c"])
+            elif title.startswith("6.7"):
+                out.append(fig_html["fig6"])
         elif line.startswith("---"):
             out.append("<hr/>")
         elif line.strip().startswith(">"):

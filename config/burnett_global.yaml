@@ -19,7 +19,8 @@ paths:
   hf_results: data/external/burnett
   lf_results: data/external/burnett
   processed: data/processed/burnett
-  models: outputs/models/burnett
+  # Separate from H-LSG residual_kmeans states under outputs/models/burnett
+  models: outputs/models/burnett_global
   evaluation: outputs/evaluation/burnett
   metadata: data/external/burnett
 

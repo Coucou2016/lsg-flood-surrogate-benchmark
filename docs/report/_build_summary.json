@@ -1,0 +1,21 @@
+{
+  "html_bytes": 1673760,
+  "md_bytes": 46242,
+  "figures_inlined": [
+    "fig01",
+    "fig02",
+    "fig03",
+    "fig04",
+    "fig05a",
+    "fig05b",
+    "fig05c",
+    "fig06"
+  ],
+  "skips": [],
+  "metrics_spotcheck": {
+    "car_max_csi": 0.9756919710408083,
+    "chow_all_csi": 0.39023876404494384,
+    "burn_wet_csi": 0.9751522776919259,
+    "var_scale_max": 0.4171616585792615
+  }
+}

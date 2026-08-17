@@ -857,14 +857,18 @@ def fig_pwet_maps(out_dir: Path, skips: list[str]) -> list[Path]:
 # ---------------------------------------------------------------------------
 
 def fig_spatial_maps(out_dir: Path, skips: list[str]) -> list[Path]:
-    """Deprecated strip: prefer fig02/03/04. Kept as optional combined depth strip."""
+    """Supplementary combined depth strip.
+
+    Numbered ``figS*`` rather than ``fig0*`` so it cannot be confused with the
+    numbered manuscript figures, which are assigned in ``make_all`` order.
+    """
     import matplotlib.pyplot as plt
 
     written: list[Path] = []
     specs = [
-        ("Carlisle", ARTIFACTS["pred_carlisle"], ARTIFACTS["geom_carlisle"], "fig05_legacy_depth_strip_carlisle"),
-        ("Chowilla", ARTIFACTS["pred_chowilla"], ARTIFACTS["geom_chowilla"], "fig05_legacy_depth_strip_chowilla"),
-        ("Burnett", ARTIFACTS["pred_burnett"], ARTIFACTS["geom_burnett"], "fig05_legacy_depth_strip_burnett"),
+        ("Carlisle", ARTIFACTS["pred_carlisle"], ARTIFACTS["geom_carlisle"], "figS1_depth_strip_carlisle"),
+        ("Chowilla", ARTIFACTS["pred_chowilla"], ARTIFACTS["geom_chowilla"], "figS1_depth_strip_chowilla"),
+        ("Burnett", ARTIFACTS["pred_burnett"], ARTIFACTS["geom_burnett"], "figS1_depth_strip_burnett"),
     ]
     for case, pred_path, geom_path, stem in specs:
         b = _case_event_bundle(case, pred_path, geom_path, skips, "fig_legacy_spatial")
@@ -984,7 +988,7 @@ def make_all(out_dir: Path) -> dict[str, Any]:
     written += fig_global_vs_hlsg(out_dir, skips)
     written += fig_uq_calibration(out_dir, skips)
     written += fig_zoning_sensitivity(out_dir, skips)
-    # Optional legacy depth strip (not primary manuscript numbering)
+    # Supplementary depth strip (figS*, outside the numbered manuscript set)
     written += fig_spatial_maps(out_dir, skips)
     skips.append(
         "hydrograph panels: pred_examples.npz is max-only (no per-timestep series) → 缺数据; skipped"
@@ -998,15 +1002,25 @@ def make_all(out_dir: Path) -> dict[str, Any]:
             seen.add(s)
             uniq_skips.append(s)
 
+    current = {p.resolve() for p in written}
+    stale = sorted(
+        p.name
+        for p in out_dir.glob("fig*.*")
+        if p.suffix.lower() in {".svg", ".pdf", ".png"} and p.resolve() not in current
+    )
+
     report = {
         "style": meta,
         "out_dir": str(out_dir),
         "n_files": len(written),
-        "files": [str(p) for p in written],
+        "files": [p.as_posix() for p in written],
         "skips": uniq_skips,
+        "stale_files": stale,
     }
     report_path = out_dir / "figure_manifest.json"
-    report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    report_path.write_text(
+        json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     return report
 
 
@@ -1027,6 +1041,10 @@ def main() -> None:
     if report["skips"]:
         print("Skipped / 缺数据:")
         for s in report["skips"]:
+            print(f"  - {s}")
+    if report["stale_files"]:
+        print("Stale figure files not written by this run (review/remove):")
+        for s in report["stale_files"]:
             print(f"  - {s}")
 
 
